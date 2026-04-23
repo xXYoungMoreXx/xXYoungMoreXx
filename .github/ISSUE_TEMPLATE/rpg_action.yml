@@ -1,0 +1,43 @@
+name: "⚔️ Ação RPG — Aethoria"
+description: "Abra esta issue para executar uma ação no RPG Aethoria"
+title: "rpg:"
+labels: ["rpg-action"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚔️ Aethoria — Ação de Jogo
+
+        Edite o **título** desta issue para a ação desejada.
+
+        ### Ações disponíveis:
+        | Título | Efeito |
+        |--------|--------|
+        | `rpg:classe:guerreiro` | Escolher classe Guerreiro |
+        | `rpg:classe:mago` | Escolher classe Mago |
+        | `rpg:classe:cacador` | Escolher classe Caçador |
+        | `rpg:classe:ladino` | Escolher classe Ladino |
+        | `rpg:norte` / `rpg:sul` / `rpg:leste` / `rpg:oeste` | Mover |
+        | `rpg:atacar` | Atacar inimigo |
+        | `rpg:habilidade` | Usar habilidade especial |
+        | `rpg:pocao` | Usar poção |
+        | `rpg:interagir` | Interagir com local/NPC |
+        | `rpg:descansar` | Descansar (zona segura) |
+        | `rpg:taverna` | Ouvir rumores na taverna |
+        | `rpg:skill:ID` | Desbloquear habilidade (ex: `rpg:skill:gf1`) |
+        | `rpg:comprar:pocao` | Comprar item (ex: pocao, elixir_mana) |
+        | `rpg:craftar:pocao_maior` | Fabricar item |
+        | `rpg:montar:ironhold` | Viajar via montaria dracônica |
+        | `rpg:desafiar:USERNAME` | Desafiar outro jogador em PvP |
+        | `rpg:prestigio` | Ativar prestígio (nível 10 necessário) |
+        | `rpg:reiniciar` | Reiniciar seu personagem |
+
+        **Simplesmente edite o título acima e clique em Submit!**
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: "Confirmar"
+      options:
+        - label: "Editei o título com a ação desejada"
+          required: true

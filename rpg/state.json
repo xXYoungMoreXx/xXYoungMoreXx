@@ -1,0 +1,15 @@
+{
+  "turn": 0,
+  "world_log": [
+    "⚔️ Aethoria aguarda seu próximo aventureiro...",
+    "🗼 A Torre do Oráculo pisca ao longe. A profecia se move.",
+    "🌙 Criaturas das trevas rondam Kragdor nesta noite."
+  ],
+  "npc_memory": {
+    "Miriel": { "met": [], "world_state": {} },
+    "Aldric": { "met": [], "world_state": {} },
+    "Oráculo": { "met": [], "world_state": {} },
+    "Capitão Heron": { "met": [], "world_state": {} }
+  },
+  "world_events": []
+}

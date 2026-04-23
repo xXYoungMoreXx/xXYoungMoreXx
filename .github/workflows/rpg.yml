@@ -1,0 +1,85 @@
+name: ⚔️ Aethoria RPG Engine v3
+
+on:
+  issues:
+    types: [opened]
+
+# ─── Fila sequencial — evita conflitos de commit ───────────────────────────
+concurrency:
+  group: aethoria-rpg-queue
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  process_action:
+    # Só processa issues com prefixo rpg: e ignora bots
+    if: |
+      startsWith(github.event.issue.title, 'rpg:') &&
+      !contains(github.event.issue.user.login, '[bot]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Cache do Python — economiza ~20s por execução
+      - name: 🐍 Setup Python 3.11 (cached)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: ⚔️ Processar ação RPG
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python rpg/engine.py \
+            "${{ github.event.issue.title }}" \
+            "${{ github.event.issue.user.login }}"
+
+      - name: 💾 Commit resultado
+        run: |
+          git config user.name  "Aethoria Bot ⚔️"
+          git config user.email "aethoria-bot@users.noreply.github.com"
+          git add README.md rpg/state.json rpg/leaderboard.json "rpg/players/"
+          # Só commita se houve mudança real
+          git diff --staged --quiet || \
+            git commit -m "⚔️ [@${{ github.event.issue.user.login }}] ${{ github.event.issue.title }}" \
+                       -m "Turno processado por Aethoria Engine v3"
+          git push
+
+      - name: 💬 Comentar e fechar Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const login  = context.payload.issue.user.login;
+            const action = context.payload.issue.title;
+            const repo   = `${context.repo.owner}/${context.repo.repo}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                `⚔️ **Aethoria Engine v3** processou: \`${action}\``,
+                ``,
+                `@${login} — Confira o resultado no [README do perfil](https://github.com/${repo}#readme).`,
+                ``,
+                `> *"A profecia se move. Cada escolha importa."*`,
+                ``,
+                `---`,
+                `> ℹ️ Esta issue foi gerada automaticamente pelo jogo. Pode ser fechada com segurança.`
+              ].join('\n')
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: context.issue.number,
+              state:  'closed',
+              labels: ['rpg-action']
+            });
