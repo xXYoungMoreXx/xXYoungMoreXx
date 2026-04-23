@@ -33,37 +33,37 @@ jobs:
 
           # Replace the section between markers in README.md
           python3 - <<'PYEOF'
-import re, os
+          import re, os
 
-readme = open("README.md", "r", encoding="utf-8").read()
-repos_str = os.environ.get("REPOS", "").strip()
-username = os.environ.get("USERNAME", "xXYoungMoreXx")
+          readme = open("README.md", "r", encoding="utf-8").read()
+          repos_str = os.environ.get("REPOS", "").strip()
+          username = os.environ.get("USERNAME", "xXYoungMoreXx")
 
-if repos_str:
-    repos = repos_str.split("\n")
-    block = "<!-- PROJECTS_START -->\n<table align=\"center\" border=\"0\" style=\"background-color: transparent;\">\n"
-    for i in range(0, len(repos), 2):
-        block += "  <tr>\n"
-        for j in range(2):
-            if i+j < len(repos):
-                repo = repos[i+j].strip()
-                url = f"https://github.com/{username}/{repo}"
-                img = f"https://github-readme-stats.vercel.app/api/pin/?username={username}&repo={repo}&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9"
-                block += f"    <td valign=\"top\" width=\"50%\">\n      <a href=\"{url}\">\n        <img src=\"{img}\" alt=\"Repo Card\" height=\"125\" style=\"max-width:100%;\" />\n      </a>\n    </td>\n"
-        block += "  </tr>\n"
-    block += "</table>\n<!-- PROJECTS_END -->"
+          if repos_str:
+              repos = repos_str.split("\n")
+              block = "<!-- PROJECTS_START -->\n<table align=\"center\" border=\"0\" style=\"background-color: transparent;\">\n"
+              for i in range(0, len(repos), 2):
+                  block += "  <tr>\n"
+                  for j in range(2):
+                      if i+j < len(repos):
+                          repo = repos[i+j].strip()
+                          url = f"https://github.com/{username}/{repo}"
+                          img = f"https://github-readme-stats.vercel.app/api/pin/?username={username}&repo={repo}&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9"
+                          block += f"    <td valign=\"top\" width=\"50%\">\n      <a href=\"{url}\">\n        <img src=\"{img}\" alt=\"Repo Card\" height=\"125\" style=\"max-width:100%;\" />\n      </a>\n    </td>\n"
+                  block += "  </tr>\n"
+              block += "</table>\n<!-- PROJECTS_END -->"
 
-    pattern = r"<!-- PROJECTS_START -->.*?<!-- PROJECTS_END -->"
-    new_readme = re.sub(pattern, block, readme, flags=re.DOTALL)
+              pattern = r"<!-- PROJECTS_START -->.*?<!-- PROJECTS_END -->"
+              new_readme = re.sub(pattern, block, readme, flags=re.DOTALL)
 
-    if new_readme != readme:
-        open("README.md", "w", encoding="utf-8").write(new_readme)
-        print("README.md updated with new featured projects.")
-    else:
-        print("No changes needed.")
-else:
-    print("No repos found.")
-PYEOF
+              if new_readme != readme:
+                  open("README.md", "w", encoding="utf-8").write(new_readme)
+                  print("README.md updated with new featured projects.")
+              else:
+                  print("No changes needed.")
+          else:
+              print("No repos found.")
+          PYEOF
 
       - name: Commit & push
         run: |
