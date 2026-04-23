@@ -45,7 +45,7 @@ const mauricio = {
 
 <table>
 <tr>
-<td width="10%" align="center"><b>Dez/2023</b><br/>↕<br/><b>Atual</b></td>
+<td width="10%" align="center"><b>Dez/2025</b><br/>↕<br/><b>Atual</b></td>
 <td>
 
 **🏢 Cogitari — Fundador, CEO & CTO**
@@ -212,20 +212,22 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 <!-- RPG_START -->
 ## ⚔️ AETHORIA: O REINO FRAGMENTADO — Escolha sua Classe
 
-> 💻 **Seu GitHub: linguagem `Python` → afinidade com 🔮 Mago** _(bônus ao escolher!)_
 > *Há mil anos, os Reis-Dragão uniam Aethoria. O último foi traído pelo Pacto das Sombras. O reino se fragmentou.*
-> *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd. Você acordou em Ironhold sem memórias.*
-> *Uma tatuagem arcana pulsa em seu pulso. A jornada pertence a quem ousa começar.*
+> *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd, destinado a restaurar a luz. Por um acaso do destino (ou uma ressaca coletiva), 10 heróis com passados estereotipados acordaram na mesma Taverna em Ironhold sem memórias recentes.*
+> *Todos eles possuem uma tatuagem arcana pulsando no pulso. Suas histórias se cruzaram aqui. A jornada pertence a quem ousa começar.*
 
 | Classe | Lore | HP | Mana | DEF | Habilidade |
 |--------|------|:--:|:----:|:---:|------------|
-| [⚔️ Guerreiro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aguerreiro) | Forjado na guerra. Resistente como o aço de Ironhold. | 130 | 40 | 10 | Investida Furiosa (2×) |
-| [🔮 Mago](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amago) | Portador de magia proibida desde a queda dos Reis-Dragão. | 85 | 100 | 4 | Tempestade Arcana (3×) |
-| [🏹 Caçador](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Acacador) | Solitário como os Witchers do norte. Caça o que outros temem. | 105 | 60 | 7 | Tiro de Precisão (2.2×) |
-| [🗡️ Ladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aladino) | Das sombras do Mercado Negro. Sabe o que reis pagam fortunas para ocultar. | 95 | 70 | 5 | Golpe Furtivo (2× + stun) |
-| [🛡️ Paladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Apaladino) | Guerreiros sagrados jurados à Ordem. Onde há trevas, eles trazem a luz. | 140 | 70 | 12 | Julgamento Divino (1.8×) |
-| [💀 Necromante](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Anecromante) | A morte não é o fim, mas apenas uma nova ferramenta no seu arsenal. | 85 | 120 | 4 | Exército de Ossos (2.5×) |
-| [🎵 Bardo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abardo) | Tecelões da música e do destino. Uma canção certa muda o mundo. | 95 | 85 | 6 | Canção do Caos (2×) |
+| [⚔️ Guerreiro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aguerreiro) | O clássico herói genérico. Sem memória, confia na espada e jura que a Estrela de Wyrd é um mapa para uma princesa em outro castelo. | 130 | 40 | 10 | Investida Furiosa (2.0×) |
+| [🔮 Mago](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amago) | Estudioso arrogante que tem pavor de sol. Acha todos idiotas por não lerem grimórios de 800 páginas sobre os Reis-Dragão. | 85 | 100 | 4 | Tempestade Arcana (3.0×) |
+| [🏹 Caçador](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Acacador) | O lobo solitário 'edgy'. Fica nos cantos escuros de Ironhold dizendo que trabalha sozinho, mas não vive sem o grupo. | 105 | 60 | 7 | Tiro de Precisão (2.2×) |
+| [🗡️ Ladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aladino) | Cleptomaníaco incurável. Jura que a Estrela de Wyrd é uma tatuagem de guilda. Se uma poção sumiu, olhe para ele. | 95 | 70 | 5 | Golpe Furtivo (2.0×) |
+| [🛡️ Paladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Apaladino) | O justiceiro fanático e insuportável. Grita 'Pela Luz!' para tudo e tenta converter cultistas do Pacto antes de matá-los. | 140 | 70 | 12 | Julgamento Divino (1.8×) |
+| [💀 Necromante](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Anecromante) | Gótico incompreendido. 'Por que reciclar lixo se podemos reciclar cadáveres?'. Leva seu esqueleto de estimação para passear. | 85 | 120 | 4 | Exército de Ossos (2.5×) |
+| [🎵 Bardo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abardo) | O sedutor compulsivo. Tenta flertar com TUDO que se move, desde as garçonetes da taverna até o próprio Destruidor de Mundos. | 95 | 85 | 6 | Canção do Caos (2.0×) |
+| [🥋 Monge](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amonge) | O mestre zen (ou apenas de ressaca). Fala provérbios de biscoito da sorte com a maior seriedade enquanto distribui voadoras. | 115 | 50 | 8 | Punhos do Wyrd (2.1×) |
+| [👁️ Bruxo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abruxo) | O CLT das trevas. Vendeu a alma para um sugar-daddy cósmico do Pacto das Sombras e agora reclama de bater ponto. | 90 | 110 | 5 | Rajada Mística (2.6×) |
+| [🪓 Bárbaro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abarbaro) | Uma montanha de músculos com QI de dois dígitos. Resolve tudo no grito e acha que livros arcanos são um ótimo lanche. | 150 | 20 | 8 | Fúria Cega (2.0×) |
 
 > 🎮 *Clique em uma classe para começar! Qualquer visitante pode jogar.*
 
@@ -240,7 +242,8 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 | # | Aventureiro | Classe | Nível | Score | Bosses | Conquistas | Lang |
 |---|---|---|---|---|---|---|---|
 | 🥇 | **@xXYoungMoreXx** | — | 1 | 213 | 0 | 0 | `Python` |
-> _Score = XP total + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · Atualizado: 23/04/2026 23:37 UTC_
+| 🥈 | **@UnregisteredUser123** | — | 1 | 0 | 0 | 0 | — |
+> _Score = XP total + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · Atualizado: 23/04/2026 23:55 UTC_
 
 <!-- RPG_END -->
 

@@ -212,31 +212,43 @@ CLASSES = {
     "guerreiro":{"nome":"Guerreiro","emoji":"⚔️","hp":130,"mana":40,"atk":(12,22),"def":10,
                  "skill":"Investida Furiosa","skill_e":"💥","skill_cost":20,"skill_multi":2.0,
                  "weapon":"Espada de Aço","armor":"Cota de Malha",
-                 "lore":"Forjado na guerra. Resistente como o aço de Ironhold."},
+                 "lore":"O clássico herói genérico. Sem memória, confia na espada e jura que a Estrela de Wyrd é um mapa para uma princesa em outro castelo."},
     "mago":     {"nome":"Mago","emoji":"🔮","hp":85,"mana":100,"atk":(8,16),"def":4,
                  "skill":"Tempestade Arcana","skill_e":"⚡","skill_cost":30,"skill_multi":3.0,
                  "weapon":"Cetro do Wyrd","armor":"Manto Rúnico",
-                 "lore":"Portador de magia proibida desde a queda dos Reis-Dragão."},
+                 "lore":"Estudioso arrogante que tem pavor de sol. Acha todos idiotas por não lerem grimórios de 800 páginas sobre os Reis-Dragão."},
     "cacador":  {"nome":"Caçador","emoji":"🏹","hp":105,"mana":60,"atk":(10,20),"def":7,
                  "skill":"Tiro de Precisão","skill_e":"🎯","skill_cost":25,"skill_multi":2.2,
-                 "weapon":"Arco de Teixo Élfio","armor":"Couro Endurecido",
-                 "lore":"Solitário como os Witchers do norte. Caça o que outros temem."},
+                 "weapon":"Arco de Teixo","armor":"Couro Endurecido",
+                 "lore":"O lobo solitário 'edgy'. Fica nos cantos escuros de Ironhold dizendo que trabalha sozinho, mas não vive sem o grupo."},
     "ladino":   {"nome":"Ladino","emoji":"🗡️","hp":95,"mana":70,"atk":(14,26),"def":5,
                  "skill":"Golpe Furtivo","skill_e":"🌑","skill_cost":20,"skill_multi":2.0,
                  "weapon":"Adagas Gêmeas","armor":"Roupa das Sombras",
-                 "lore":"Das sombras do Mercado Negro. Sabe o que reis pagam fortunas para ocultar."},
+                 "lore":"Cleptomaníaco incurável. Jura que a Estrela de Wyrd é uma tatuagem de guilda. Se uma poção sumiu, olhe para ele."},
     "paladino": {"nome":"Paladino","emoji":"🛡️","hp":140,"mana":70,"atk":(10,18),"def":12,
                  "skill":"Julgamento Divino","skill_e":"✨","skill_cost":25,"skill_multi":1.8,
                  "weapon":"Martelo da Luz","armor":"Placas Abençoadas",
-                 "lore":"Guerreiros sagrados jurados à Ordem. Onde há trevas, eles trazem a luz."},
+                 "lore":"O justiceiro fanático e insuportável. Grita 'Pela Luz!' para tudo e tenta converter cultistas do Pacto antes de matá-los."},
     "necromante":{"nome":"Necromante","emoji":"💀","hp":85,"mana":120,"atk":(9,15),"def":4,
                  "skill":"Exército de Ossos","skill_e":"🦴","skill_cost":35,"skill_multi":2.5,
                  "weapon":"Foice das Almas","armor":"Manto de Ossos",
-                 "lore":"A morte não é o fim, mas apenas uma nova ferramenta no seu arsenal."},
+                 "lore":"Gótico incompreendido. 'Por que reciclar lixo se podemos reciclar cadáveres?'. Leva seu esqueleto de estimação para passear."},
     "bardo":    {"nome":"Bardo","emoji":"🎵","hp":95,"mana":85,"atk":(9,17),"def":6,
                  "skill":"Canção do Caos","skill_e":"🎶","skill_cost":20,"skill_multi":2.0,
                  "weapon":"Alaúde Encantado","armor":"Trajes Festivos",
-                 "lore":"Tecelões da música e do destino. Uma canção certa muda o mundo."},
+                 "lore":"O sedutor compulsivo. Tenta flertar com TUDO que se move, desde as garçonetes da taverna até o próprio Destruidor de Mundos."},
+    "monge":    {"nome":"Monge","emoji":"🥋","hp":115,"mana":50,"atk":(11,21),"def":8,
+                 "skill":"Punhos do Wyrd","skill_e":"👊","skill_cost":20,"skill_multi":2.1,
+                 "weapon":"Manoplas Espirituais","armor":"Traje de Monge",
+                 "lore":"O mestre zen (ou apenas de ressaca). Fala provérbios de biscoito da sorte com a maior seriedade enquanto distribui voadoras."},
+    "bruxo":    {"nome":"Bruxo","emoji":"👁️","hp":90,"mana":110,"atk":(10,18),"def":5,
+                 "skill":"Rajada Mística","skill_e":"☄️","skill_cost":25,"skill_multi":2.6,
+                 "weapon":"Tomo Sombrio","armor":"Vestes do Pacto",
+                 "lore":"O CLT das trevas. Vendeu a alma para um sugar-daddy cósmico do Pacto das Sombras e agora reclama de bater ponto."},
+    "barbaro":  {"nome":"Bárbaro","emoji":"🪓","hp":150,"mana":20,"atk":(15,28),"def":8,
+                 "skill":"Fúria Cega","skill_e":"💢","skill_cost":15,"skill_multi":2.0,
+                 "weapon":"Machado Duplo","armor":"Peles de Urso",
+                 "lore":"Uma montanha de músculos com QI de dois dígitos. Resolve tudo no grito e acha que livros arcanos são um ótimo lanche."}
 }
 SKILL_TREES = {
     "guerreiro":[
@@ -294,6 +306,30 @@ SKILL_TREES = {
         ("bs2","Dança Festiva",     "✨ Charme",  2,2,"bs1",  "Fuga sempre funciona",             {"free_escape":True}),
         ("bg1","Canto de Cura",     "💚 Melodia", 1,1,None,   "+6 HP por turno vivo",             {"regen":6}),
         ("bg2","Bis",               "💚 Melodia", 2,2,"bg1",  "30% de ataque duplo",              {"double_atk":0.30}),
+    ],
+    "monge":[
+        ("mof1","Punhos de Ferro",   "👊 Força",    1,1,None,  "+8 ATK",                           {"atk_flat":8}),
+        ("mof2","Chute Ciclone",     "👊 Força",    2,2,"mof1","+14 ATK · 25% de ataque duplo",    {"atk_flat":14,"double_atk":0.25}),
+        ("mod1","Mente Limpa",       "🧘 Foco",     1,1,None,  "+10 DEF",                          {"def_flat":10}),
+        ("mod2","Corpo Diamante",    "🧘 Foco",     2,2,"mod1","+15 DEF · Esquiva 20%",            {"def_flat":15,"dodge":0.20}),
+        ("mos1","Chi Interior",      "🌀 Energia",  1,1,None,  "+30 Mana máx",                     {"mana_max":30}),
+        ("mos2","Respiração Cura",   "🌀 Energia",  2,2,"mos1","+8 HP por turno vivo",             {"regen":8}),
+    ],
+    "bruxo":[
+        ("wxf1","Fogo do Inferno",   "🔥 Destruição",1,1,None, "+10 ATK",                          {"atk_flat":10}),
+        ("wxf2","Raio Aniquilador",  "🔥 Destruição",2,2,"wxf1","+15 ATK · Queima 8/turno",        {"atk_flat":15,"burn":8}),
+        ("wxd1","Escudo das Trevas", "🌑 Sombra",   1,1,None,  "+6 DEF",                           {"def_flat":6}),
+        ("wxd2","Manto de Miasma",   "🌑 Sombra",   2,2,"wxd1","+10 DEF · Veneno debuff -20%",     {"def_flat":10,"poison_debuff":0.20}),
+        ("wxp1","Barganha Sombria",  "🩸 Pacto",    1,1,None,  "HP<30% → +90% ATK",               {"low_hp_bonus":0.90}),
+        ("wxp2","Sacrifício",        "🩸 Pacto",    2,2,"wxp1","Crítico +20%",                     {"crit":0.20}),
+    ],
+    "barbaro":[
+        ("baf1","Golpe Selvagem",    "🪓 Violência",1,1,None,  "+12 ATK",                          {"atk_flat":12}),
+        ("baf2","Fender Crânios",    "🪓 Violência",2,2,"baf1","+20 ATK · Atordoa 20%",            {"atk_flat":20,"stun":0.20}),
+        ("bad1","Pele Escarificada", "🛡️ Resiliência",1,1,None,"+12 DEF",                         {"def_flat":12}),
+        ("bad2","Ignorar Dor",       "🛡️ Resiliência",2,2,"bad1","+20 DEF · +50 HP máx",           {"def_flat":20,"hp_max":50}),
+        ("bas1","Sede de Sangue",    "💢 Instinto", 1,1,None,  "Ao matar: próx. atk +30%",         {"kill_fury":0.30}),
+        ("bas2","Incontrolável",     "💢 Instinto", 2,2,"bas1","Fuga sempre funciona",             {"free_escape":True}),
     ],
 }
 XP_TABLE = [0,0,60,150,280,450,680,980,1360,1840,2500]
@@ -1221,7 +1257,7 @@ def npc_dialogue(npc,p,gs):
 #  LEADERBOARD
 # ══════════════════════════════════════════════════════════════════════════════
 def score(p):
-    gh = p.get("github_profile", {})
+    gh = p.get("github_profile") or {}
     gh_score = gh.get("public_repos", 0) * 10 + gh.get("total_stars", 0) * 50 + gh.get("followers", 0) * 25
     return p.get("total_xp",0) + p.get("kills",0)*5 + len(p.get("bosses_defeated",{}))*100 + len(p.get("conquistas",[]))*30 + p.get("prestige_count",0)*500 + gh_score
 
@@ -1297,6 +1333,12 @@ def build_block(p,gs,lb):
     titulo=f" · 🏅 *{p.get('titulo')}*" if p.get("titulo") else ""
     prestige_badge=f" · 🔮 **Prestígio {'I'*p.get('prestige_count',0)}**" if p.get("prestige_count",0) else ""
 
+    class_rows = []
+    for c_id, c_data in CLASSES.items():
+        row = f"| [{c_data['emoji']} {c_data['nome']}]({base}rpg%3Aclasse%3A{c_id}) | {c_data['lore']} | {c_data['hp']} | {c_data['mana']} | {c_data['def']} | {c_data['skill']} ({c_data['skill_multi']}×) |"
+        class_rows.append(row)
+    class_table = "\n".join(class_rows)
+
     if not p.get("classe"):
         gh=p.get("github_profile"); lang=gh.get("top_language") if gh else None
         lang_hint=""
@@ -1307,18 +1349,12 @@ def build_block(p,gs,lb):
 ## ⚔️ AETHORIA: O REINO FRAGMENTADO — Escolha sua Classe
 {lang_hint}
 > *Há mil anos, os Reis-Dragão uniam Aethoria. O último foi traído pelo Pacto das Sombras. O reino se fragmentou.*
-> *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd. Você acordou em Ironhold sem memórias.*
-> *Uma tatuagem arcana pulsa em seu pulso. A jornada pertence a quem ousa começar.*
+> *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd, destinado a restaurar a luz. Por um acaso do destino (ou uma ressaca coletiva), 10 heróis com passados estereotipados acordaram na mesma Taverna em Ironhold sem memórias recentes.*
+> *Todos eles possuem uma tatuagem arcana pulsando no pulso. Suas histórias se cruzaram aqui. A jornada pertence a quem ousa começar.*
 
 | Classe | Lore | HP | Mana | DEF | Habilidade |
 |--------|------|:--:|:----:|:---:|------------|
-| [{CLASSES['guerreiro']['emoji']} Guerreiro]({base}rpg%3Aclasse%3Aguerreiro) | {CLASSES['guerreiro']['lore']} | 130 | 40 | 10 | Investida Furiosa (2×) |
-| [{CLASSES['mago']['emoji']} Mago]({base}rpg%3Aclasse%3Amago) | {CLASSES['mago']['lore']} | 85 | 100 | 4 | Tempestade Arcana (3×) |
-| [{CLASSES['cacador']['emoji']} Caçador]({base}rpg%3Aclasse%3Acacador) | {CLASSES['cacador']['lore']} | 105 | 60 | 7 | Tiro de Precisão (2.2×) |
-| [{CLASSES['ladino']['emoji']} Ladino]({base}rpg%3Aclasse%3Aladino) | {CLASSES['ladino']['lore']} | 95 | 70 | 5 | Golpe Furtivo (2× + stun) |
-| [{CLASSES['paladino']['emoji']} Paladino]({base}rpg%3Aclasse%3Apaladino) | {CLASSES['paladino']['lore']} | 140 | 70 | 12 | Julgamento Divino (1.8×) |
-| [{CLASSES['necromante']['emoji']} Necromante]({base}rpg%3Aclasse%3Anecromante) | {CLASSES['necromante']['lore']} | 85 | 120 | 4 | Exército de Ossos (2.5×) |
-| [{CLASSES['bardo']['emoji']} Bardo]({base}rpg%3Aclasse%3Abardo) | {CLASSES['bardo']['lore']} | 95 | 85 | 6 | Canção do Caos (2×) |
+{class_table}
 
 > 🎮 *Clique em uma classe para começar! Qualquer visitante pode jogar.*
 

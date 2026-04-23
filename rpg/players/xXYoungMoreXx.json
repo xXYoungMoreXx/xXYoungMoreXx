@@ -89,15 +89,15 @@
     "Ironhold"
   ],
   "conquistas": [],
-  "sessions": 1,
+  "sessions": 2,
   "log": [
+    "❓ Ação `rpg:status` desconhecida.",
     "😴 Descansou em **Ironhold**: +0 HP · +0 Mana · veneno curado.",
     "⚔️ Bem-vindo, **@xXYoungMoreXx**! Escolha sua classe para começar.",
     "💻 Linguagem principal **Python** → afinidade com **Mago** _(bônus ao escolher esta classe!)_",
     "👥 6 seguidores → **+3 XP** inicial!",
     "⚔️ Bem-vindo a Aethoria!",
-    "_Uma tatuagem arcana pulsa em seu pulso._",
-    "🧙 Escolha sua classe para começar!"
+    "_Uma tatuagem arcana pulsa em seu pulso._"
   ],
   "active_monster": null,
   "boss_phase": 0,
@@ -110,7 +110,7 @@
   "raid_count": 0,
   "raid_mvp_count": 0,
   "raid_bosses_killed": [],
-  "last_played": "2026-04-23T23:37:14.158841+00:00",
+  "last_played": "2026-04-23T23:51:54.530054+00:00",
   "factions": {
     "ordem": 0,
     "circulo": 0,

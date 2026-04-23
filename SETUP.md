@@ -189,6 +189,36 @@ Ganhe pontos ao subir de nível. Use `rpg:skill:ID` para desbloquear.
 | `bg1` | Canto de Cura | 1 | — | +6 HP por turno vivo |
 | `bg2` | Bis | 2 | bg1 | 30% de ataque duplo |
 
+**🥋 Monge:**
+| ID | Nome | Tier | Pré-req | Efeito |
+|----|------|------|---------|--------|
+| `mof1` | Punhos de Ferro | 1 | — | +8 ATK |
+| `mof2` | Chute Ciclone | 2 | mof1 | +14 ATK · 25% de ataque duplo |
+| `mod1` | Mente Limpa | 1 | — | +10 DEF |
+| `mod2` | Corpo Diamante | 2 | mod1 | +15 DEF · Esquiva 20% |
+| `mos1` | Chi Interior | 1 | — | +30 Mana máx |
+| `mos2` | Respiração Cura | 2 | mos1 | +8 HP por turno vivo |
+
+**👁️ Bruxo:**
+| ID | Nome | Tier | Pré-req | Efeito |
+|----|------|------|---------|--------|
+| `wxf1` | Fogo do Inferno | 1 | — | +10 ATK |
+| `wxf2` | Raio Aniquilador | 2 | wxf1 | +15 ATK · Queima 8/turno |
+| `wxd1` | Escudo das Trevas | 1 | — | +6 DEF |
+| `wxd2` | Manto de Miasma | 2 | wxd1 | +10 DEF · Veneno debuff -20% |
+| `wxp1` | Barganha Sombria | 1 | — | HP<30% → +90% ATK |
+| `wxp2` | Sacrifício | 2 | wxp1 | Crítico +20% |
+
+**🪓 Bárbaro:**
+| ID | Nome | Tier | Pré-req | Efeito |
+|----|------|------|---------|--------|
+| `baf1` | Golpe Selvagem | 1 | — | +12 ATK |
+| `baf2` | Fender Crânios | 2 | baf1 | +20 ATK · Atordoa 20% |
+| `bad1` | Pele Escarificada | 1 | — | +12 DEF |
+| `bad2` | Ignorar Dor | 2 | bad1 | +20 DEF · +50 HP máx |
+| `bas1` | Sede de Sangue | 1 | — | Ao matar: próx. atk +30% |
+| `bas2` | Incontrolável | 2 | bas1 | Fuga sempre funciona |
+
 ### Social
 | Issue | Efeito |
 |-------|--------|
