@@ -3,6 +3,8 @@ name: ⚔️ Aethoria RPG Engine v3
 on:
   issues:
     types: [opened]
+  issue_comment:
+    types: [created]
 
 # ─── Fila sequencial — evita conflitos de commit ───────────────────────────
 concurrency:
@@ -15,10 +17,10 @@ permissions:
 
 jobs:
   process_action:
-    # Só processa issues com prefixo rpg: e ignora bots
+    # Só processa issues com prefixo rpg: ou comentários com /atacar em issues [RAID], ignora bots
     if: |
-      startsWith(github.event.issue.title, 'rpg:') &&
-      !contains(github.event.issue.user.login, '[bot]')
+      (github.event_name == 'issues' && startsWith(github.event.issue.title, 'rpg:') && !contains(github.event.issue.user.login, '[bot]')) ||
+      (github.event_name == 'issue_comment' && startsWith(github.event.issue.title, '[RAID]') && startsWith(github.event.comment.body, '/atacar') && !contains(github.event.comment.user.login, '[bot]'))
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -27,6 +29,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      # Para lidar com os possíveis pull requests ou pull --rebase antes do push devido a possíveis race conditions com outras coisas. O concurrency resolve o principal, mas por segurança puxamos.
+      - name: 🔄 Configurar Git e Atualizar
+        run: |
+          git config user.name  "Aethoria Bot ⚔️"
+          git config user.email "aethoria-bot@users.noreply.github.com"
+          git pull --rebase origin main
 
       # Cache do Python — economiza ~20s por execução
       - name: 🐍 Setup Python 3.11 (cached)
@@ -39,22 +49,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python rpg/engine.py \
-            "${{ github.event.issue.title }}" \
-            "${{ github.event.issue.user.login }}"
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            python rpg/engine.py "rpg:raid_attack:${{ github.event.issue.number }}" "${{ github.event.comment.user.login }}"
+          else
+            python rpg/engine.py "${{ github.event.issue.title }}" "${{ github.event.issue.user.login }}"
+          fi
 
       - name: 💾 Commit resultado
         run: |
-          git config user.name  "Aethoria Bot ⚔️"
-          git config user.email "aethoria-bot@users.noreply.github.com"
-          git add README.md rpg/state.json rpg/leaderboard.json "rpg/players/"
+          git add README.md rpg/state.json rpg/leaderboard.json "rpg/players/" "rpg/raids.json" || true
           # Só commita se houve mudança real
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            MSG="⚔️ [@${{ github.event.comment.user.login }}] Raid Attack nas Cavernas"
+          else
+            MSG="⚔️ [@${{ github.event.issue.user.login }}] ${{ github.event.issue.title }}"
+          fi
+          
           git diff --staged --quiet || \
-            git commit -m "⚔️ [@${{ github.event.issue.user.login }}] ${{ github.event.issue.title }}" \
+            git commit -m "$MSG" \
                        -m "Turno processado por Aethoria Engine v3"
           git push
 
-      - name: 💬 Comentar e fechar Issue
+      - name: 💬 Comentar e fechar Issue (apenas para ações normais)
+        if: github.event_name == 'issues'
         uses: actions/github-script@v7
         with:
           script: |

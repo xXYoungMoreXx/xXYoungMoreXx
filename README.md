@@ -212,24 +212,35 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 <!-- RPG_START -->
 ## ⚔️ AETHORIA: O REINO FRAGMENTADO — Escolha sua Classe
 
-> *Há mil anos, os Reis-Dragão uniam Aethoria. Quando o último foi traído, o reino se fragmentou em facções rivais.*
-> *Uma profecia fala de um Escolhido — marcado pela Estrela de Wyrd.*
-> *Você acordou em Ironhold sem memórias. Uma tatuagem arcana pulsa em seu pulso.*
+> 💻 **Seu GitHub: linguagem `Python` → afinidade com 🔮 Mago** _(bônus ao escolher!)_
+> *Há mil anos, os Reis-Dragão uniam Aethoria. O último foi traído pelo Pacto das Sombras. O reino se fragmentou.*
+> *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd. Você acordou em Ironhold sem memórias.*
+> *Uma tatuagem arcana pulsa em seu pulso. A jornada pertence a quem ousa começar.*
 
-| Classe | Descrição | HP | Mana | Estilo | Habilidade Especial |
-|--------|-----------|-----|------|--------|---------------------|
-| [⚔️ Guerreiro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aguerreiro) | Forjado no aço de Ironhold | 130 | 40 | Tanque / Alto DEF | Investida Furiosa (2× ATK) |
-| [🔮 Mago](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amago) | Magia proibida desde os Reis-Dragão | 85 | 100 | Burst / Alto dano | Tempestade Arcana (3× ATK) |
-| [🏹 Caçador](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Acacador) | Solitário como os Witchers | 105 | 60 | Balanceado / Crítico | Tiro de Precisão (2.2× ATK) |
-| [🗡️ Ladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aladino) | Das sombras do Mercado Negro | 95 | 70 | Crítico / Veneno | Golpe Furtivo (2× + stun) |
+| Classe | Lore | HP | Mana | DEF | Habilidade |
+|--------|------|:--:|:----:|:---:|------------|
+| [⚔️ Guerreiro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aguerreiro) | Forjado na guerra. Resistente como o aço de Ironhold. | 130 | 40 | 10 | Investida Furiosa (2×) |
+| [🔮 Mago](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amago) | Portador de magia proibida desde a queda dos Reis-Dragão. | 85 | 100 | 4 | Tempestade Arcana (3×) |
+| [🏹 Caçador](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Acacador) | Solitário como os Witchers do norte. Caça o que outros temem. | 105 | 60 | 7 | Tiro de Precisão (2.2×) |
+| [🗡️ Ladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aladino) | Das sombras do Mercado Negro. Sabe o que reis pagam fortunas para ocultar. | 95 | 70 | 5 | Golpe Furtivo (2× + stun) |
+| [🛡️ Paladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Apaladino) | Guerreiros sagrados jurados à Ordem. Onde há trevas, eles trazem a luz. | 140 | 70 | 12 | Julgamento Divino (1.8×) |
+| [💀 Necromante](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Anecromante) | A morte não é o fim, mas apenas uma nova ferramenta no seu arsenal. | 85 | 120 | 4 | Exército de Ossos (2.5×) |
+| [🎵 Bardo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abardo) | Tecelões da música e do destino. Uma canção certa muda o mundo. | 95 | 85 | 6 | Canção do Caos (2×) |
 
-> 🎮 *Clique na classe para começar! Qualquer visitante pode jogar.*
+> 🎮 *Clique em uma classe para começar! Qualquer visitante pode jogar.*
 
 ---
 
-### 🏆 Quadro da Guilda — Top Aventureiros
-_Ainda não há aventureiros no ranking. Seja o primeiro!_
-> _Atualizado em: —_
+### 🌍 Evento Mundial Atual
+> 🌑 **Lua de Sangue** — A Lua de Sangue banha Aethoria. Monstros emergem mais fortes e frequentes.
+
+---
+
+### 🏆 Quadro da Guilda
+| # | Aventureiro | Classe | Nível | Score | Bosses | Conquistas | Lang |
+|---|---|---|---|---|---|---|---|
+| 🥇 | **@xXYoungMoreXx** | — | 1 | 213 | 0 | 0 | `Python` |
+> _Score = XP total + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · Atualizado: 23/04/2026 23:37 UTC_
 
 <!-- RPG_END -->
 

@@ -1,4 +1,18 @@
 {
-  "players": [],
-  "updated": ""
+  "players": [
+    {
+      "username": "xXYoungMoreXx",
+      "score": 213,
+      "level": 1,
+      "prestige": 0,
+      "classe": null,
+      "kills": 0,
+      "bosses": 0,
+      "conquistas": 0,
+      "titulo": null,
+      "top_lang": "Python",
+      "last_played": "2026-04-23T23:37:13.063275+00:00"
+    }
+  ],
+  "updated": "23/04/2026 23:37 UTC"
 }

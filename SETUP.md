@@ -79,6 +79,9 @@ Os 4 repositórios em destaque já estão preenchidos no README:
 | `rpg:classe:mago` | Escolhe Mago (HP:85, MANA:100) |
 | `rpg:classe:cacador` | Escolhe Caçador (HP:105, equilibrado) |
 | `rpg:classe:ladino` | Escolhe Ladino (HP:95, críticos altos) |
+| `rpg:classe:paladino` | Escolhe Paladino (HP:140, DEF:12) |
+| `rpg:classe:necromante` | Escolhe Necromante (HP:85, MANA:120) |
+| `rpg:classe:bardo` | Escolhe Bardo (HP:95, equilibrado) |
 | `rpg:prestigio` | Prestígio (requer nível 10) |
 | `rpg:reiniciar` | Reseta seu personagem |
 
@@ -156,6 +159,36 @@ Ganhe pontos ao subir de nível. Use `rpg:skill:ID` para desbloquear.
 | `la1` | Reflexos Felinos | 1 | — | Esquiva 18% |
 | `la2` | Dança das Lâminas | 2 | la1 | Ataque duplo sempre |
 
+**🛡️ Paladino:**
+| ID | Nome | Tier | Pré-req | Efeito |
+|----|------|------|---------|--------|
+| `paf1` | Arma Sagrada | 1 | — | +8 ATK |
+| `paf2` | Golpe Purificador | 2 | paf1 | +14 ATK · Crítico +15% |
+| `pad1` | Aura de Devoção | 1 | — | +10 DEF |
+| `pad2` | Bastião da Luz | 2 | pad1 | +15 DEF · +40 HP máx |
+| `pas1` | Fé Inabalável | 1 | — | +35 Mana máx |
+| `pas2` | Cura Divina | 2 | pas1 | +8 HP por turno vivo |
+
+**💀 Necromante:**
+| ID | Nome | Tier | Pré-req | Efeito |
+|----|------|------|---------|--------|
+| `nf1` | Toque da Morte | 1 | — | +9 ATK |
+| `nf2` | Ceifador de Almas | 2 | nf1 | +18 ATK · Ao matar: próx. atk +25% |
+| `ns1` | Escudo de Ossos | 1 | — | +8 DEF |
+| `ns2` | Prisão Óssea | 2 | ns1 | +12 DEF · Atordoa 30% |
+| `nm1` | Pacto Sombrio | 1 | — | +40 Mana máx |
+| `nm2` | Lorde Lich | 2 | nm1 | HP<30% → +85% ATK |
+
+**🎵 Bardo:**
+| ID | Nome | Tier | Pré-req | Efeito |
+|----|------|------|---------|--------|
+| `bf1` | Acorde Dissonante | 1 | — | +7 ATK base |
+| `bf2` | Sinfonia da Ruína | 2 | bf1 | +12 ATK · Crítico +15% |
+| `bs1` | Inspiração | 1 | — | Esquiva 18% |
+| `bs2` | Dança Festiva | 2 | bs1 | Fuga sempre funciona |
+| `bg1` | Canto de Cura | 1 | — | +6 HP por turno vivo |
+| `bg2` | Bis | 2 | bg1 | 30% de ataque duplo |
+
 ### Social
 | Issue | Efeito |
 |-------|--------|
@@ -176,6 +209,45 @@ Ganhe pontos ao subir de nível. Use `rpg:skill:ID` para desbloquear.
 **Zonas seguras** (sem encontros, compra, descanso): 🏙️ Ironhold · 🏘️ Ashenvale · 🏡 Ravenford · 🕵️ Mercado Negro · ⚓ Porto da Perdição
 
 **Chefões**: 🏚️ Vel'Krath · 🏰 Lord Malachar · ⛏️ Drakar · 🏝️ Xal'thar
+
+---
+
+## ⚔️ Dungeons Cooperativas (Raids)
+
+Raids são combates cooperativos contra **World Bosses** onde múltiplos jogadores unem forças!
+
+### Como Participar
+1. Crie uma issue com título `rpg:criar_raid:<slug>` (requer nível 5+)
+2. Ou espere o sistema gerar uma Raid automaticamente a cada 30 turnos
+3. Na Issue `[RAID]` criada, comente `/atacar` para causar dano ao Boss
+4. Cada ataque usa seu dano de classe — o Boss contra-ataca com 60% de chance
+
+### Mecânicas
+| Mecânica | Descrição |
+|----------|-----------|
+| **Escalonamento** | Boss ganha HP extra por nível de cada novo participante |
+| **Contra-ataque** | 60% de chance do Boss revidar após seu ataque |
+| **MVP** | Quem causar mais dano total ganha +50% de recompensas |
+| **Golpe Final** | Quem derrotar o Boss ganha +2 poções extras |
+| **Recompensas** | Todos os participantes recebem XP e Gold ao vencer |
+| **Cleanup** | Raids derrotadas são limpas automaticamente após 24h |
+
+### World Bosses Disponíveis
+| Boss | Slug | HP Base | ATK | XP | Gold |
+|------|------|---------|-----|----|------|
+| 🥶 Titã de Gelo Ancestral | `tita_de_gelo` | 1.000 | 40 | 500 | 200 |
+| 🌋 Azazel, O Destruidor | `destruidor_de_mundos` | 2.500 | 65 | 1.200 | 500 |
+| 👻 Drakon, O Dragão Fantasma | `drakon_fantasma` | 1.500 | 50 | 800 | 350 |
+| 🦑 Thal'Zuun, O Kraken Abissal | `kraken_abissal` | 2.000 | 55 | 1.000 | 400 |
+| 🌿 Ygdra, Guardiã Corrompida | `guardiao_corrompido` | 1.800 | 45 | 900 | 380 |
+
+### Conquistas de Raid
+| Conquista | Condição |
+|-----------|----------|
+| 🔥 Raider | Participar da primeira Raid |
+| 🌟 MVP da Raid | Ser MVP em uma Raid |
+| ⚔️ Veterano de Raids | Completar 5 Raids |
+| 👑 Matador de Titãs | Derrotar todos os World Bosses |
 
 ---
 

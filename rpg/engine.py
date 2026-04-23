@@ -15,7 +15,7 @@
 ║                 Eragon · Trono de Vidro · Corte de Espinhos e Rosas         ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
-import json, sys, random, re, os
+import json, sys, random, re, os, unicodedata
 from pathlib import Path
 from datetime import datetime, timezone
 from urllib.request import Request, urlopen
@@ -142,6 +142,70 @@ BOSSES = {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  WORLD BOSSES (RAIDS COOPERATIVAS)
+# ══════════════════════════════════════════════════════════════════════════════
+WORLD_BOSSES = {
+    "Tita de Gelo": {
+        "nome": "Titã de Gelo Ancestral",
+        "emoji": "🥶",
+        "base_hp": 1000,
+        "hp_per_level": 200,
+        "base_atk": 40,
+        "desc": "🥶 **[RAID]** O Titã despertou. Ele esmaga tudo em seu caminho! (Dano Base: 40)",
+        "xp_pool": 500,
+        "gold_pool": 200
+    },
+    "Destruidor de Mundos": {
+        "nome": "Azazel, O Destruidor",
+        "emoji": "🌋",
+        "base_hp": 2500,
+        "hp_per_level": 300,
+        "base_atk": 65,
+        "desc": "🌋 **[RAID]** A terra se abre. Azazel emergiu do núcleo para queimar Aethoria! (Dano Base: 65)",
+        "xp_pool": 1200,
+        "gold_pool": 500
+    },
+    "Drakon Fantasma": {
+        "nome": "Drakon, O Dragão Fantasma",
+        "emoji": "👻",
+        "base_hp": 1500,
+        "hp_per_level": 250,
+        "base_atk": 50,
+        "desc": "👻 **[RAID]** O espectro de um Rei-Dragão se materializou! Seus ataques atravessam armaduras. (Dano Base: 50)",
+        "xp_pool": 800,
+        "gold_pool": 350
+    },
+    "Kraken Abissal": {
+        "nome": "Thal'Zuun, O Kraken Abissal",
+        "emoji": "🦑",
+        "base_hp": 2000,
+        "hp_per_level": 280,
+        "base_atk": 55,
+        "desc": "🦑 **[RAID]** Das profundezas do Mar Fragmentado, tentáculos colossais emergem! (Dano Base: 55)",
+        "xp_pool": 1000,
+        "gold_pool": 400
+    },
+    "Guardiao Corrompido": {
+        "nome": "Ygdra, Guardiã Corrompida",
+        "emoji": "🌿",
+        "base_hp": 1800,
+        "hp_per_level": 220,
+        "base_atk": 45,
+        "desc": "🌿 **[RAID]** A antiga protetora da floresta foi consumida pelas Sombras! (Dano Base: 45)",
+        "xp_pool": 900,
+        "gold_pool": 380
+    }
+}
+
+BOSS_SLUGS = {
+    "tita_de_gelo": "Tita de Gelo",
+    "destruidor_de_mundos": "Destruidor de Mundos",
+    "drakon_fantasma": "Drakon Fantasma",
+    "kraken_abissal": "Kraken Abissal",
+    "guardiao_corrompido": "Guardiao Corrompido",
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  CLASSES & SKILL TREES
 # ══════════════════════════════════════════════════════════════════════════════
 CLASSES = {
@@ -161,6 +225,18 @@ CLASSES = {
                  "skill":"Golpe Furtivo","skill_e":"🌑","skill_cost":20,"skill_multi":2.0,
                  "weapon":"Adagas Gêmeas","armor":"Roupa das Sombras",
                  "lore":"Das sombras do Mercado Negro. Sabe o que reis pagam fortunas para ocultar."},
+    "paladino": {"nome":"Paladino","emoji":"🛡️","hp":140,"mana":70,"atk":(10,18),"def":12,
+                 "skill":"Julgamento Divino","skill_e":"✨","skill_cost":25,"skill_multi":1.8,
+                 "weapon":"Martelo da Luz","armor":"Placas Abençoadas",
+                 "lore":"Guerreiros sagrados jurados à Ordem. Onde há trevas, eles trazem a luz."},
+    "necromante":{"nome":"Necromante","emoji":"💀","hp":85,"mana":120,"atk":(9,15),"def":4,
+                 "skill":"Exército de Ossos","skill_e":"🦴","skill_cost":35,"skill_multi":2.5,
+                 "weapon":"Foice das Almas","armor":"Manto de Ossos",
+                 "lore":"A morte não é o fim, mas apenas uma nova ferramenta no seu arsenal."},
+    "bardo":    {"nome":"Bardo","emoji":"🎵","hp":95,"mana":85,"atk":(9,17),"def":6,
+                 "skill":"Canção do Caos","skill_e":"🎶","skill_cost":20,"skill_multi":2.0,
+                 "weapon":"Alaúde Encantado","armor":"Trajes Festivos",
+                 "lore":"Tecelões da música e do destino. Uma canção certa muda o mundo."},
 }
 SKILL_TREES = {
     "guerreiro":[
@@ -194,6 +270,30 @@ SKILL_TREES = {
         ("lv2","Nuvem Tóxica",      "🐍 Veneno",  2,2,"lv1", "Veneno reduz ATK inimigo -20%",     {"poison_debuff":0.20}),
         ("la1","Reflexos Felinos",  "💨 Agilidade",1,1,None, "Esquiva 18%",                       {"dodge":0.18}),
         ("la2","Dança das Lâminas", "💨 Agilidade",2,2,"la1","Ataque duplo sempre ativo",         {"always_double":True}),
+    ],
+    "paladino":[
+        ("paf1","Arma Sagrada",     "✨ Divino",  1,1,None,  "+8 ATK",                            {"atk_flat":8}),
+        ("paf2","Golpe Purificador","✨ Divino",  2,2,"paf1", "+14 ATK · Crítico +15%",           {"atk_flat":14,"crit":0.15}),
+        ("pad1","Aura de Devoção",  "🛡️ Proteção",1,1,None,  "+10 DEF",                           {"def_flat":10}),
+        ("pad2","Bastião da Luz",   "🛡️ Proteção",2,2,"pad1", "+15 DEF · +40 HP máx",            {"def_flat":15,"hp_max":40}),
+        ("pas1","Fé Inabalável",    "🌟 Fé",      1,1,None,  "+35 Mana máx",                      {"mana_max":35}),
+        ("pas2","Cura Divina",      "🌟 Fé",      2,2,"pas1", "+8 HP por turno vivo",             {"regen":8}),
+    ],
+    "necromante":[
+        ("nf1","Toque da Morte",    "💀 Decadência",1,1,None, "+9 ATK",                           {"atk_flat":9}),
+        ("nf2","Ceifador de Almas", "💀 Decadência",2,2,"nf1","+18 ATK · Ao matar: próx. atk +25%",{"atk_flat":18,"kill_fury":0.25}),
+        ("ns1","Escudo de Ossos",   "🦴 Ossos",   1,1,None,   "+8 DEF",                           {"def_flat":8}),
+        ("ns2","Prisão Óssea",      "🦴 Ossos",   2,2,"ns1",  "+12 DEF · Atordoa 30%",            {"def_flat":12,"stun":0.30}),
+        ("nm1","Pacto Sombrio",     "🩸 Magia",   1,1,None,   "+40 Mana máx",                     {"mana_max":40}),
+        ("nm2","Lorde Lich",        "🩸 Magia",   2,2,"nm1",  "HP<30% → +85% ATK",               {"low_hp_bonus":0.85}),
+    ],
+    "bardo":[
+        ("bf1","Acorde Dissonante", "🎵 Som",     1,1,None,   "+7 ATK base",                      {"atk_flat":7}),
+        ("bf2","Sinfonia da Ruína", "🎵 Som",     2,2,"bf1",  "+12 ATK · Crítico +15%",           {"atk_flat":12,"crit":0.15}),
+        ("bs1","Inspiração",        "✨ Charme",  1,1,None,   "Esquiva 18%",                      {"dodge":0.18}),
+        ("bs2","Dança Festiva",     "✨ Charme",  2,2,"bs1",  "Fuga sempre funciona",             {"free_escape":True}),
+        ("bg1","Canto de Cura",     "💚 Melodia", 1,1,None,   "+6 HP por turno vivo",             {"regen":6}),
+        ("bg2","Bis",               "💚 Melodia", 2,2,"bg1",  "30% de ataque duplo",              {"double_atk":0.30}),
     ],
 }
 XP_TABLE = [0,0,60,150,280,450,680,980,1360,1840,2500]
@@ -290,14 +390,19 @@ CONQUISTAS = [
     ("ressurreto_3",      "💀 Que Não Morre",         "Morreu e voltou 3 vezes",                 lambda p:p.get("deaths",0)>=3),
     ("artesao",           "🔨 Artesão",               "Primeiro item fabricado via crafting",    lambda p:p.get("crafted_count",0)>=1),
     ("gladiador",         "🥊 Gladiador",             "Venceu um desafio PvP",                   lambda p:p.get("pvp_wins",0)>=1),
+    ("raid_first",        "🔥 Raider",                "Participou da primeira Raid",             lambda p:p.get("raid_count",0)>=1),
+    ("raid_mvp",          "🌟 MVP da Raid",           "Foi MVP de uma Raid",                     lambda p:p.get("raid_mvp_count",0)>=1),
+    ("raid_veteran",      "⚔️ Veterano de Raids",     "5 raids completadas",                     lambda p:p.get("raid_count",0)>=5),
+    ("raid_titan",        "👑 Matador de Titãs",       "Derrotou ambos os World Bosses",          lambda p:len(p.get("raid_bosses_killed",[]))>=len(WORLD_BOSSES)),
 ]
 
 # GitHub language → class affinity
 LANG_CLASS = {
     "Python":"mago","Ruby":"mago","Elixir":"mago","Haskell":"mago","R":"mago","Lua":"mago",
     "C":"guerreiro","C++":"guerreiro","Rust":"guerreiro","Go":"guerreiro","Zig":"guerreiro","Assembly":"guerreiro",
-    "Java":"cacador","Kotlin":"cacador","Swift":"cacador","TypeScript":"cacador","Scala":"cacador","Dart":"cacador",
-    "JavaScript":"ladino","PHP":"ladino","Shell":"ladino","Perl":"ladino","HTML":"ladino","CSS":"ladino",
+    "Java":"paladino","C#":"paladino","Kotlin":"paladino","Swift":"paladino","TypeScript":"cacador","Scala":"cacador","Dart":"cacador",
+    "JavaScript":"ladino","PHP":"ladino","Shell":"ladino","Perl":"ladino","HTML":"bardo","CSS":"bardo",
+    "SQL":"necromante","GDScript":"bardo","Clojure":"necromante",
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -342,10 +447,31 @@ def load_player(u):
         "log":["⚔️ Bem-vindo a Aethoria!","_Uma tatuagem arcana pulsa em seu pulso._","🧙 Escolha sua classe para começar!"],
         "active_monster":None,"boss_phase":0,"poison_stacks":0,"fury_bonus":False,
         "dragon_mount":False,"prestige_count":0,"crafted_count":0,"pvp_wins":0,
+        "raid_count":0,"raid_mvp_count":0,"raid_bosses_killed":[],
         "last_played":datetime.now(timezone.utc).isoformat(),
     }
 
 def save_player(p): _rw(f"rpg/players/{p['username']}.json", p)
+
+def load_raids():
+    r = _rw("rpg/raids.json")
+    if not r:
+        r = {}
+    return r
+
+def save_raids(r): _rw("rpg/raids.json", r)
+
+def _cleanup_raids():
+    """Remove defeated raids older than 24 hours."""
+    raids = load_raids()
+    now = datetime.now(timezone.utc)
+    stale = [k for k, r in raids.items()
+             if r.get("status") == "defeated" and r.get("defeated_at")
+             and (now - datetime.fromisoformat(r["defeated_at"])).total_seconds() > 86400]
+    for k in stale:
+        del raids[k]
+    if stale:
+        save_raids(raids)
 
 def load_lb():
     lb = _rw("rpg/leaderboard.json")
@@ -396,6 +522,10 @@ def apply_profile_bonuses(profile, p):
 # ══════════════════════════════════════════════════════════════════════════════
 #  HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
+def _normalize(s):
+    """Remove accents and lowercase for safe comparison."""
+    return unicodedata.normalize("NFD", s).encode("ascii", "ignore").decode().lower()
+
 def terrain(p): return WORLD_MAP[p["position"]["y"]][p["position"]["x"]]
 def cls(p): return CLASSES.get(p.get("classe",""),None)
 
@@ -429,6 +559,11 @@ def atk_dmg(p, bonuses=None):
     if p.get("fury_bonus"): dmg=int(dmg*(1+sk["kill_fury"])); p["fury_bonus"]=False
     if sk["crit"]>0 and random.random()<sk["crit"]: dmg=int(dmg*1.80)
     if bonuses and bonuses.get("monster_hp_mult",1)>1.0: dmg=int(dmg*0.95)  # event harder monsters
+    
+    # Herança (Roguelite)
+    legacy = p.get("legacy_stacks", 0)
+    if legacy > 0: dmg += legacy * 2
+    
     return dmg
 
 def hp_bar(v,mx,n=10):
@@ -520,6 +655,13 @@ def death_reset(p):
     c=cls(p); p["hp"]=max(30,(c["hp"]if c else 100)//3); p["mana"]=max(10,p["max_mana"]//2)
     p["position"]={"x":2,"y":2}; p["gold"]=max(0,p["gold"]-12)
     p["active_monster"]=None; p["boss_phase"]=0; p["poison_stacks"]=0
+    
+    # Sistema de Herança (Roguelite)
+    legacy = p.get("legacy_stacks", 0)
+    if legacy < 10:
+        p["legacy_stacks"] = legacy + 1
+        push_log(p, f"🩸 **Herança Sombria**: Sua linhagem fica mais forte com a morte. (+{p['legacy_stacks']*2} ATK base permanente)")
+        
     p["deaths"]=p.get("deaths",0)+1; push_log(p,"🏥 Acordou em Ironhold. -12 ouro (curandeiro).")
 
 def resolve_kill(p,m,gs):
@@ -552,6 +694,189 @@ def resolve_kill(p,m,gs):
         if random.random()<0.12: p["potions"]+=1; push_log(p,"🧪 Poção encontrada no corpo!")
         if sk.get("regen",0)>0: p["hp"]=min(p["max_hp"],p["hp"]+sk["regen"])
     p["active_monster"]=None
+
+def action_create_raid(p, gs, boss_slug):
+    """Create a new raid by opening a GitHub Issue and initializing raids.json."""
+    boss_key = BOSS_SLUGS.get(boss_slug)
+    if not boss_key:
+        slugs = " · ".join(f"`{s}`" for s in BOSS_SLUGS)
+        push_log(p, f"❓ Boss desconhecido: `{boss_slug}`. Disponíveis: {slugs}")
+        return
+    if not p.get("classe"):
+        push_log(p, "⚠️ Escolha uma classe antes de convocar Raids!")
+        return
+    if p["level"] < 5:
+        push_log(p, "⚠️ Você precisa ser nível 5+ para convocar uma Raid!")
+        return
+    raids = load_raids()
+    for iss, r in raids.items():
+        if r.get("boss_key") == boss_key and r.get("status") == "active":
+            push_log(p, f"⚠️ Já existe uma Raid ativa contra **{WORLD_BOSSES[boss_key]['nome']}**!")
+            return
+    tok = os.environ.get("GITHUB_TOKEN")
+    if not tok:
+        push_log(p, "⚠️ Erro: GITHUB_TOKEN ausente."); return
+    bd = WORLD_BOSSES[boss_key]
+    repo = os.environ.get("GITHUB_REPOSITORY", "xXYoungMoreXx/xXYoungMoreXx")
+    issue_body = (f"## {bd['emoji']} RAID: {bd['nome']}\n\n{bd['desc']}\n\n---\n"
+                  f"### Como Participar\n1. Comente `/atacar` nesta issue\n"
+                  f"2. Cada ataque causa dano baseado no seu nível e classe\n"
+                  f"3. O Boss contra-ataca com 60% de chance\n"
+                  f"4. MVP (maior dano) ganha +50% de recompensas\n\n"
+                  f"| Atributo | Valor |\n|----------|-------|\n"
+                  f"| HP Base | {bd['base_hp']} |\n| ATK | {bd['base_atk']} |\n"
+                  f"| Scaling | +{bd['hp_per_level']} HP/nível |\n"
+                  f"| XP Pool | {bd['xp_pool']} |\n| Gold Pool | {bd['gold_pool']} |\n\n"
+                  f"> ⚔️ *Convocado por @{p['username']}*")
+    try:
+        url = f"https://api.github.com/repos/{repo}/issues"
+        data = json.dumps({"title": f"[RAID] {boss_key}", "body": issue_body, "labels": ["rpg-action"]}).encode("utf-8")
+        req = Request(url, data=data, headers={"Authorization": f"token {tok}", "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json", "User-Agent": "Aethoria"})
+        with urlopen(req) as resp:
+            issue_number = str(json.loads(resp.read().decode())["number"])
+    except Exception as e:
+        push_log(p, f"⚠️ Erro ao criar Issue de Raid: {e}"); return
+    raids[issue_number] = {
+        "boss_key": boss_key, "hp": bd["base_hp"], "max_hp": bd["base_hp"],
+        "status": "active", "participants": {},
+        "created_by": p["username"], "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    save_raids(raids)
+    push_log(p, f"{bd['emoji']} **RAID CONVOCADA!** {bd['nome']} aguarda desafiantes! (Issue #{issue_number})")
+    push_world(gs, f"{bd['emoji']} @{p['username']} convocou uma **RAID** contra **{bd['nome']}**! Issue #{issue_number}")
+
+def _try_auto_spawn_raid(gs, tok):
+    """Auto-spawn a raid if no active raids exist (called every 30 turns)."""
+    raids = load_raids()
+    if any(r.get("status") == "active" for r in raids.values()):
+        return
+    boss_key = random.choice(list(WORLD_BOSSES.keys()))
+    bd = WORLD_BOSSES[boss_key]
+    repo = os.environ.get("GITHUB_REPOSITORY", "xXYoungMoreXx/xXYoungMoreXx")
+    try:
+        body = (f"## {bd['emoji']} RAID: {bd['nome']}\n\n{bd['desc']}\n\n---\n"
+                f"**Comente `/atacar` para participar!**\n\n"
+                f"> ⚔️ *Raid gerada pelo sistema de eventos mundiais.*")
+        url = f"https://api.github.com/repos/{repo}/issues"
+        data = json.dumps({"title": f"[RAID] {boss_key}", "body": body, "labels": ["rpg-action"]}).encode("utf-8")
+        req = Request(url, data=data, headers={"Authorization": f"token {tok}", "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json", "User-Agent": "Aethoria"})
+        with urlopen(req) as resp:
+            issue_number = str(json.loads(resp.read().decode())["number"])
+        raids[issue_number] = {
+            "boss_key": boss_key, "hp": bd["base_hp"], "max_hp": bd["base_hp"],
+            "status": "active", "participants": {},
+            "created_by": "system", "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        save_raids(raids)
+        push_world(gs, f"{bd['emoji']} **RAID MUNDIAL!** {bd['nome']} emergiu das trevas! Issue #{issue_number}")
+    except Exception as e:
+        print(f"⚠️ Auto-spawn raid failed: {e}")
+
+def _raid_init_from_issue(tok, issue_number, raids):
+    """Lazy-init a raid from a GitHub Issue if not already in raids.json."""
+    url = f"https://api.github.com/repos/{os.environ.get('GITHUB_REPOSITORY')}/issues/{issue_number}"
+    req = Request(url, headers={"Authorization": f"token {tok}", "User-Agent": "Aethoria"})
+    try:
+        with urlopen(req) as resp:
+            title = json.loads(resp.read().decode()).get("title", "")
+    except Exception as e:
+        return None, f"⚠️ Erro ao buscar dados da Raid {issue_number}: {e}"
+    boss_key = None
+    title_norm = _normalize(title)
+    for k in WORLD_BOSSES:
+        if _normalize(k) in title_norm:
+            boss_key = k; break
+    if not boss_key:
+        return None, "⚠️ Chefão da Raid desconhecido ou issue inválida."
+    bd = WORLD_BOSSES[boss_key]
+    raid = {"boss_key": boss_key, "hp": bd["base_hp"], "max_hp": bd["base_hp"], "status": "active", "participants": {}}
+    raids[issue_number] = raid
+    return raid, None
+
+def _raid_distribute_rewards(raid, bd, user, p, gs):
+    """Distribute rewards to all raid participants after boss defeat."""
+    mvp = max(raid["participants"].items(), key=lambda x: x[1]["damage"])[0]
+    for p_user, stats in raid["participants"].items():
+        other_p = p if p_user == user else load_player(p_user)
+        p_xp, p_gold = bd["xp_pool"], bd["gold_pool"]
+        if p_user == mvp:
+            p_xp = int(p_xp * 1.5); p_gold = int(p_gold * 1.5)
+        if p_user == user:
+            other_p["potions"] += 2
+        other_p["xp"] += p_xp; other_p["total_xp"] += p_xp; other_p["gold"] += p_gold
+        other_p["raid_count"] = other_p.get("raid_count", 0) + 1
+        if raid["boss_key"] not in other_p.get("raid_bosses_killed", []):
+            other_p.setdefault("raid_bosses_killed", []).append(raid["boss_key"])
+        push_log(other_p, f"🎉 **A RAID {bd['nome']} FOI VENCIDA!** Você ganhou {p_xp} XP e {p_gold}g!")
+        if p_user == mvp:
+            other_p["raid_mvp_count"] = other_p.get("raid_mvp_count", 0) + 1
+            push_log(other_p, f"🌟 **VOCÊ FOI O MVP DA RAID!** (+50% recompensa)")
+        check_lu(other_p)
+        if p_user != user:
+            save_player(other_p)
+    push_world(gs, f"👑 **{bd['nome']}** foi derrotado na Raid! MVP: @{mvp}")
+
+def _raid_post_comment(tok, issue_number, user, dmg, raid, bd):
+    """Post attack status comment on the raid Issue."""
+    try:
+        url = f"https://api.github.com/repos/{os.environ.get('GITHUB_REPOSITORY')}/issues/{issue_number}/comments"
+        msg = f"⚔️ **@{user}** atacou causando **{dmg}** de dano!\n\n"
+        if raid["hp"] > 0:
+            msg += f"### {bd['emoji']} {bd['nome']}\n**HP Global:** {hp_bar(raid['hp'], raid['max_hp'])} ({raid['hp']}/{raid['max_hp']})"
+        else:
+            msg += f"🎉 **A RAID {bd['nome']} FOI VENCIDA!** O Boss caiu!\nRecompensas distribuídas para todos os participantes."
+        req = Request(url, data=json.dumps({"body": msg}).encode("utf-8"), headers={
+            "Authorization": f"token {tok}", "Accept": "application/vnd.github.v3+json",
+            "Content-Type": "application/json", "User-Agent": "Aethoria"
+        })
+        urlopen(req)
+    except Exception as e:
+        print(f"⚠️ Erro ao postar comentário de Raid na issue {issue_number}: {e}")
+
+def action_raid_attack(p, gs, issue_number):
+    """Main raid attack flow: validate → init → combat → rewards → comment."""
+    if not p.get("classe"):
+        push_log(p, "⚠️ Escolha uma classe antes de participar de Raids! Use `rpg:classe:<nome>`."); return
+    tok = os.environ.get("GITHUB_TOKEN")
+    if not tok:
+        push_log(p, "⚠️ Erro: GITHUB_TOKEN ausente."); return
+    raids = load_raids()
+    raid = raids.get(issue_number)
+    if not raid:
+        raid, err = _raid_init_from_issue(tok, issue_number, raids)
+        if err: push_log(p, err); return
+    if raid["status"] == "defeated":
+        push_log(p, f"⚠️ Tarde demais! O Boss desta Raid (Issue #{issue_number}) já foi pulverizado."); return
+    bd = WORLD_BOSSES[raid["boss_key"]]
+    user = p["username"]
+    # Join raid if new participant
+    if user not in raid["participants"]:
+        added_hp = p["level"] * bd["hp_per_level"]
+        raid["max_hp"] += added_hp; raid["hp"] += added_hp
+        raid["participants"][user] = {"damage": 0, "level": p["level"]}
+        push_log(p, f"🔥 Você entrou na Raid! O Boss foi fortalecido em +{added_hp} HP (Escalonamento Nvl {p['level']})!")
+        push_world(gs, f"⚔️ @{user} entrou na Raid contra **{bd['nome']}**!")
+    # Combat
+    dmg = atk_dmg(p)
+    if random.random() < 0.6:
+        boss_dmg = max(1, bd["base_atk"] - p.get("defense", 5))
+        p["hp"] = max(0, p["hp"] - boss_dmg)
+        push_log(p, f"🩸 O Boss da Raid revidou! **-{boss_dmg} HP**")
+        if p["hp"] <= 0:
+            push_log(p, "💀 Você caiu na Raid...")
+            death_reset(p); save_raids(raids); return
+    raid["participants"][user]["damage"] += dmg
+    raid["hp"] -= dmg
+    push_log(p, f"⚔️ Você causou **{dmg} de dano** ao Boss da Raid!")
+    # Defeat
+    if raid["hp"] <= 0:
+        raid["status"] = "defeated"; raid["hp"] = 0
+        raid["defeated_at"] = datetime.now(timezone.utc).isoformat()
+        push_log(p, f"👑 **VOCÊ DEU O GOLPE FINAL NA RAID!** O Boss caiu!")
+        _raid_distribute_rewards(raid, bd, user, p, gs)
+    save_raids(raids)
+    _raid_post_comment(tok, issue_number, user, dmg, raid, bd)
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  ACTIONS
@@ -692,13 +1017,34 @@ def action_tavern(p,gs):
     t=terrain(p)
     rumors=TAVERN_RUMORS.get(t)
     if not rumors: push_log(p,f"🍺 Não há taverna em **{t}**. Vá a uma zona segura."); return
-    rumor=random.choice(rumors); text,reward_type,reward_val=rumor
-    push_log(p,text)
-    if reward_type=="xp": g=xp_gain(p,reward_val); push_log(p,f"_(+{g} XP pelo conhecimento adquirido)_")
-    elif reward_type=="gold": p["gold"]+=reward_val; push_log(p,f"_(+{reward_val} ouro encontrado durante a conversa)_")
-    elif reward_type=="atk_bonus_boss": p.setdefault("tavern_bonus",{}); p["tavern_bonus"]["boss_atk"]=reward_val
+    
+    player_msgs = gs.get("tavern_messages", [])
+    if player_msgs and random.random() < 0.4:
+        text = random.choice(player_msgs)
+        push_log(p, text)
+        push_log(p, "_(+5 XP por ouvir as histórias da comunidade)_")
+        g = xp_gain(p, 5)
+    else:
+        rumor=random.choice(rumors); text,reward_type,reward_val=rumor
+        push_log(p,text)
+        if reward_type=="xp": g=xp_gain(p,reward_val); push_log(p,f"_(+{g} XP pelo conhecimento adquirido)_")
+        elif reward_type=="gold": p["gold"]+=reward_val; push_log(p,f"_(+{reward_val} ouro encontrado durante a conversa)_")
+        elif reward_type=="atk_bonus_boss": p.setdefault("tavern_bonus",{}); p["tavern_bonus"]["boss_atk"]=reward_val
     lv=check_lu(p)
     if lv: push_log(p,lv)
+
+def action_message(p, gs, msg):
+    t = terrain(p)
+    if t not in TAVERN_RUMORS:
+        push_log(p, f"🍺 Não há taverna em **{t}** para deixar uma mensagem. Vá a uma zona segura.")
+        return
+    msg = msg.strip()[:100]
+    if not msg:
+        return
+    messages = gs.get("tavern_messages", [])
+    messages.append(f"💬 \"{msg}\" — _{p['username']}_")
+    gs["tavern_messages"] = messages[-20:]
+    push_log(p, f"🍺 Você cravou uma mensagem na mesa da taverna em **{t}**!")
 
 def action_interact(p,gs):
     t=terrain(p)
@@ -924,6 +1270,27 @@ def render_skill_tree(p):
 # ══════════════════════════════════════════════════════════════════════════════
 #  README RENDERER
 # ══════════════════════════════════════════════════════════════════════════════
+def _render_raids_preclass(base):
+    """Render active raids section for the pre-class README block."""
+    raids = load_raids()
+    active = [(iss, r) for iss, r in raids.items() if r.get("status") == "active"]
+    if not active:
+        return ""
+    repo = os.environ.get("GITHUB_REPOSITORY", "xXYoungMoreXx/xXYoungMoreXx")
+    rows = "".join(
+        f"\n| {WORLD_BOSSES[r['boss_key']]['emoji']} {r['boss_key']} | {hp_bar(r['hp'], r['max_hp'])} | {len(r['participants'])} | [Ver Raid](https://github.com/{repo}/issues/{iss}) |"
+        for iss, r in active
+    )
+    return f"""
+---
+
+### ⚔️ Raids Ativas
+> _Escolha uma classe para participar das Raids!_
+
+| Boss | HP | Jogadores | Link |
+|---|---|---|---|{rows}
+"""
+
 def build_block(p,gs,lb):
     base="../../issues/new?labels=rpg-action&title="
     ev=get_event(gs); c=cls(p)
@@ -949,6 +1316,9 @@ def build_block(p,gs,lb):
 | [{CLASSES['mago']['emoji']} Mago]({base}rpg%3Aclasse%3Amago) | {CLASSES['mago']['lore']} | 85 | 100 | 4 | Tempestade Arcana (3×) |
 | [{CLASSES['cacador']['emoji']} Caçador]({base}rpg%3Aclasse%3Acacador) | {CLASSES['cacador']['lore']} | 105 | 60 | 7 | Tiro de Precisão (2.2×) |
 | [{CLASSES['ladino']['emoji']} Ladino]({base}rpg%3Aclasse%3Aladino) | {CLASSES['ladino']['lore']} | 95 | 70 | 5 | Golpe Furtivo (2× + stun) |
+| [{CLASSES['paladino']['emoji']} Paladino]({base}rpg%3Aclasse%3Apaladino) | {CLASSES['paladino']['lore']} | 140 | 70 | 12 | Julgamento Divino (1.8×) |
+| [{CLASSES['necromante']['emoji']} Necromante]({base}rpg%3Aclasse%3Anecromante) | {CLASSES['necromante']['lore']} | 85 | 120 | 4 | Exército de Ossos (2.5×) |
+| [{CLASSES['bardo']['emoji']} Bardo]({base}rpg%3Aclasse%3Abardo) | {CLASSES['bardo']['lore']} | 95 | 85 | 6 | Canção do Caos (2×) |
 
 > 🎮 *Clique em uma classe para começar! Qualquer visitante pode jogar.*
 
@@ -956,7 +1326,7 @@ def build_block(p,gs,lb):
 
 ### 🌍 Evento Mundial Atual
 > {ev['emoji']} **{ev['nome']}** — {ev['desc']}
-
+{_render_raids_preclass(base)}
 ---
 
 ### 🏆 Quadro da Guilda
@@ -985,7 +1355,7 @@ def build_block(p,gs,lb):
         if v>-1: return "🟡🟡⬜⬜⬜ Neutro"
         if v>-3: return "🔴🔴⬜⬜⬜ Hostil"
         return "🔴🔴🔴🔴🔴 Inimigo"
-    m=p.get("active_monster")
+    m = p.get("active_monster")
     m_block=""
     if m:
         tag="⚠️ **[CHEFÃO]**" if m.get("is_boss") else "👹"
@@ -998,6 +1368,21 @@ def build_block(p,gs,lb):
 
 > **[⚔️ Atacar]({base}rpg%3Aatacar)** · **[{c['skill_e']} {c['skill']}]({base}rpg%3Ahabilidade)** · **[🧪 Poção]({base}rpg%3Apocao)**
 """
+    raids = load_raids()
+    active_raids_block = ""
+    active_raid_list = [(iss, r) for iss, r in raids.items() if r["status"] == "active"]
+    if active_raid_list:
+        repo_name = os.environ.get('GITHUB_REPOSITORY', 'xXYoungMoreXx/xXYoungMoreXx')
+        raid_rows = "".join(f"\n| {WORLD_BOSSES[r['boss_key']]['emoji']} {r['boss_key']} | {hp_bar(r['hp'], r['max_hp'])} | {len(r['participants'])} | [⚔️ Juntar-se à Raid!](https://github.com/{repo_name}/issues/{iss}) |" for iss, r in active_raid_list)
+        active_raids_block = f"""
+---
+### ⚔️ Dungeons Cooperativas (Raids Ativas)
+> _Qualquer jogador pode entrar na Raid comentando `/atacar` na Issue! O dano e as recompensas são distribuídos entre todos os participantes._
+
+| Boss | HP Global | Participantes | Ação |
+|---|---|---|---|{raid_rows}
+"""
+        
     log_txt="\n".join(f"> {l}" for l in p.get("log",[])[:7])
     wlog="\n".join(f"> 🌍 {l}" for l in gs.get("world_log",[])[:4])
 
@@ -1068,7 +1453,7 @@ def build_block(p,gs,lb):
 ### 👹 Chefões
 | | | Local | Status |
 |---|---|---|---|{boss_rows}
-{m_block}
+{m_block}{active_raids_block}
 
 ---
 
@@ -1111,7 +1496,7 @@ def main():
     # Skip bots
     if "bot" in u.lower() and "github" in u.lower(): print("⏭️ Skipped: bot user"); sys.exit(0)
     tok=os.environ.get("GITHUB_TOKEN")
-    gs=load_gs(); gs["turn"]=gs.get("turn",0)+1
+    gs=load_gs(); gs["turn"]=gs.get("turn",0)+1; _cleanup_raids()
     p=load_player(u); is_new=p.pop("_new",False); p["sessions"]=p.get("sessions",0)+1
     if not p.get("factions"): p["factions"]={"ordem":0,"circulo":0,"pacto":0}
     if is_new and u!="anon":
@@ -1141,12 +1526,20 @@ def main():
     elif raw.startswith("rpg:craftar:"): action_craft(p,raw.split("rpg:craftar:")[1])
     elif raw.startswith("rpg:montar:"):  action_mount_to(p,gs,raw.split("rpg:montar:")[1])
     elif raw.startswith("rpg:desafiar:"): action_pvp(p,gs,raw.split("rpg:desafiar:")[1])
+    elif raw.startswith("rpg:criar_raid:"): action_create_raid(p, gs, raw.split("rpg:criar_raid:")[1])
+    elif raw.startswith("rpg:raid_attack:"): 
+        issue_number = raw.split("rpg:raid_attack:")[1]
+        action_raid_attack(p, gs, issue_number)
+    elif raw.startswith("rpg:mensagem:"): action_message(p, gs, raw.split("rpg:mensagem:")[1])
     else: push_log(p,f"❓ Ação `{raw}` desconhecida.")
     check_conquistas(p,gs); lv=check_lu(p)
     if lv: push_log(p,lv)
     lb=load_lb(); update_lb(lb,p); save_lb(lb)
     p["last_played"]=datetime.now(timezone.utc).isoformat()
     save_player(p); save_gs(gs); update_readme(p,gs,lb)
+    # Auto-spawn raid every 30 turns if none active
+    if gs["turn"] % 30 == 0 and tok:
+        _try_auto_spawn_raid(gs, tok)
     print(f"✅ '{raw}' → @{u} · T#{gs['turn']} · Score:{score(p)}")
 
 if __name__=="__main__": main()

@@ -1,0 +1,47 @@
+name: "⚔️ Criar Raid"
+description: "Convoque um World Boss para uma Raid Cooperativa!"
+title: "rpg:criar_raid:"
+labels: ["rpg-action"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚔️ Convocação de Raid
+
+        Escolha um World Boss abaixo e crie esta Issue para convocar a Raid!
+
+        **Requisitos:**
+        - Nível 5 ou superior
+        - Ter escolhido uma classe
+
+        **Como funciona:**
+        1. Crie esta Issue com o slug do boss no título
+        2. Uma Issue `[RAID]` será criada automaticamente
+        3. Outros jogadores comentam `/atacar` para participar
+        4. O MVP (maior dano) ganha +50% de recompensas
+
+  - type: dropdown
+    id: boss
+    attributes:
+      label: "World Boss"
+      description: "Escolha o boss para a Raid"
+      options:
+        - tita_de_gelo
+        - destruidor_de_mundos
+        - drakon_fantasma
+        - kraken_abissal
+        - guardiao_corrompido
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        **Após escolher o boss**, edite o título desta Issue para:
+        `rpg:criar_raid:<slug_do_boss>`
+
+        Exemplo: `rpg:criar_raid:tita_de_gelo`
+
+        > ℹ️ A engine processará automaticamente e criará a Issue `[RAID]`.

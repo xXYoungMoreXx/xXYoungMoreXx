@@ -213,7 +213,7 @@ xXYoungMoreXx/
 - [ ] v3.1 — Sistema de Guildas: jogadores podem criar grupos
 - [ ] v3.2 — World Boss semanal: todos combatem o mesmo inimigo
 - [ ] v3.3 — Marketplace: jogadores trocam itens entre si
-- [ ] v3.4 — Dungeons cooperativas: dois jogadores entram no mesmo covil
+- [x] v3.4 — Dungeons cooperativas (Raids): múltiplos jogadores atacam World Bosses via Issues `[RAID]` com sistema MVP, escalonamento de HP, 4 conquistas, auto-spawn e criação manual (`rpg:criar_raid:<slug>`)
 - [ ] v3.5 — Lore expansível: sistema de capítulos da história principal
 
 ---

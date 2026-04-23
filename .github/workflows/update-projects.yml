@@ -41,17 +41,18 @@ jobs:
 
           if repos_str:
               repos = repos_str.split("\n")
-              block = "<!-- PROJECTS_START -->\n<table align=\"center\" border=\"0\" style=\"background-color: transparent;\">\n"
+              block = "<!-- PROJECTS_START -->\n<div align=\"center\">\n  <table border=\"0\">\n"
               for i in range(0, len(repos), 2):
-                  block += "  <tr>\n"
+                  block += "    <tr>\n"
                   for j in range(2):
                       if i+j < len(repos):
                           repo = repos[i+j].strip()
                           url = f"https://github.com/{username}/{repo}"
-                          img = f"https://github-readme-stats.vercel.app/api/pin/?username={username}&repo={repo}&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9"
-                          block += f"    <td valign=\"top\" width=\"50%\">\n      <a href=\"{url}\">\n        <img src=\"{img}\" alt=\"Repo Card\" height=\"125\" style=\"max-width:100%;\" />\n      </a>\n    </td>\n"
-                  block += "  </tr>\n"
-              block += "</table>\n<!-- PROJECTS_END -->"
+                          # Card stats premium azul com bordas arredondadas e tamanho fixo
+                          img = f"https://github-readme-stats.vercel.app/api/pin/?username={username}&repo={repo}&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true"
+                          block += f"      <td align=\"center\" width=\"400\">\n        <a href=\"{url}\">\n          <img src=\"{img}\" width=\"380\" height=\"120\" />\n        </a>\n      </td>\n"
+                  block += "    </tr>\n"
+              block += "  </table>\n</div>\n<!-- PROJECTS_END -->"
 
               pattern = r"<!-- PROJECTS_START -->.*?<!-- PROJECTS_END -->"
               new_readme = re.sub(pattern, block, readme, flags=re.DOTALL)

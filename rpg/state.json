@@ -1,15 +1,28 @@
 {
-  "turn": 0,
+  "turn": 1,
   "world_log": [
+    "🌟 **@xXYoungMoreXx** chegou a Aethoria! _(Python · 6 followers)_",
     "⚔️ Aethoria aguarda seu próximo aventureiro...",
     "🗼 A Torre do Oráculo pisca ao longe. A profecia se move.",
     "🌙 Criaturas das trevas rondam Kragdor nesta noite."
   ],
   "npc_memory": {
-    "Miriel": { "met": [], "world_state": {} },
-    "Aldric": { "met": [], "world_state": {} },
-    "Oráculo": { "met": [], "world_state": {} },
-    "Capitão Heron": { "met": [], "world_state": {} }
+    "Miriel": {
+      "met": [],
+      "world_state": {}
+    },
+    "Aldric": {
+      "met": [],
+      "world_state": {}
+    },
+    "Oráculo": {
+      "met": [],
+      "world_state": {}
+    },
+    "Capitão Heron": {
+      "met": [],
+      "world_state": {}
+    }
   },
   "world_events": []
 }

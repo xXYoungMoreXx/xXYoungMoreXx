@@ -5,6 +5,29 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [3.4.0] — 2026 — Dungeons Cooperativas (Raids)
+
+### ✨ Adicionado
+- **Sistema de Raids Cooperativas**: Múltiplos jogadores atacam World Bosses juntos via Issues `[RAID]`
+- **Criação Manual de Raids**: Comando `rpg:criar_raid:<slug>` cria Issue `[RAID]` automaticamente (nível 5+)
+- **Auto-Spawn de Raids**: A cada 30 turnos, se não há raids ativas, uma é criada automaticamente pelo sistema
+- **2 World Bosses**: 🥶 Titã de Gelo Ancestral (1000 HP) e 🌋 Azazel, O Destruidor (2500 HP)
+- **Sistema MVP**: Jogador com maior dano total recebe +50% de recompensas
+- **HP Escalonado**: Boss ganha HP extra por nível de cada participante que entra
+- **4 Conquistas de Raid**: 🔥 Raider · 🌟 MVP da Raid · ⚔️ Veterano de Raids · 👑 Matador de Titãs
+- **World Log para Raids**: Eventos de criação, entrada e derrota notificam todos os jogadores
+- **Raids no Pre-Class Block**: Jogadores sem classe veem raids ativas como hook social
+- **Issue Template**: `criar_raid.yml` com dropdown para escolha de boss
+- **Documentação SETUP.md**: Seção completa de Raids com mecânicas, slugs e conquistas
+
+### 🛠️ Corrigido
+- **Boss Key Lookup**: Normalização de acentos via `unicodedata` (antes falhava com caracteres especiais)
+- **Validação de Classe**: Jogadores sem classe não podem mais entrar em raids (antes causava crash)
+- **Reward Math**: Removida multiplicação/divisão redundante que confundia a leitura
+- **Cleanup Automático**: Raids derrotadas são removidas após 24h (antes ficavam para sempre)
+
+---
+
 ## [3.0.0] — 2026
 
 ### ✨ Adicionado
