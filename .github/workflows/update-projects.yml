@@ -2,7 +2,7 @@ name: 📦 Update Featured Projects
 
 on:
   schedule:
-    - cron: '0 */6 * * *'   # a cada 6 horas
+    - cron: '0 */12 * * *'   # a cada 12 horas
   workflow_dispatch:
 
 permissions:
@@ -31,30 +31,38 @@ jobs:
           echo "Top 4 recently pushed repos:"
           echo "$REPOS"
 
-          # Build the new projects block
-          BLOCK="<!-- PROJECTS_START -->"
-          while IFS= read -r repo; do
-            BLOCK="$BLOCK
-          [![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=$USERNAME&repo=$repo&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/$USERNAME/$repo)"
-          done <<< "$REPOS"
-          BLOCK="$BLOCK
-          <!-- PROJECTS_END -->"
-
           # Replace the section between markers in README.md
           python3 - <<'PYEOF'
 import re, os
 
 readme = open("README.md", "r", encoding="utf-8").read()
-block = os.environ["BLOCK"]
+repos_str = os.environ.get("REPOS", "").strip()
+username = os.environ.get("USERNAME", "xXYoungMoreXx")
 
-pattern = r"<!-- PROJECTS_START -->.*?<!-- PROJECTS_END -->"
-new_readme = re.sub(pattern, block, readme, flags=re.DOTALL)
+if repos_str:
+    repos = repos_str.split("\n")
+    block = "<!-- PROJECTS_START -->\n<table align=\"center\" border=\"0\" style=\"background-color: transparent;\">\n"
+    for i in range(0, len(repos), 2):
+        block += "  <tr>\n"
+        for j in range(2):
+            if i+j < len(repos):
+                repo = repos[i+j].strip()
+                url = f"https://github.com/{username}/{repo}"
+                img = f"https://github-readme-stats.vercel.app/api/pin/?username={username}&repo={repo}&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9"
+                block += f"    <td valign=\"top\" width=\"50%\">\n      <a href=\"{url}\">\n        <img src=\"{img}\" alt=\"Repo Card\" />\n      </a>\n    </td>\n"
+        block += "  </tr>\n"
+    block += "</table>\n<!-- PROJECTS_END -->"
 
-if new_readme != readme:
-    open("README.md", "w", encoding="utf-8").write(new_readme)
-    print("README.md updated with new featured projects.")
+    pattern = r"<!-- PROJECTS_START -->.*?<!-- PROJECTS_END -->"
+    new_readme = re.sub(pattern, block, readme, flags=re.DOTALL)
+
+    if new_readme != readme:
+        open("README.md", "w", encoding="utf-8").write(new_readme)
+        print("README.md updated with new featured projects.")
+    else:
+        print("No changes needed.")
 else:
-    print("No changes needed.")
+    print("No repos found.")
 PYEOF
 
       - name: Commit & push

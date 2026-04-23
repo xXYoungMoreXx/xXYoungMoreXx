@@ -874,7 +874,10 @@ def npc_dialogue(npc,p,gs):
 # ══════════════════════════════════════════════════════════════════════════════
 #  LEADERBOARD
 # ══════════════════════════════════════════════════════════════════════════════
-def score(p): return p.get("total_xp",0)+p.get("kills",0)*5+len(p.get("bosses_defeated",{}))*100+len(p.get("conquistas",[]))*30+p.get("prestige_count",0)*500
+def score(p):
+    gh = p.get("github_profile", {})
+    gh_score = gh.get("public_repos", 0) * 10 + gh.get("total_stars", 0) * 50 + gh.get("followers", 0) * 25
+    return p.get("total_xp",0) + p.get("kills",0)*5 + len(p.get("bosses_defeated",{}))*100 + len(p.get("conquistas",[]))*30 + p.get("prestige_count",0)*500 + gh_score
 
 def update_lb(lb,p):
     entry={"username":p["username"],"score":score(p),"level":p["level"],"prestige":p.get("prestige_count",0),
@@ -958,7 +961,7 @@ def build_block(p,gs,lb):
 
 ### 🏆 Quadro da Guilda
 {render_lb(lb)}
-> _Score = XP total + kills×5 + chefões×100 + conquistas×30 + prestígio×500 · Atualizado: {lb.get('updated','—')}_
+> _Score = XP total + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · Atualizado: {lb.get('updated','—')}_
 
 <!-- RPG_END -->"""
 
@@ -1090,7 +1093,7 @@ def build_block(p,gs,lb):
 
 ### 🏆 Quadro da Guilda — Top Aventureiros
 {render_lb(lb)}
-> _Score = XP + kills×5 + chefões×100 + conquistas×30 + prestígio×500 · {lb.get('updated','—')}_
+> _Score = XP + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · {lb.get('updated','—')}_
 
 <!-- RPG_END -->"""
 
