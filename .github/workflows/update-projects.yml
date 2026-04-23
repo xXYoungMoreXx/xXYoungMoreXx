@@ -1,0 +1,67 @@
+name: 📦 Update Featured Projects
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # a cada 6 horas
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-projects:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch & update featured repos
+        env:
+          GH_TOKEN: ${{ github.token }}
+          USERNAME: xXYoungMoreXx
+        run: |
+          # Fetch repos sorted by most recently pushed, exclude profile repo and forks
+          REPOS=$(gh api "users/$USERNAME/repos?sort=pushed&direction=desc&per_page=20&type=owner" \
+            --jq '[.[] | select(.fork == false and .name != env.USERNAME) | .name] | .[0:4] | .[]')
+
+          if [ -z "$REPOS" ]; then
+            echo "No repos found, skipping update."
+            exit 0
+          fi
+
+          echo "Top 4 recently pushed repos:"
+          echo "$REPOS"
+
+          # Build the new projects block
+          BLOCK="<!-- PROJECTS_START -->"
+          while IFS= read -r repo; do
+            BLOCK="$BLOCK
+          [![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=$USERNAME&repo=$repo&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/$USERNAME/$repo)"
+          done <<< "$REPOS"
+          BLOCK="$BLOCK
+          <!-- PROJECTS_END -->"
+
+          # Replace the section between markers in README.md
+          python3 - <<'PYEOF'
+import re, os
+
+readme = open("README.md", "r", encoding="utf-8").read()
+block = os.environ["BLOCK"]
+
+pattern = r"<!-- PROJECTS_START -->.*?<!-- PROJECTS_END -->"
+new_readme = re.sub(pattern, block, readme, flags=re.DOTALL)
+
+if new_readme != readme:
+    open("README.md", "w", encoding="utf-8").write(new_readme)
+    print("README.md updated with new featured projects.")
+else:
+    print("No changes needed.")
+PYEOF
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "📦 auto: update featured projects"
+          git push

@@ -2,13 +2,13 @@
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=220&section=header&text=Mauricio%20Caique&fontSize=52&fontColor=fff&animation=twinkling&fontAlignY=36&desc=Full%20Stack%20Developer%20%7C%20Founder%20%7C%20Builder&descAlignY=58&descSize=20" width="100%"/>
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=1000&color=A855F7&center=true&vCenter=true&multiline=true&width=700&height=90&lines=Fundador+da+Cogitari+%7C+SaaS+%26+IA+%F0%9F%9A%80;Full+Stack+%7C+Python+%7C+React+%7C+FastAPI+%7C+Docker;Transformando+problemas+complexos+em+c%C3%B3digo+elegante+%E2%9A%94%EF%B8%8F)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=1000&color=58A6FF&center=true&vCenter=true&multiline=true&width=700&height=90&lines=Fundador+da+Cogitari+%7C+IA+%26+Automação;Full+Stack+%7C+Python+%7C+React+%7C+FastAPI+%7C+Docker;Transformando+problemas+complexos+em+c%C3%B3digo+elegante)](https://git.io/typing-svg)
 
 <br/>
 
-[![Profile views](https://komarev.com/ghpvc/?username=xXYoungMoreXx&color=a855f7&style=flat-square&label=Visitas)](https://github.com/xXYoungMoreXx)
-[![GitHub followers](https://img.shields.io/github/followers/xXYoungMoreXx?style=flat-square&color=a855f7&label=Seguidores)](https://github.com/xXYoungMoreXx?tab=followers)
-[![Email](https://img.shields.io/badge/Email-morekaik27%40gmail.com-a855f7?style=flat-square&logo=gmail&logoColor=white)](mailto:morekaik27@gmail.com)
+[![Profile views](https://komarev.com/ghpvc/?username=xXYoungMoreXx&color=58a6ff&style=flat-square&label=Visitas)](https://github.com/xXYoungMoreXx)
+[![GitHub followers](https://img.shields.io/github/followers/xXYoungMoreXx?style=flat-square&color=58a6ff&label=Seguidores)](https://github.com/xXYoungMoreXx?tab=followers)
+[![Email](https://img.shields.io/badge/Email-morekaik27%40gmail.com-58a6ff?style=flat-square&logo=gmail&logoColor=white)](mailto:morekaik27@gmail.com)
 
 </div>
 
@@ -23,19 +23,19 @@ const mauricio = {
   github:      "@xXYoungMoreXx",
 
   papeis: [
-    "Fundador & CTO @ Cogitari",       // SaaS com IA — desde Dez/2023
+    "Fundador & CTO @ Cogitari",       // SaaS e Automações com IA — desde Dez/2025
     "Estagiário ServiceDesk @ ADN",    // ERP modular empresarial — desde Fev/2026
     "Estagiário Suporte TI @ BioCheckup", // Infraestrutura clínica — Nov/2025
   ],
 
-  stack:       ["Python", "FastAPI", "React", "TypeScript", "Docker", "PostgreSQL"],
-  ia:          ["Google Vertex AI", "Gemini", "Integração LLM"],
-  arquitetura: ["Clean Architecture", "DDD", "SOLID", "LGPD"],
-  estudando:   ["Técnico em Informática (2026→2027)", "Cybersecurity", "Cloud"],
+  stack:       ["Python", "Typescript", "React", "Node.js", "Docker", "Supabase", "Vercel", "Java", "Next.js", "Resend"],
+  ia:          ["Ollama", "Google Ecosystem", "Anthropic Ecosystem", "Cursor", "OpenCode", "MCP", "Skills", "Fine Tunning"],
+  arquitetura: ["Clean Architecture", "Hexagonal Architecture", "DDD", "SOLID", "LGPD"],
+  estudando:   ["Técnico em Informática (2026→2027)","Tecnologo em Análise e Desenvolvimento de Sistemas (2024→2026)", "Cybersecurity (OWASP)", "Cloud (GCP)", "Prompt Engineering", "Vibe-Coding"],
 
   empreendedor: true,
   disponivel:   true, // aberto a oportunidades 🚀
-  filosofia:    "Código limpo hoje. Sistemas que escalam amanhã.",
+  filosofia:    "Torna-te quem tu és. — Friedrich Nietzsche",
 };
 ```
 
@@ -64,12 +64,12 @@ Fundei a Cogitari para criar o **Amuri**, SaaS de automação de conteúdo B2B c
 
 Suporte em sistema gerencial modular para empresas (módulos: financeiro, contábil, contratos e outros). Atendimento técnico, diagnóstico de incidentes e resolução de chamados no ecossistema ERP da ADN.
 
-`Suporte N1/N2` `ERP Modular` `ServiceDesk` `Análise de Incidentes`
+`Suporte N1` `ERP Modular` `ServiceDesk` `Análise de Incidentes`
 
 </td>
 </tr>
 <tr>
-<td align="center"><b>Nov/2025</b><br/>↕<br/><b>Atual</b></td>
+<td align="center"><b>Jun/2025</b><br/>↕<br/><b>Nov/2025</b></td>
 <td>
 
 **🏥 Clínica BioCheckup — Estagiário Suporte TI**
@@ -81,7 +81,7 @@ Eliminação de gargalos de hardware crítico, suporte a ERP hospitalar legado, 
 </td>
 </tr>
 <tr>
-<td align="center"><b>2022</b><br/>↕<br/><b>2023</b></td>
+<td align="center"><b>2023</b><br/>↕<br/><b>2024</b></td>
 <td>
 
 **🔧 Field Services (EuNerd / FindUp) — Técnico de Campo Autônomo (MEI)**
@@ -93,7 +93,7 @@ Infraestrutura crítica para empresas como Positivo: firewalls Fortigate, racks 
 </td>
 </tr>
 <tr>
-<td align="center"><b>2015</b><br/>↕<br/><b>2022</b></td>
+<td align="center"><b>2019</b><br/>↕<br/><b>2025</b></td>
 <td>
 
 **📊 Trajetória Multidisciplinar — Vendas, Operações & Marketing**
@@ -113,8 +113,8 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 | | Curso | Instituição | Status |
 |---|---|---|---|
 | 💻 | Análise e Desenvolvimento de Sistemas | UNIJORGE | Em andamento (4º sem.) |
-| 🔧 | Técnico em Informática | *(instituição)* | Fev/2026 → Dez/2027 |
-| 📋 | Técnico em Administração | CEEP Luiz Navarro de Brito | Concluído |
+| 🔧 | Técnico em Informática | Colégio Estadual Duque de Caxias | Em andamento (1º sem.) |
+| 📋 | Técnico em Administração | CEEP Luiz Navarro de Brito | Concluído em 2025 |
 
 ---
 
@@ -123,13 +123,13 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 <div align="center">
 
 ### Backend & IA
-[![Skills](https://skillicons.dev/icons?i=python,fastapi,java,postgres,redis,docker,linux&perline=7)](https://skillicons.dev)
+[![Skills](https://skillicons.dev/icons?i=python,fastapi,java,postgres,docker,linux&perline=7)](https://skillicons.dev)
 
 ### Frontend
 [![Skills](https://skillicons.dev/icons?i=react,nextjs,ts,js,html,css,tailwind&perline=7)](https://skillicons.dev)
 
 ### Cloud & Ferramentas
-[![Skills](https://skillicons.dev/icons?i=gcp,git,github,vscode,figma,nginx,vercel&perline=7)](https://skillicons.dev)
+[![Skills](https://skillicons.dev/icons?i=gcp,git,github,vscode,vercel&perline=7)](https://skillicons.dev)
 
 </div>
 
@@ -139,16 +139,16 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 
 <div align="center">
 
-<img height="175em" src="https://github-readme-stats.vercel.app/api?username=xXYoungMoreXx&show_icons=true&theme=midnight-purple&include_all_commits=true&count_private=true&hide_border=true&bg_color=0d1117&title_color=a855f7&icon_color=a855f7&text_color=c9d1d9"/>
-<img height="175em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=xXYoungMoreXx&layout=compact&theme=midnight-purple&hide_border=true&bg_color=0d1117&title_color=a855f7&text_color=c9d1d9&langs_count=8"/>
+<img height="175em" src="https://github-readme-stats.vercel.app/api?username=xXYoungMoreXx&show_icons=true&theme=tokyonight&include_all_commits=true&count_private=true&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9"/>
+<img height="175em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=xXYoungMoreXx&layout=compact&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&text_color=c9d1d9&langs_count=8"/>
 
 <br/>
 
-<img src="https://streak-stats.demolab.com?user=xXYoungMoreXx&theme=midnight-purple&hide_border=true&background=0d1117&ring=a855f7&fire=a855f7&currStreakLabel=a855f7" alt="GitHub Streak"/>
+<img src="https://streak-stats.demolab.com?user=xXYoungMoreXx&theme=tokyonight&hide_border=true&background=0d1117&ring=58a6ff&fire=58a6ff&currStreakLabel=58a6ff" alt="GitHub Streak"/>
 
 <br/><br/>
 
-### 🐍 Contribuições devoradas por uma cobra
+### 🐍 Contribuições alimentando a cobrinha
 <picture>
   <source media="(prefers-color-scheme: dark)"  srcset="https://raw.githubusercontent.com/xXYoungMoreXx/xXYoungMoreXx/output/snake-dark.svg"/>
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/xXYoungMoreXx/xXYoungMoreXx/output/snake.svg"/>
@@ -163,10 +163,12 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 
 <div align="center">
 
-[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WP_Cogitari_Theme&theme=midnight-purple&hide_border=true&bg_color=0d1117&title_color=a855f7&icon_color=a855f7&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/WP_Cogitari_Theme)
-[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=RAG_Agent&theme=midnight-purple&hide_border=true&bg_color=0d1117&title_color=a855f7&icon_color=a855f7&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/RAG_Agent)
-[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=xXYoungMoreXx.github.io&theme=midnight-purple&hide_border=true&bg_color=0d1117&title_color=a855f7&icon_color=a855f7&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/xXYoungMoreXx.github.io)
-[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=Curso-Em-V-deo---Python-3&theme=midnight-purple&hide_border=true&bg_color=0d1117&title_color=a855f7&icon_color=a855f7&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/Curso-Em-V-deo---Python-3)
+<!-- PROJECTS_START -->
+[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WP_Cogitari_Theme&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/WP_Cogitari_Theme)
+[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=RAG_Agent&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/RAG_Agent)
+[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=xXYoungMoreXx.github.io&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/xXYoungMoreXx.github.io)
+[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=Curso-Em-V-deo---Python-3&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/Curso-Em-V-deo---Python-3)
+<!-- PROJECTS_END -->
 
 </div>
 
@@ -176,7 +178,7 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 
 <div align="center">
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-mauricio--caique-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/mauricio-caique)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-mauricio--caique-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/mauricio-caique-62678a189)
 [![Gmail](https://img.shields.io/badge/Gmail-morekaik27%40gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:morekaik27@gmail.com)
 [![GitHub](https://img.shields.io/badge/GitHub-xXYoungMoreXx-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xXYoungMoreXx)
 [![WhatsApp](https://img.shields.io/badge/WhatsApp-(71)%2099938--5012-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/5571999385012)
