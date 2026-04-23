@@ -139,12 +139,12 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 
 <div align="center">
 
-<img height="175em" src="https://github-readme-stats.vercel.app/api?username=xXYoungMoreXx&show_icons=true&theme=tokyonight&include_all_commits=true&count_private=true&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9"/>
-<img height="175em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=xXYoungMoreXx&layout=compact&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&text_color=c9d1d9&langs_count=8"/>
+<img height="175em" src="https://github-readme-stats.vercel.app/api?username=xXYoungMoreXx&show_icons=true&include_all_commits=true&count_private=true&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9"/>
+<img height="175em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=xXYoungMoreXx&layout=compact&hide_border=true&bg_color=0d1117&title_color=58a6ff&text_color=c9d1d9&langs_count=8"/>
 
 <br/>
 
-<img src="https://streak-stats.demolab.com?user=xXYoungMoreXx&theme=tokyonight&hide_border=true&background=0d1117&ring=58a6ff&fire=58a6ff&currStreakLabel=58a6ff" alt="GitHub Streak"/>
+<img src="https://streak-stats.demolab.com?user=xXYoungMoreXx&hide_border=true&background=0d1117&ring=58a6ff&fire=58a6ff&currStreakLabel=58a6ff&sideLabels=c9d1d9&currStreakNum=c9d1d9&sideNums=c9d1d9&dates=c9d1d9" alt="GitHub Streak"/>
 
 <br/><br/>
 
@@ -164,10 +164,32 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 <div align="center">
 
 <!-- PROJECTS_START -->
-[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WP_Cogitari_Theme&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/WP_Cogitari_Theme)
-[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=RAG_Agent&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/RAG_Agent)
-[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=xXYoungMoreXx.github.io&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/xXYoungMoreXx.github.io)
-[![Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=Curso-Em-V-deo---Python-3&theme=tokyonight&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9)](https://github.com/xXYoungMoreXx/Curso-Em-V-deo---Python-3)
+<table align="center" border="0" style="background-color: transparent;">
+  <tr>
+    <td valign="top" width="50%">
+      <a href="https://github.com/xXYoungMoreXx/WP_Cogitari_Theme">
+        <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WP_Cogitari_Theme&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9" alt="Repo Card" height="125" style="max-width:100%;" />
+      </a>
+    </td>
+    <td valign="top" width="50%">
+      <a href="https://github.com/xXYoungMoreXx/RAG_Agent">
+        <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=RAG_Agent&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9" alt="Repo Card" height="125" style="max-width:100%;" />
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" width="50%">
+      <a href="https://github.com/xXYoungMoreXx/xXYoungMoreXx.github.io">
+        <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=xXYoungMoreXx.github.io&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9" alt="Repo Card" height="125" style="max-width:100%;" />
+      </a>
+    </td>
+    <td valign="top" width="50%">
+      <a href="https://github.com/xXYoungMoreXx/Curso-Em-V-deo---Python-3">
+        <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=Curso-Em-V-deo---Python-3&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9" alt="Repo Card" height="125" style="max-width:100%;" />
+      </a>
+    </td>
+  </tr>
+</table>
 <!-- PROJECTS_END -->
 
 </div>
