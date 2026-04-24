@@ -164,32 +164,34 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 <div align="center">
 
 <!-- PROJECTS_START -->
-<table align="center" border="0" style="background-color: transparent;">
-  <tr>
-    <td valign="top" width="50%">
-      <a href="https://github.com/xXYoungMoreXx/RAG_Agent">
-        <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=RAG_Agent&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9" alt="Repo Card" height="125" style="max-width:100%;" />
-      </a>
-    </td>
-    <td valign="top" width="50%">
-      <a href="https://github.com/xXYoungMoreXx/WordPress_Cogitari_Theme">
-        <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WordPress_Cogitari_Theme&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9" alt="Repo Card" height="125" style="max-width:100%;" />
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" width="50%">
-      <a href="https://github.com/xXYoungMoreXx/WP_Cogitari_Theme">
-        <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WP_Cogitari_Theme&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9" alt="Repo Card" height="125" style="max-width:100%;" />
-      </a>
-    </td>
-    <td valign="top" width="50%">
-      <a href="https://github.com/xXYoungMoreXx/xXYoungMoreXx.github.io">
-        <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=xXYoungMoreXx.github.io&hide_border=true&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9" alt="Repo Card" height="125" style="max-width:100%;" />
-      </a>
-    </td>
-  </tr>
-</table>
+<div align="center">
+  <table border="0">
+    <tr>
+      <td align="center" width="400">
+        <a href="https://github.com/xXYoungMoreXx/RAG_Agent">
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=RAG_Agent&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" width="380" height="120" />
+        </a>
+      </td>
+      <td align="center" width="400">
+        <a href="https://github.com/xXYoungMoreXx/WordPress_Cogitari_Theme">
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WordPress_Cogitari_Theme&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" width="380" height="120" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="400">
+        <a href="https://github.com/xXYoungMoreXx/WP_Cogitari_Theme">
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WP_Cogitari_Theme&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" width="380" height="120" />
+        </a>
+      </td>
+      <td align="center" width="400">
+        <a href="https://github.com/xXYoungMoreXx/xXYoungMoreXx.github.io">
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=xXYoungMoreXx.github.io&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" width="380" height="120" />
+        </a>
+      </td>
+    </tr>
+  </table>
+</div>
 <!-- PROJECTS_END -->
 
 </div>
