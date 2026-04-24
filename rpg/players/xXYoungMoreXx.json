@@ -31,7 +31,7 @@
   "titulo": null,
   "position": {
     "x": 2,
-    "y": 2
+    "y": 1
   },
   "inventory": [],
   "equipment": {
@@ -86,20 +86,33 @@
   "relics": [],
   "companion": null,
   "visited": [
-    "Ironhold"
+    "Ironhold",
+    "Ruínas de Vel'Moran"
   ],
   "conquistas": [],
-  "sessions": 2,
+  "sessions": 4,
   "log": [
+    "⚔️ Termine o combate antes de mover!",
+    "_'Você ousa profanar estas ruínas?'_ Vel'Krath ergue sua espada espectral.",
+    "💀 **[CHEFÃO]** __Vel'Krath, o Não-Morto__ surge!",
+    "_A capital traída. O ar cheira a cinza e promessas quebradas._",
+    "🚶 Moveu para **Ruínas de Vel'Moran** (Norte ⬆️).",
     "❓ Ação `rpg:status` desconhecida.",
-    "😴 Descansou em **Ironhold**: +0 HP · +0 Mana · veneno curado.",
-    "⚔️ Bem-vindo, **@xXYoungMoreXx**! Escolha sua classe para começar.",
-    "💻 Linguagem principal **Python** → afinidade com **Mago** _(bônus ao escolher esta classe!)_",
-    "👥 6 seguidores → **+3 XP** inicial!",
-    "⚔️ Bem-vindo a Aethoria!",
-    "_Uma tatuagem arcana pulsa em seu pulso._"
+    "😴 Descansou em **Ironhold**: +0 HP · +0 Mana · veneno curado."
   ],
-  "active_monster": null,
+  "active_monster": {
+    "nome": "Vel'Krath, o Não-Morto",
+    "hp": 120,
+    "max_hp": 120,
+    "atk": 45,
+    "xp_reward": 80,
+    "gold_range": [
+      20,
+      40
+    ],
+    "emoji": "💀",
+    "is_boss": true
+  },
   "boss_phase": 0,
   "poison_stacks": 0,
   "fury_bonus": false,
@@ -110,7 +123,7 @@
   "raid_count": 0,
   "raid_mvp_count": 0,
   "raid_bosses_killed": [],
-  "last_played": "2026-04-23T23:51:54.530054+00:00",
+  "last_played": "2026-04-24T02:39:02.875249+00:00",
   "factions": {
     "ordem": 0,
     "circulo": 0,

@@ -214,22 +214,23 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 <!-- RPG_START -->
 ## ⚔️ AETHORIA: O REINO FRAGMENTADO — Escolha sua Classe
 
+> 💻 **Seu GitHub: linguagem `Python` → afinidade com 🔮 Mago** _(bônus ao escolher!)_
 > *Há mil anos, os Reis-Dragão uniam Aethoria. O último foi traído pelo Pacto das Sombras. O reino se fragmentou.*
 > *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd, destinado a restaurar a luz. Por um acaso do destino (ou uma ressaca coletiva), 10 heróis com passados estereotipados acordaram na mesma Taverna em Ironhold sem memórias recentes.*
 > *Todos eles possuem uma tatuagem arcana pulsando no pulso. Suas histórias se cruzaram aqui. A jornada pertence a quem ousa começar.*
 
-| Classe | Lore | HP | Mana | DEF | Habilidade |
-|--------|------|:--:|:----:|:---:|------------|
-| [⚔️ Guerreiro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aguerreiro) | O clássico herói genérico. Sem memória, confia na espada e jura que a Estrela de Wyrd é um mapa para uma princesa em outro castelo. | 130 | 40 | 10 | Investida Furiosa (2.0×) |
-| [🔮 Mago](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amago) | Estudioso arrogante que tem pavor de sol. Acha todos idiotas por não lerem grimórios de 800 páginas sobre os Reis-Dragão. | 85 | 100 | 4 | Tempestade Arcana (3.0×) |
-| [🏹 Caçador](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Acacador) | O lobo solitário 'edgy'. Fica nos cantos escuros de Ironhold dizendo que trabalha sozinho, mas não vive sem o grupo. | 105 | 60 | 7 | Tiro de Precisão (2.2×) |
-| [🗡️ Ladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aladino) | Cleptomaníaco incurável. Jura que a Estrela de Wyrd é uma tatuagem de guilda. Se uma poção sumiu, olhe para ele. | 95 | 70 | 5 | Golpe Furtivo (2.0×) |
-| [🛡️ Paladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Apaladino) | O justiceiro fanático e insuportável. Grita 'Pela Luz!' para tudo e tenta converter cultistas do Pacto antes de matá-los. | 140 | 70 | 12 | Julgamento Divino (1.8×) |
-| [💀 Necromante](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Anecromante) | Gótico incompreendido. 'Por que reciclar lixo se podemos reciclar cadáveres?'. Leva seu esqueleto de estimação para passear. | 85 | 120 | 4 | Exército de Ossos (2.5×) |
-| [🎵 Bardo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abardo) | O sedutor compulsivo. Tenta flertar com TUDO que se move, desde as garçonetes da taverna até o próprio Destruidor de Mundos. | 95 | 85 | 6 | Canção do Caos (2.0×) |
-| [🥋 Monge](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amonge) | O mestre zen (ou apenas de ressaca). Fala provérbios de biscoito da sorte com a maior seriedade enquanto distribui voadoras. | 115 | 50 | 8 | Punhos do Wyrd (2.1×) |
-| [👁️ Bruxo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abruxo) | O CLT das trevas. Vendeu a alma para um sugar-daddy cósmico do Pacto das Sombras e agora reclama de bater ponto. | 90 | 110 | 5 | Rajada Mística (2.6×) |
-| [🪓 Bárbaro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abarbaro) | Uma montanha de músculos com QI de dois dígitos. Resolve tudo no grito e acha que livros arcanos são um ótimo lanche. | 150 | 20 | 8 | Fúria Cega (2.0×) |
+| Classe | Lore | Stats | Atributos | Habilidades |
+|--------|------|:---:|:-------:|-------------|
+| [⚔️ Guerreiro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aguerreiro) | O clássico herói genérico. Sem memória, confia na espada e jura que a Estrela de Wyrd é um mapa para uma princesa em outro castelo. | ❤️ 130<br>💧 40<br>🛡️ 10 | **FOR:** 16<br>**DES:** 12<br>**INT:** 8<br>**CON:** 15<br>**CAR:** 10 | 💥 **Investida Furiosa**<br>🗣️ **Grito de Provocação** |
+| [🔮 Mago](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amago) | Estudioso arrogante que tem pavor de sol. Acha todos idiotas por não lerem grimórios de 800 páginas sobre os Reis-Dragão. | ❤️ 85<br>💧 100<br>🛡️ 4 | **FOR:** 6<br>**DES:** 10<br>**INT:** 18<br>**CON:** 8<br>**CAR:** 11 | ⚡ **Tempestade Arcana**<br>🛡️ **Barreira de Cristal** |
+| [🏹 Caçador](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Acacador) | O lobo solitário 'edgy'. Fica nos cantos escuros de Ironhold dizendo que trabalha sozinho, mas não vive sem o grupo. | ❤️ 105<br>💧 60<br>🛡️ 7 | **FOR:** 10<br>**DES:** 17<br>**INT:** 12<br>**CON:** 11<br>**CAR:** 8 | 🎯 **Tiro de Precisão**<br>🪤 **Armadilha de Espinhos** |
+| [🗡️ Ladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aladino) | Cleptomaníaco incurável. Jura que a Estrela de Wyrd é uma tatuagem de guilda. Se uma poção sumiu, olhe para ele. | ❤️ 95<br>💧 70<br>🛡️ 5 | **FOR:** 9<br>**DES:** 18<br>**INT:** 11<br>**CON:** 10<br>**CAR:** 14 | 🌑 **Golpe Furtivo**<br>💨 **Bomba de Fumaça** |
+| [🛡️ Paladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Apaladino) | O justiceiro fanático e insuportável. Grita 'Pela Luz!' para tudo e tenta converter cultistas do Pacto antes de matá-los. | ❤️ 140<br>💧 70<br>🛡️ 12 | **FOR:** 14<br>**DES:** 9<br>**INT:** 10<br>**CON:** 16<br>**CAR:** 15 | ✨ **Julgamento Divino**<br>💖 **Cura pela Luz** |
+| [💀 Necromante](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Anecromante) | Gótico incompreendido. 'Por que reciclar lixo se podemos reciclar cadáveres?'. Leva seu esqueleto de estimação para passear. | ❤️ 85<br>💧 120<br>🛡️ 4 | **FOR:** 7<br>**DES:** 9<br>**INT:** 16<br>**CON:** 9<br>**CAR:** 6 | 🦴 **Exército de Ossos**<br>🩸 **Drenar Vida** |
+| [🎵 Bardo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abardo) | O sedutor compulsivo. Tenta flertar com TUDO que se move, desde as garçonetes da taverna até o próprio Destruidor de Mundos. | ❤️ 95<br>💧 85<br>🛡️ 6 | **FOR:** 8<br>**DES:** 14<br>**INT:** 12<br>**CON:** 9<br>**CAR:** 18 | 🎶 **Canção do Caos**<br>😘 **Charme Irresistível** |
+| [🥋 Monge](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amonge) | O mestre zen (ou apenas de ressaca). Fala provérbios de biscoito da sorte com a maior seriedade enquanto distribui voadoras. | ❤️ 115<br>💧 50<br>🛡️ 8 | **FOR:** 12<br>**DES:** 16<br>**INT:** 14<br>**CON:** 12<br>**CAR:** 9 | 👊 **Punhos do Wyrd**<br>🧘 **Meditação Profunda** |
+| [👁️ Bruxo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abruxo) | O CLT das trevas. Vendeu a alma para um sugar-daddy cósmico do Pacto das Sombras e agora reclama de bater ponto. | ❤️ 90<br>💧 110<br>🛡️ 5 | **FOR:** 7<br>**DES:** 11<br>**INT:** 15<br>**CON:** 10<br>**CAR:** 16 | ☄️ **Rajada Mística**<br>📜 **Contrato Sombrio** |
+| [🪓 Bárbaro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abarbaro) | Uma montanha de músculos com QI de dois dígitos. Resolve tudo no grito e acha que livros arcanos são um ótimo lanche. | ❤️ 150<br>💧 20<br>🛡️ 8 | **FOR:** 18<br>**DES:** 10<br>**INT:** 4<br>**CON:** 17<br>**CAR:** 8 | 💢 **Fúria Cega**<br>🤕 **Cabeçada** |
 
 > 🎮 *Clique em uma classe para começar! Qualquer visitante pode jogar.*
 
@@ -245,7 +246,8 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 |---|---|---|---|---|---|---|---|
 | 🥇 | **@xXYoungMoreXx** | — | 1 | 213 | 0 | 0 | `Python` |
 | 🥈 | **@UnregisteredUser123** | — | 1 | 0 | 0 | 0 | — |
-> _Score = XP total + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · Atualizado: 23/04/2026 23:55 UTC_
+| 🥉 | **@testUser** | 👁️ Bruxo | 1 | 0 | 0 | 0 | — |
+> _Score = XP total + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · Atualizado: 24/04/2026 02:39 UTC_
 
 <!-- RPG_END -->
 

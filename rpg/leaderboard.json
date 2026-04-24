@@ -11,7 +11,7 @@
       "conquistas": 0,
       "titulo": null,
       "top_lang": "Python",
-      "last_played": "2026-04-23T23:37:14.158841+00:00"
+      "last_played": "2026-04-24T02:38:45.355356+00:00"
     },
     {
       "username": "UnregisteredUser123",
@@ -25,7 +25,20 @@
       "titulo": null,
       "top_lang": null,
       "last_played": "2026-04-23T23:54:08.281167+00:00"
+    },
+    {
+      "username": "testUser",
+      "score": 0,
+      "level": 1,
+      "prestige": 0,
+      "classe": "bruxo",
+      "kills": 0,
+      "bosses": 0,
+      "conquistas": 0,
+      "titulo": null,
+      "top_lang": null,
+      "last_played": "2026-04-24T02:18:12.780915+00:00"
     }
   ],
-  "updated": "23/04/2026 23:55 UTC"
+  "updated": "24/04/2026 02:39 UTC"
 }

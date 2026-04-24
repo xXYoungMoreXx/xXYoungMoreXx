@@ -650,6 +650,16 @@ def atk_dmg(p, bonuses=None):
     legacy = p.get("legacy_stacks", 0)
     if legacy > 0: dmg += legacy * 2
     
+    # Penalidade de Karma/Alinhamento (Desequipamento Forçado lógico)
+    weapon = p.get("equipment", {}).get("weapon", "")
+    karma = p.get("karma", 0)
+    if weapon in ["Martelo da Luz"] and karma <= -20:
+        dmg = max(1, int(dmg * 0.5))
+        if random.random() < 0.3: push_log(p, "🔥 O Martelo da Luz queima suas mãos corrompidas! (-50% ATK)")
+    elif weapon in ["Foice das Almas", "Tomo Sombrio"] and karma >= 20:
+        dmg = max(1, int(dmg * 0.5))
+        if random.random() < 0.3: push_log(p, "✨ A luz em seu coração enfraquece a arma sombria! (-50% ATK)")
+        
     return dmg
 
 def hp_bar(v,mx,n=10):
@@ -1169,6 +1179,32 @@ def _temple(p): p["hp"]=max(1,p["hp"]-5); p["mana"]=min(p["max_mana"],p["mana"]+
 def _mirewood(p): xp_gain(p,15); p["mana"]=min(p["max_mana"],p["mana"]+15)
 def _catedral(p): xp_gain(p,25); p["hp"]=max(1,p["hp"]-10)
 
+def action_karma(p, alignment):
+    t = terrain(p)
+    if t == "Vilarejo de Ravenford":
+        if alignment == "good":
+            if p["gold"] >= 10:
+                p["gold"] -= 10
+                p["karma"] = p.get("karma", 0) + 10
+                push_log(p, "🛡️ Doou 10g aos órfãos locais. (+10 Karma)")
+            else:
+                push_log(p, "⚠️ Sem ouro para doar aos órfãos.")
+        elif alignment == "bad":
+            p["gold"] += 15
+            p["karma"] = p.get("karma", 0) - 15
+            push_log(p, "🗡️ Saqueou uma tenda desvigiada! (+15g, -15 Karma)")
+    elif t == "Ironhold":
+        if alignment == "good":
+            p["hp"] = max(1, p["hp"] - 10)
+            p["karma"] = p.get("karma", 0) + 5
+            push_log(p, "🛡️ Ajudou a Guarda da Cidade. (-10 HP, +5 Karma)")
+        elif alignment == "bad":
+            p["gold"] += 20
+            p["karma"] = p.get("karma", 0) - 10
+            push_log(p, "🗡️ Extorquiu um mercador fraco! (+20g, -10 Karma)")
+    else:
+        push_log(p, "⚖️ Não há grandes escolhas morais para fazer aqui (Tente em Ironhold ou Ravenford).")
+
 def action_buy(p,item_key):
     t=terrain(p)
     if t not in SAFE_ZONES: push_log(p,"🏪 Compre em Ironhold, Ashenvale, Ravenford, Porto ou Mercado."); return
@@ -1546,7 +1582,7 @@ def build_block(p,gs,lb):
 | 🧙 Classe | {c['emoji']} **{c['nome']}** · {c_attr_str} |
 | ✨ Habilidades | {habs_status} |
 | ⭐ Nível | {p['level']} · XP: {p['xp']}/{xp_next} · Total: {p.get('total_xp',0)} |
-| 💰 Ouro | {p['gold']}g |
+| 💰 Ouro / ⚖️ Karma | {p['gold']}g / {p.get('karma', 0)} ({'😇 Herói' if p.get('karma', 0)>=20 else '😈 Vilão' if p.get('karma', 0)<=-20 else '⚖️ Neutro'}) |
 | 🧪 Poções | {p['potions']} · 🐍 Veneno: {p.get('poison_stacks',0)} cargas |
 | ☠️ Kills/Mortes | {p['kills']} / {p.get('deaths',0)} |
 | 🗡️ Arma / 🛡️ Armadura | {p['equipment']['weapon']} / {p['equipment']['armor']} |
@@ -1587,6 +1623,7 @@ def build_block(p,gs,lb):
 **🧭 Mover:** [⬆️]({base}rpg%3Anorte) [⬇️]({base}rpg%3Asul) [◀️]({base}rpg%3Aoeste) [▶️]({base}rpg%3Aleste)
 **⚔️ Combate:** [⚔️ Atacar]({base}rpg%3Aatacar) · {habs_str_actions} · [🧪 Poção]({base}rpg%3Apocao)
 **🍺 Explorar:** [🔍 Interagir]({base}rpg%3Ainteragir) · [😴 Descansar]({base}rpg%3Adescansar) · [🍺 Taverna]({base}rpg%3Ataverna)
+**⚖️ Moralidade:** [🛡️ Escolha Boa (Ironhold/Ravenford)]({base}rpg%3Akarma%3Agood) · [🗡️ Escolha Maligna]({base}rpg%3Akarma%3Abad)
 **🛒 Comprar:** [🧪-8g]({base}rpg%3Acomprar%3Apocao_menor) · [💊-15g]({base}rpg%3Acomprar%3Apocao) · [💙-12g]({base}rpg%3Acomprar%3Aelixir_mana) · [🌿-10g]({base}rpg%3Acomprar%3Aantidoto)
 **🔨 Crafting:** [Poção Superior]({base}rpg%3Acraftar%3Apocao_maior) · [Elixir Wyrd]({base}rpg%3Acraftar%3Aelixir_wyrd) · [Pó de Relíquias]({base}rpg%3Acraftar%3Apo_reliquias)
 **🌳 Skill:** `rpg:skill:ID` — [{c['emoji']} Ver IDs no SETUP.md](../../blob/main/SETUP.md)
@@ -1659,6 +1696,7 @@ def main():
         issue_number = raw.split("rpg:raid_attack:")[1]
         action_raid_attack(p, gs, issue_number)
     elif raw.startswith("rpg:mensagem:"): action_message(p, gs, raw.split("rpg:mensagem:")[1])
+    elif raw.startswith("rpg:karma:"): action_karma(p, raw.split("rpg:karma:")[1])
     else: push_log(p,f"❓ Ação `{raw}` desconhecida.")
     check_conquistas(p,gs); lv=check_lu(p)
     if lv: push_log(p,lv)
