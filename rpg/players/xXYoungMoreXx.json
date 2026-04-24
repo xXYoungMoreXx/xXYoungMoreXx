@@ -15,31 +15,31 @@
     "👥 6 seguidores → **+3 XP** inicial!",
     "💻 Linguagem principal **Python** → afinidade com **Mago** _(bônus ao escolher esta classe!)_"
   ],
-  "hp": 0,
-  "max_hp": 0,
-  "mana": 0,
-  "max_mana": 0,
-  "xp": 3,
-  "total_xp": 3,
-  "level": 1,
-  "gold": 10,
-  "potions": 3,
-  "kills": 0,
+  "hp": 10035,
+  "max_hp": 10035,
+  "mana": 10079,
+  "max_mana": 10079,
+  "xp": 655,
+  "total_xp": 658,
+  "level": 5,
+  "gold": 392,
+  "potions": 4,
+  "kills": 16,
   "deaths": 0,
-  "classe": null,
-  "defense": 5,
+  "classe": "guerreiro",
+  "defense": 10,
   "titulo": null,
   "position": {
-    "x": 2,
-    "y": 1
+    "x": 0,
+    "y": 0
   },
   "inventory": [],
   "equipment": {
-    "weapon": "Punhos",
-    "armor": "Roupa Simples"
+    "weapon": "Espada de Aço",
+    "armor": "Cota de Malha"
   },
   "skills_unlocked": [],
-  "skill_points": 0,
+  "skill_points": 2,
   "quests": [
     {
       "id": "q1",
@@ -82,40 +82,37 @@
       "gold": 0
     }
   ],
-  "bosses_defeated": {},
+  "bosses_defeated": {
+    "Tundra Glacial": true
+  },
   "relics": [],
   "companion": null,
   "visited": [
     "Ironhold",
     "Ruínas de Vel'Moran"
   ],
-  "conquistas": [],
-  "sessions": 4,
-  "log": [
-    "⚔️ Termine o combate antes de mover!",
-    "_'Você ousa profanar estas ruínas?'_ Vel'Krath ergue sua espada espectral.",
-    "💀 **[CHEFÃO]** __Vel'Krath, o Não-Morto__ surge!",
-    "_A capital traída. O ar cheira a cinza e promessas quebradas._",
-    "🚶 Moveu para **Ruínas de Vel'Moran** (Norte ⬆️).",
-    "❓ Ação `rpg:status` desconhecida.",
-    "😴 Descansou em **Ironhold**: +0 HP · +0 Mana · veneno curado."
+  "conquistas": [
+    "primeiro_sangue",
+    "caçador_10",
+    "primeiro_chefao",
+    "nivel_5",
+    "rico",
+    "dungeon_clear",
+    "dungeon_flawless"
   ],
-  "active_monster": {
-    "nome": "Vel'Krath, o Não-Morto",
-    "hp": 120,
-    "max_hp": 120,
-    "atk": 45,
-    "xp_reward": 80,
-    "gold_range": [
-      20,
-      40
-    ],
-    "emoji": "💀",
-    "is_boss": true
-  },
+  "sessions": 75,
+  "log": [
+    "⚔️ Escolha sua classe para começar!",
+    "🔄 **Nova lenda começa em Aethoria...**",
+    "🏆 **CONQUISTA: 💎 Perfeição Abissal**",
+    "🏆 **CONQUISTA: 🏰 Sobrevivente do Abismo**",
+    "🏆 **CONQUISTA: 💰 Barão do Ouro**",
+    "🏆 **CONQUISTA: ⭐ Aventureiro**",
+    "🏰 Masmorras completas: 1"
+  ],
   "boss_phase": 0,
   "poison_stacks": 0,
-  "fury_bonus": false,
+  "fury_bonus": true,
   "dragon_mount": false,
   "prestige_count": 0,
   "crafted_count": 0,
@@ -123,10 +120,16 @@
   "raid_count": 0,
   "raid_mvp_count": 0,
   "raid_bosses_killed": [],
-  "last_played": "2026-04-24T02:39:02.875249+00:00",
+  "last_played": "2026-04-24T03:15:26.295570+00:00",
   "factions": {
     "ordem": 0,
     "circulo": 0,
     "pacto": 0
-  }
+  },
+  "active_monsters": [],
+  "in_dungeon": false,
+  "dungeon_room": 0,
+  "dungeon_terrain": "Tundra Glacial",
+  "dungeons_cleared": 1,
+  "dungeon_flawless": true
 }

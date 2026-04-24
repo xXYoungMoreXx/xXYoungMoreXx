@@ -480,6 +480,9 @@ CONQUISTAS = [
     ("raid_mvp",          "🌟 MVP da Raid",           "Foi MVP de uma Raid",                     lambda p:p.get("raid_mvp_count",0)>=1),
     ("raid_veteran",      "⚔️ Veterano de Raids",     "5 raids completadas",                     lambda p:p.get("raid_count",0)>=5),
     ("raid_titan",        "👑 Matador de Titãs",       "Derrotou ambos os World Bosses",          lambda p:len(p.get("raid_bosses_killed",[]))>=len(WORLD_BOSSES)),
+    ("dungeon_clear",     "🏰 Sobrevivente do Abismo","Completou uma Masmorra Instanciada",      lambda p:p.get("dungeons_cleared",0)>=1),
+    ("dungeon_5",         "🗝️ Rato de Masmorra",      "5 Masmorras completadas",                 lambda p:p.get("dungeons_cleared",0)>=5),
+    ("dungeon_flawless",  "💎 Perfeição Abissal",      "Completou uma Masmorra sem usar poção",   lambda p:p.get("dungeon_flawless",False)),
 ]
 
 # GitHub language → class affinity
@@ -751,6 +754,9 @@ def death_reset(p):
     c=cls(p); p["hp"]=max(30,(c["hp"]if c else 100)//3); p["mana"]=max(10,p["max_mana"]//2)
     p["position"]={"x":2,"y":2}; p["gold"]=max(0,p["gold"]-12)
     p["active_monsters"]=[]; p["boss_phase"]=0; p["poison_stacks"]=0
+    # Clear dungeon state on death
+    if p.get("in_dungeon"): push_log(p,"💀 A masmorra colapsa ao seu redor enquanto você cai...")
+    p["in_dungeon"]=False; p["dungeon_room"]=0
     
     # Sistema de Herança (Roguelite)
     legacy = p.get("legacy_stacks", 0)
@@ -789,6 +795,181 @@ def resolve_kill(p,m,gs):
         push_log(p,f"💀 **{m['nome']} derrotado!** +{g} XP · +{gold}g")
         if random.random()<0.12: p["potions"]+=1; push_log(p,"🧪 Poção encontrada no corpo!")
         if sk.get("regen",0)>0: p["hp"]=min(p["max_hp"],p["hp"]+sk["regen"])
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  DUNGEON SYSTEM — INSTANCED ROGUELIKE
+# ══════════════════════════════════════════════════════════════════════════════
+DUNGEON_MAX_ROOMS = 10
+
+# Themed dungeon mini-bosses per terrain (nome, hp, atk, xp_reward, gold_range, emoji)
+DUNGEON_MINI_BOSSES = {
+    "Floresta de Mirewood":   ("Ent Ancião Corrompido",180,55,60,(25,50),"🌳"),
+    "Pântano de Morgraen":    ("Hydra do Pântano",200,60,65,(30,55),"🐍"),
+    "Tundra Glacial":         ("Wyrm de Gelo",190,58,60,(28,52),"🐲"),
+    "Pico de Frostmourne":    ("Elemental de Gelo Ancião",210,62,70,(32,58),"❄️"),
+    "Torre do Oráculo":       ("Esfinge do Oráculo",170,65,65,(30,55),"🦁"),
+    "Planície Dourada":       ("Quimera das Planícies",185,55,55,(25,48),"🦅"),
+    "Floresta Profunda":      ("Aracne Rainha",175,58,60,(28,50),"🕷️"),
+    "Templo Esquecido":       ("Golem Sagrado",220,50,65,(30,55),"🗿"),
+    "Masmorra de Kragdor":    ("Troll-Rei de Kragdor",230,65,75,(35,60),"👹"),
+    "Cavernas Abissais":      ("Basilisco Ancestral",200,62,70,(32,58),"🐉"),
+    "Floresta Amaldiçoada":   ("Banshee Rainha",165,68,65,(30,55),"👻"),
+    "Catedral em Ruínas":     ("Vampiro Lorde",195,64,70,(32,58),"🧛"),
+    "Litoral Proibido":       ("Kraken Jovem Adulto",240,60,75,(35,62),"🦑"),
+    "Costa dos Náufragos":    ("Capitão Fantasma",175,55,55,(25,48),"☠️"),
+    "Mar Cinzento":           ("Serpente Marinha Abissal",210,60,70,(30,55),"🌊"),
+    "Minas de Ferro":         ("Autômato de Ferro",225,58,65,(30,55),"⚙️"),
+}
+
+# Fallback mini-boss for terrains without a specific one
+DUNGEON_FALLBACK_BOSS = ("Guardião da Masmorra",180,55,60,(25,50),"💀")
+
+def _generate_dungeon_encounter(p, gs):
+    """Generates the encounter for the current dungeon room."""
+    room = p.get("dungeon_room", 1)
+    dt = p.get("dungeon_terrain", terrain(p))
+    
+    if room > DUNGEON_MAX_ROOMS:
+        # Dungeon cleared!
+        p["in_dungeon"] = False
+        p["dungeon_room"] = 0
+        gold_reward = 150 + random.randint(50, 150)
+        p["gold"] += gold_reward
+        p["dungeons_cleared"] = p.get("dungeons_cleared", 0) + 1
+        # Check flawless (no potions used during dungeon)
+        if p.get("_dungeon_potions_used", 0) == 0:
+            p["dungeon_flawless"] = True
+        p.pop("_dungeon_potions_used", None)
+        xp_bonus = 50 + (p["level"] * 10)
+        xp_gain(p, xp_bonus)
+        push_log(p, f"🎉 **MASMORRA CONCLUÍDA!** Baú Épico: +{gold_reward}g · +{xp_bonus} XP")
+        push_log(p, f"🏰 Masmorras completas: {p['dungeons_cleared']}")
+        push_world(gs, f"🏰 @{p['username']} completou a Masmorra de {dt}!")
+        # Relic drop chance (10%)
+        if random.random() < 0.10:
+            p["potions"] += 3
+            push_log(p, "🧪 Encontrou um estoque escondido: +3 Poções!")
+        return
+    
+    push_log(p, f"🚪 **Sala {room}/{DUNGEON_MAX_ROOMS}** — _{_dungeon_room_flavor(room)}_")
+    
+    # Room 10: mini-boss
+    if room == DUNGEON_MAX_ROOMS:
+        boss_data = DUNGEON_MINI_BOSSES.get(dt, DUNGEON_FALLBACK_BOSS)
+        bname, bhp, batk, bxp, bgold, bemoji = boss_data
+        scale = 1.0 + (p["level"] * 0.08)
+        m = {"nome": bname, "hp": int(bhp * scale), "max_hp": int(bhp * scale),
+             "atk": int(batk * scale), "xp_reward": int(bxp * scale),
+             "gold_range": bgold, "emoji": bemoji, "is_boss": True}
+        p["active_monsters"] = [m]
+        push_log(p, f"{bemoji} **MESTRE DA MASMORRA: {bname}!** O chão treme...")
+        return
+    
+    # Rooms 1-9: regular encounters with scaling
+    base_pool = MONSTERS.get(dt, [])
+    if not base_pool:
+        # Fallback pool for terrains with no monsters (Ironhold, etc.)
+        base_pool = [("Sombra Errante", 30, 18, 12, 0.99), ("Rato Gigante", 20, 12, 8, 0.99)]
+    
+    scale = 1.0 + (room * 0.12)  # 12% stronger per room
+    ev = get_event(gs)
+    ev_hp = ev.get("monster_hp_mult", 1.0)
+    
+    # Horde chance increases with room depth
+    horde_chance = 0.15 + (room * 0.05)  # 20% at room 1, 60% at room 9
+    is_horde = random.random() < horde_chance
+    qty = random.randint(2, 3) if is_horde else 1
+    
+    monsters = []
+    for i in range(qty):
+        base = random.choice(base_pool)
+        mhp = int(base[1] * scale * ev_hp)
+        m = {"nome": f"{base[0]}{f' {i+1}' if qty > 1 else ''}",
+             "hp": mhp, "max_hp": mhp, "atk": int(base[2] * scale),
+             "xp_reward": int(base[3] * scale), "gold_range": (2, 10),
+             "emoji": "👹", "is_boss": False}
+        monsters.append(m)
+    
+    p["active_monsters"] = monsters
+    if qty > 1:
+        push_log(p, f"⚠️ Uma horda de **{qty} inimigos** bloqueia o corredor!")
+    else:
+        push_log(p, f"⚠️ Um **{monsters[0]['nome']}** surge na escuridão!")
+
+def _dungeon_room_flavor(room):
+    """Returns atmospheric text for each room depth."""
+    flavors = [
+        "O ar está úmido. Gotas ecoam nas paredes.",
+        "Tochas antigas crepitam fracamente.",
+        "Ossos rangem sob seus pés.",
+        "Um frio sobrenatural atravessa sua armadura.",
+        "Inscrições arcanas brilham nas paredes.",
+        "O cheiro de enxofre fica mais forte.",
+        "Sombras se movem onde não deveria haver nada.",
+        "A pressão do ar muda. Algo enorme respira adiante.",
+        "Runas de sangue marcam o limiar da próxima sala.",
+        "O corredor termina em um portal de energia negra. O Mestre espera."
+    ]
+    return flavors[min(room - 1, len(flavors) - 1)]
+
+def action_dungeon(p, gs):
+    """Enter an instanced dungeon from the current terrain."""
+    if not p.get("classe"): push_log(p, "⚠️ Escolha uma classe antes de explorar masmorras!"); return
+    if p.get("in_dungeon"): push_log(p, "⚠️ Você já está dentro de uma masmorra!"); return
+    if p.get("active_monsters"): push_log(p, "⚔️ Termine o combate antes de entrar na masmorra!"); return
+    t = terrain(p)
+    if t in SAFE_ZONES: push_log(p, f"🏰 Não há masmorras em **{t}**. Aventure-se nas terras selvagens!"); return
+    if p["level"] < 3: push_log(p, "⚠️ Nível mínimo 3 para masmorras. Continue caçando!"); return
+    
+    p["in_dungeon"] = True
+    p["dungeon_room"] = 1
+    p["dungeon_terrain"] = t
+    p["active_monsters"] = []
+    p["_dungeon_potions_used"] = 0
+    push_log(p, f"🏰 **Você adentra a Masmorra de {t}!**")
+    push_log(p, "_A escuridão te envolve. Não há caminho de volta fácil..._")
+    push_world(gs, f"🏰 @{p['username']} entrou na Masmorra de {t}!")
+    _generate_dungeon_encounter(p, gs)
+
+def action_advance(p, gs):
+    """Advance to the next room in the dungeon."""
+    if not p.get("in_dungeon"): push_log(p, "⚠️ Você não está em uma Masmorra."); return
+    if p.get("active_monsters"): push_log(p, "⚔️ Derrote todos os inimigos antes de avançar!"); return
+    # Mana regen between rooms
+    regen_mana = max(5, p["max_mana"] // 10)
+    p["mana"] = min(p["max_mana"], p["mana"] + regen_mana)
+    push_log(p, f"💧 Recuperou {regen_mana} de mana entre as salas.")
+    p["dungeon_room"] = p.get("dungeon_room", 1) + 1
+    _generate_dungeon_encounter(p, gs)
+
+def action_flee(p, gs):
+    """Flee from combat or from the dungeon entirely."""
+    if p.get("active_monsters"):
+        # Flee from combat
+        sk = sb(p)
+        flee_chance = 0.45 + (sk.get("dodge", 0) * 0.5)  # Agility helps flee
+        if random.random() < flee_chance:
+            p["active_monsters"] = []
+            push_log(p, "🏃 Você conseguiu escapar do combate!")
+            if p.get("in_dungeon"):
+                lost = p["gold"] // 2
+                p["gold"] -= lost
+                p["in_dungeon"] = False; p["dungeon_room"] = 0
+                push_log(p, f"💸 Você corre para fora da masmorra, derrubando **{lost}g** pelo caminho!")
+                push_world(gs, f"🏃 @{p['username']} fugiu da Masmorra de {p.get('dungeon_terrain','?')}!")
+        else:
+            push_log(p, "🏃 Você tenta fugir... mas os inimigos bloqueiam!")
+            _process_monsters_turn(p, gs, [])  # Takes damage
+    elif p.get("in_dungeon"):
+        # Flee from dungeon outside of combat
+        lost = p["gold"] // 2
+        p["gold"] -= lost
+        room = p.get("dungeon_room", 1)
+        p["in_dungeon"] = False; p["dungeon_room"] = 0
+        push_log(p, f"🏃 Você abandona a masmorra na sala {room}/{DUNGEON_MAX_ROOMS}.")
+        push_log(p, f"💸 Perdeu **{lost}g** subornando guardiões na saída.")
+    else:
+        push_log(p, "⚠️ Não há de onde fugir.")
 
 def action_create_raid(p, gs, boss_slug):
     """Create a new raid by opening a GitHub Issue and initializing raids.json."""
@@ -995,6 +1176,7 @@ def action_class(p,gs,cls_key):
 DIRS={"rpg:norte":(0,-1,"Norte ⬆️"),"rpg:sul":(0,1,"Sul ⬇️"),"rpg:leste":(1,0,"Leste ▶️"),"rpg:oeste":(-1,0,"Oeste ◀️")}
 
 def action_move(p,gs,dx,dy,dname):
+    if p.get("in_dungeon"): push_log(p,"🏰 Você está preso na Masmorra! Use **Avançar** ou **Fugir**."); return
     if p.get("active_monsters") or p.get("active_monster"): push_log(p,"⚔️ Termine o combate antes de mover!"); return
     nx,ny=p["position"]["x"]+dx,p["position"]["y"]+dy
     if not(0<=nx<5 and 0<=ny<5): push_log(p,"🚧 O mundo de Aethoria termina aqui."); return
@@ -1153,6 +1335,7 @@ def action_unlock_skill(p,sid):
 def action_potion(p):
     if p.get("potions",0)<=0: push_log(p,"❌ Sem poções! Compre ou encontre em inimigos."); return
     heal=random.randint(32,56); p["hp"]=min(p["max_hp"],p["hp"]+heal); p["potions"]-=1
+    if p.get("in_dungeon"): p["_dungeon_potions_used"] = p.get("_dungeon_potions_used", 0) + 1
     push_log(p,f"🧪 +{heal} HP · {p['hp']}/{p['max_hp']} · {p['potions']} poções restantes")
 
 def action_rest(p):
@@ -1675,9 +1858,9 @@ def build_block(p,gs,lb):
 
 ### 🎮 Ações — _Última jogada: @{p['username']}_
 
-**🧭 Mover:** [⬆️]({base}rpg%3Anorte) [⬇️]({base}rpg%3Asul) [◀️]({base}rpg%3Aoeste) [▶️]({base}rpg%3Aleste)
-**⚔️ Combate:** [⚔️ Atacar]({base}rpg%3Aatacar) · {habs_str_actions} · [🧪 Poção]({base}rpg%3Apocao)
-**🍺 Explorar:** [🔍 Interagir]({base}rpg%3Ainteragir) · [😴 Descansar]({base}rpg%3Adescansar) · [🍺 Taverna]({base}rpg%3Ataverna)
+{'**🏰 Masmorra (Sala ' + str(p.get('dungeon_room',1)) + '/' + str(DUNGEON_MAX_ROOMS) + '):** [🚪 Avançar Sala](' + base + 'rpg%3Aavancar) · [🏃 Fugir (-50% Ouro)](' + base + 'rpg%3Afugir)' if p.get('in_dungeon') else '**🧭 Mover:** [⬆️](' + base + 'rpg%3Anorte) [⬇️](' + base + 'rpg%3Asul) [◀️](' + base + 'rpg%3Aoeste) [▶️](' + base + 'rpg%3Aleste)'}
+**⚔️ Combate:** [⚔️ Atacar]({base}rpg%3Aatacar) · {habs_str_actions} · [🧪 Poção]({base}rpg%3Apocao) · [🏃 Fugir]({base}rpg%3Afugir)
+{'**🍺 Explorar:** [🔍 Interagir](' + base + 'rpg%3Ainteragir) · [😴 Descansar](' + base + 'rpg%3Adescansar) · [🍺 Taverna](' + base + 'rpg%3Ataverna)' + (' · [🏰 Explorar Masmorra (nív.3+)](' + base + 'rpg%3Amasmorra)' if terrain(p) not in SAFE_ZONES else '') if not p.get('in_dungeon') else '**🏰 Masmorra:** Não é possível explorar dentro da masmorra.'}
 **⚖️ Moralidade:** [🛡️ Escolha Boa (Ironhold/Ravenford)]({base}rpg%3Akarma%3Agood) · [🗡️ Escolha Maligna]({base}rpg%3Akarma%3Abad)
 **🛒 Comprar:** [🧪-8g]({base}rpg%3Acomprar%3Apocao_menor) · [💊-15g]({base}rpg%3Acomprar%3Apocao) · [💙-12g]({base}rpg%3Acomprar%3Aelixir_mana) · [🌿-10g]({base}rpg%3Acomprar%3Aantidoto)
 **🔨 Crafting:** [Poção Superior]({base}rpg%3Acraftar%3Apocao_maior) · [Elixir Wyrd]({base}rpg%3Acraftar%3Aelixir_wyrd) · [Pó de Relíquias]({base}rpg%3Acraftar%3Apo_reliquias)
@@ -1752,6 +1935,9 @@ def main():
         action_raid_attack(p, gs, issue_number)
     elif raw.startswith("rpg:mensagem:"): action_message(p, gs, raw.split("rpg:mensagem:")[1])
     elif raw.startswith("rpg:karma:"): action_karma(p, raw.split("rpg:karma:")[1])
+    elif raw=="rpg:masmorra":    action_dungeon(p, gs)
+    elif raw=="rpg:avancar":     action_advance(p, gs)
+    elif raw=="rpg:fugir":       action_flee(p, gs)
     else: push_log(p,f"❓ Ação `{raw}` desconhecida.")
     check_conquistas(p,gs); lv=check_lu(p)
     if lv: push_log(p,lv)

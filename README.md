@@ -212,42 +212,131 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 ---
 
 <!-- RPG_START -->
-## ⚔️ AETHORIA: O REINO FRAGMENTADO — Escolha sua Classe
+## ⚔️ AETHORIA: O REINO FRAGMENTADO
 
-> 💻 **Seu GitHub: linguagem `Python` → afinidade com 🔮 Mago** _(bônus ao escolher!)_
 > *Há mil anos, os Reis-Dragão uniam Aethoria. O último foi traído pelo Pacto das Sombras. O reino se fragmentou.*
-> *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd, destinado a restaurar a luz. Por um acaso do destino (ou uma ressaca coletiva), 10 heróis com passados estereotipados acordaram na mesma Taverna em Ironhold sem memórias recentes.*
-> *Todos eles possuem uma tatuagem arcana pulsando no pulso. Suas histórias se cruzaram aqui. A jornada pertence a quem ousa começar.*
+> *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd. Você acordou em Ironhold sem memórias.*
+> *Qualquer visitante pode agir — a história pertence a quem ousa escrever.*
 
-| Classe | Lore | Stats | Atributos | Habilidades |
-|--------|------|:---:|:-------:|-------------|
-| [⚔️ Guerreiro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aguerreiro) | O clássico herói genérico. Sem memória, confia na espada e jura que a Estrela de Wyrd é um mapa para uma princesa em outro castelo. | ❤️ 130<br>💧 40<br>🛡️ 10 | **FOR:** 16<br>**DES:** 12<br>**INT:** 8<br>**CON:** 15<br>**CAR:** 10 | 💥 **Investida Furiosa**<br>🗣️ **Grito de Provocação** |
-| [🔮 Mago](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amago) | Estudioso arrogante que tem pavor de sol. Acha todos idiotas por não lerem grimórios de 800 páginas sobre os Reis-Dragão. | ❤️ 85<br>💧 100<br>🛡️ 4 | **FOR:** 6<br>**DES:** 10<br>**INT:** 18<br>**CON:** 8<br>**CAR:** 11 | ⚡ **Tempestade Arcana**<br>🛡️ **Barreira de Cristal** |
-| [🏹 Caçador](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Acacador) | O lobo solitário 'edgy'. Fica nos cantos escuros de Ironhold dizendo que trabalha sozinho, mas não vive sem o grupo. | ❤️ 105<br>💧 60<br>🛡️ 7 | **FOR:** 10<br>**DES:** 17<br>**INT:** 12<br>**CON:** 11<br>**CAR:** 8 | 🎯 **Tiro de Precisão**<br>🪤 **Armadilha de Espinhos** |
-| [🗡️ Ladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Aladino) | Cleptomaníaco incurável. Jura que a Estrela de Wyrd é uma tatuagem de guilda. Se uma poção sumiu, olhe para ele. | ❤️ 95<br>💧 70<br>🛡️ 5 | **FOR:** 9<br>**DES:** 18<br>**INT:** 11<br>**CON:** 10<br>**CAR:** 14 | 🌑 **Golpe Furtivo**<br>💨 **Bomba de Fumaça** |
-| [🛡️ Paladino](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Apaladino) | O justiceiro fanático e insuportável. Grita 'Pela Luz!' para tudo e tenta converter cultistas do Pacto antes de matá-los. | ❤️ 140<br>💧 70<br>🛡️ 12 | **FOR:** 14<br>**DES:** 9<br>**INT:** 10<br>**CON:** 16<br>**CAR:** 15 | ✨ **Julgamento Divino**<br>💖 **Cura pela Luz** |
-| [💀 Necromante](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Anecromante) | Gótico incompreendido. 'Por que reciclar lixo se podemos reciclar cadáveres?'. Leva seu esqueleto de estimação para passear. | ❤️ 85<br>💧 120<br>🛡️ 4 | **FOR:** 7<br>**DES:** 9<br>**INT:** 16<br>**CON:** 9<br>**CAR:** 6 | 🦴 **Exército de Ossos**<br>🩸 **Drenar Vida** |
-| [🎵 Bardo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abardo) | O sedutor compulsivo. Tenta flertar com TUDO que se move, desde as garçonetes da taverna até o próprio Destruidor de Mundos. | ❤️ 95<br>💧 85<br>🛡️ 6 | **FOR:** 8<br>**DES:** 14<br>**INT:** 12<br>**CON:** 9<br>**CAR:** 18 | 🎶 **Canção do Caos**<br>😘 **Charme Irresistível** |
-| [🥋 Monge](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Amonge) | O mestre zen (ou apenas de ressaca). Fala provérbios de biscoito da sorte com a maior seriedade enquanto distribui voadoras. | ❤️ 115<br>💧 50<br>🛡️ 8 | **FOR:** 12<br>**DES:** 16<br>**INT:** 14<br>**CON:** 12<br>**CAR:** 9 | 👊 **Punhos do Wyrd**<br>🧘 **Meditação Profunda** |
-| [👁️ Bruxo](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abruxo) | O CLT das trevas. Vendeu a alma para um sugar-daddy cósmico do Pacto das Sombras e agora reclama de bater ponto. | ❤️ 90<br>💧 110<br>🛡️ 5 | **FOR:** 7<br>**DES:** 11<br>**INT:** 15<br>**CON:** 10<br>**CAR:** 16 | ☄️ **Rajada Mística**<br>📜 **Contrato Sombrio** |
-| [🪓 Bárbaro](../../issues/new?labels=rpg-action&title=rpg%3Aclasse%3Abarbaro) | Uma montanha de músculos com QI de dois dígitos. Resolve tudo no grito e acha que livros arcanos são um ótimo lanche. | ❤️ 150<br>💧 20<br>🛡️ 8 | **FOR:** 18<br>**DES:** 10<br>**INT:** 4<br>**CON:** 17<br>**CAR:** 8 | 💢 **Fúria Cega**<br>🤕 **Cabeçada** |
-
-> 🎮 *Clique em uma classe para começar! Qualquer visitante pode jogar.*
+> Turno **#80** · ☀️ Dia · Jogando como: **@xXYoungMoreXx**
 
 ---
 
-### 🌍 Evento Mundial Atual
-> 🌑 **Lua de Sangue** — A Lua de Sangue banha Aethoria. Monstros emergem mais fortes e frequentes.
+### 🌍 Evento Mundial — 🌩️ Tormenta Arcana
+> _Energia mágica instável amplifica todos os poderes mágicos._
+> Efeitos: Monstros +10% HP · Encontros +5% · XP ×1.4 · Preços +0%
 
 ---
 
-### 🏆 Quadro da Guilda
+### 🗺️ Mapa de Aethoria
+```
+🧙🏔️🗼🌊🏝️
+🌲🏘️🏚️🏰⛵
+🌑🌾🏙️⛏️🌊
+🌳🛕🏡⚙️⚓
+🕳️💀⛪🕵️🔱
+```
+> 🧙 Você · 🌨️Tundra · 🏔️Pico · 🗼Oráculo · 🌲Mirewood · 🏘️Ashenvale · 🏚️Vel'Moran · 🏰Fortaleza
+> 🌑Pântano · 🌾Planície · 🏙️Ironhold · ⛏️Kragdor · 🌳Floresta · 🛕Templo · 🏡Ravenford
+
+📍 **Tundra Glacial** — _Ventos cortantes. Crânios de criaturas antigas emergem do gelo como avisos._
+
+---
+
+### 📊 Status
+| Atributo | |
+|---|---|
+| ❤️ HP | `[██████████]` 10035/10035 |
+| 💧 Mana | `[▓▓▓▓▓▓▓▓]` 10079/10079 |
+| 🧙 Classe | ⚔️ **Guerreiro** · FOR:16 DES:12 INT:8 CON:15 CAR:10 |
+| ✨ Habilidades | 💥 Investida Furiosa · 🗣️ Grito de Provocação |
+| ⭐ Nível | 5 · XP: 655/680 · Total: 658 |
+| 💰 Ouro / ⚖️ Karma | 392g / 0 (⚖️ Neutro) |
+| 🧪 Poções | 4 · 🐍 Veneno: 0 cargas |
+| ☠️ Kills/Mortes | 16 / 0 |
+| 🗡️ Arma / 🛡️ Armadura | Espada de Aço / Cota de Malha |
+| 💎 Relíquias | _nenhuma_ |
+| 🎖️ Conquistas | 🩸 Primeiro Sangue, 🗡️ Caçador, 👑 Caçador de Chefões, ⭐ Aventureiro, 💰 Barão do Ouro, 🏰 Sobrevivente do Abismo, 💎 Perfeição Abissal |
+| 🌐 GitHub | @xXYoungMoreXx · 6 repos · 0⭐ · 6 followers · `Python` |
+
+---
+
+### 🌳 Árvore de Habilidades (2 ponto(s))
+**2 ponto(s) disponível(is)**
+⚔️ Força: 🔓`gf1` **Lâmina Afiada** — _+6 ATK base_ → 🔒`gf2` **Golpe Devastador** — _+14 ATK · Crítico +12%_
+🛡️ Defesa: 🔓`gd1` **Escudo de Ferro** — _+8 DEF_ → 🔒`gd2` **Muralha Viva** — _+15 DEF · +35 HP máx_
+🔥 Fúria: 🔓`gv1` **Sede de Sangue** — _Ao matar: próx. ataque +20%_ → 🔒`gv2` **Berserker** — _HP<30% → +80% ATK_
+
+---
+
+### 🏹 Facções
+| Facção | Reputação |
+|---|---|
+| ⚔️ Ordem do Aço | 🟡🟡⬜⬜⬜ Neutro |
+| 🌿 Círculo Verdante | 🟡🟡⬜⬜⬜ Neutro |
+| 🖤 Pacto das Sombras | 🟡🟡⬜⬜⬜ Neutro |
+
+---
+
+### 📜 Missões
+| | Missão | Objetivo |
+|---|---|---|
+| 📜 | **A Chama de Ashenvale** | _Visite Aldeia de Ashenvale_ |
+| 📜 | **O Segredo de Vel'Moran** | _Derrote Vel'Krath_ |
+| 📜 | **O Coração das Trevas** | _Derrote Lord Malachar_ |
+| 📜 | **O Dragão Ancião** | _Derrote Drakar em Kragdor_ |
+| 📜 | **O Deus Esquecido** | _Derrote Xal'thar nas Ilhas do Exílio_ |
+
+---
+
+### 👹 Chefões
+| | | Local | Status |
+|---|---|---|---|
+| 💀 | **Vel'Krath, o Não-Morto** | Ruínas de Vel'Moran | 😈 Vivo |
+| 🧟 | **Lord Malachar, das Trevas** | Fortaleza das Sombras | 😈 Vivo |
+| 🐉 | **Drakar, o Dragão Ancião** | Masmorra de Kragdor | 😈 Vivo |
+| 👁️ | **Xal'thar, o Deus Esquecido** | Ilhas do Exílio | 😈 Vivo |
+
+
+---
+
+### 🎮 Ações — _Última jogada: @xXYoungMoreXx_
+
+**🧭 Mover:** [⬆️](../../issues/new?labels=rpg-action&title=rpg%3Anorte) [⬇️](../../issues/new?labels=rpg-action&title=rpg%3Asul) [◀️](../../issues/new?labels=rpg-action&title=rpg%3Aoeste) [▶️](../../issues/new?labels=rpg-action&title=rpg%3Aleste)
+**⚔️ Combate:** [⚔️ Atacar](../../issues/new?labels=rpg-action&title=rpg%3Aatacar) · [💥 Investida Furiosa](../../issues/new?labels=rpg-action&title=rpg%3Ahabilidade%3A0) · [🗣️ Grito de Provocação](../../issues/new?labels=rpg-action&title=rpg%3Ahabilidade%3A1) · [🧪 Poção](../../issues/new?labels=rpg-action&title=rpg%3Apocao) · [🏃 Fugir](../../issues/new?labels=rpg-action&title=rpg%3Afugir)
+**🍺 Explorar:** [🔍 Interagir](../../issues/new?labels=rpg-action&title=rpg%3Ainteragir) · [😴 Descansar](../../issues/new?labels=rpg-action&title=rpg%3Adescansar) · [🍺 Taverna](../../issues/new?labels=rpg-action&title=rpg%3Ataverna) · [🏰 Explorar Masmorra (nív.3+)](../../issues/new?labels=rpg-action&title=rpg%3Amasmorra)
+**⚖️ Moralidade:** [🛡️ Escolha Boa (Ironhold/Ravenford)](../../issues/new?labels=rpg-action&title=rpg%3Akarma%3Agood) · [🗡️ Escolha Maligna](../../issues/new?labels=rpg-action&title=rpg%3Akarma%3Abad)
+**🛒 Comprar:** [🧪-8g](../../issues/new?labels=rpg-action&title=rpg%3Acomprar%3Apocao_menor) · [💊-15g](../../issues/new?labels=rpg-action&title=rpg%3Acomprar%3Apocao) · [💙-12g](../../issues/new?labels=rpg-action&title=rpg%3Acomprar%3Aelixir_mana) · [🌿-10g](../../issues/new?labels=rpg-action&title=rpg%3Acomprar%3Aantidoto)
+**🔨 Crafting:** [Poção Superior](../../issues/new?labels=rpg-action&title=rpg%3Acraftar%3Apocao_maior) · [Elixir Wyrd](../../issues/new?labels=rpg-action&title=rpg%3Acraftar%3Aelixir_wyrd) · [Pó de Relíquias](../../issues/new?labels=rpg-action&title=rpg%3Acraftar%3Apo_reliquias)
+**🌳 Skill:** `rpg:skill:ID` — [⚔️ Ver IDs no SETUP.md](../../blob/main/SETUP.md)
+**⚙️ Outros:** [🔄 Reiniciar](../../issues/new?labels=rpg-action&title=rpg%3Areiniciar) · [🔮 Prestígio (nív.10)](../../issues/new?labels=rpg-action&title=rpg%3Aprestigio) · `rpg:desafiar:USERNAME` · `rpg:montar:DESTINO`
+
+---
+
+### 📖 Log de @xXYoungMoreXx
+> ⚔️ Escolha sua classe para começar!
+> 🔄 **Nova lenda começa em Aethoria...**
+> 🏆 **CONQUISTA: 💎 Perfeição Abissal**
+> 🏆 **CONQUISTA: 🏰 Sobrevivente do Abismo**
+> 🏆 **CONQUISTA: 💰 Barão do Ouro**
+> 🏆 **CONQUISTA: ⭐ Aventureiro**
+> 🏰 Masmorras completas: 1
+
+### 🌍 Eventos Recentes do Mundo
+> 🌍 🔄 @xXYoungMoreXx reiniciou sua jornada.
+> 🌍 🏆 @xXYoungMoreXx conquistou **💎 Perfeição Abissal**!
+> 🌍 🏆 @xXYoungMoreXx conquistou **🏰 Sobrevivente do Abismo**!
+> 🌍 🏆 @xXYoungMoreXx conquistou **💰 Barão do Ouro**!
+
+---
+
+### 🏆 Quadro da Guilda — Top Aventureiros
 | # | Aventureiro | Classe | Nível | Score | Bosses | Conquistas | Lang |
 |---|---|---|---|---|---|---|---|
-| 🥇 | **@xXYoungMoreXx** | — | 1 | 213 | 0 | 0 | `Python` |
+| 🥇 | **@xXYoungMoreXx** | ⚔️ Guerreiro | 5 | 1258 | 1 | 7 | `Python` |
 | 🥈 | **@UnregisteredUser123** | — | 1 | 0 | 0 | 0 | — |
 | 🥉 | **@testUser** | 👁️ Bruxo | 1 | 0 | 0 | 0 | — |
-> _Score = XP total + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · Atualizado: 24/04/2026 02:39 UTC_
+> _Score = XP + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · 24/04/2026 03:15 UTC_
 
 <!-- RPG_END -->
 

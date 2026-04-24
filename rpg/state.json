@@ -1,11 +1,14 @@
 {
-  "turn": 8,
+  "turn": 80,
   "world_log": [
-    "🌟 @testUser escolheu a classe **Bruxo** e começa sua jornada!",
-    "🌟 **@xXYoungMoreXx** chegou a Aethoria! _(Python · 6 followers)_",
-    "⚔️ Aethoria aguarda seu próximo aventureiro...",
-    "🗼 A Torre do Oráculo pisca ao longe. A profecia se move.",
-    "🌙 Criaturas das trevas rondam Kragdor nesta noite."
+    "🔄 @xXYoungMoreXx reiniciou sua jornada.",
+    "🏆 @xXYoungMoreXx conquistou **💎 Perfeição Abissal**!",
+    "🏆 @xXYoungMoreXx conquistou **🏰 Sobrevivente do Abismo**!",
+    "🏆 @xXYoungMoreXx conquistou **💰 Barão do Ouro**!",
+    "🏆 @xXYoungMoreXx conquistou **⭐ Aventureiro**!",
+    "🏰 @xXYoungMoreXx completou a Masmorra de Tundra Glacial!",
+    "🏆 @xXYoungMoreXx conquistou **👑 Caçador de Chefões**!",
+    "⚔️ @xXYoungMoreXx derrotou **Wyrm de Gelo** em Tundra Glacial!"
   ],
   "npc_memory": {
     "Miriel": {

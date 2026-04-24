@@ -1,0 +1,106 @@
+{
+  "username": "testUser",
+  "github_profile": null,
+  "profile_bonuses": {},
+  "hp": 90,
+  "max_hp": 90,
+  "mana": 110,
+  "max_mana": 110,
+  "xp": 0,
+  "total_xp": 0,
+  "level": 1,
+  "gold": 10,
+  "potions": 3,
+  "kills": 0,
+  "deaths": 0,
+  "classe": "bruxo",
+  "defense": 5,
+  "titulo": null,
+  "position": {
+    "x": 2,
+    "y": 2
+  },
+  "inventory": [],
+  "equipment": {
+    "weapon": "Tomo Sombrio",
+    "armor": "Vestes do Pacto"
+  },
+  "skills_unlocked": [],
+  "skill_points": 0,
+  "quests": [
+    {
+      "id": "q1",
+      "titulo": "A Chama de Ashenvale",
+      "objetivo": "Visite Aldeia de Ashenvale",
+      "concluida": false,
+      "xp": 30,
+      "gold": 15
+    },
+    {
+      "id": "q2",
+      "titulo": "O Segredo de Vel'Moran",
+      "objetivo": "Derrote Vel'Krath",
+      "concluida": false,
+      "xp": 80,
+      "gold": 0
+    },
+    {
+      "id": "q3",
+      "titulo": "O Coração das Trevas",
+      "objetivo": "Derrote Lord Malachar",
+      "concluida": false,
+      "xp": 150,
+      "gold": 0
+    },
+    {
+      "id": "q4",
+      "titulo": "O Dragão Ancião",
+      "objetivo": "Derrote Drakar em Kragdor",
+      "concluida": false,
+      "xp": 150,
+      "gold": 0
+    },
+    {
+      "id": "q5",
+      "titulo": "O Deus Esquecido",
+      "objetivo": "Derrote Xal'thar nas Ilhas do Exílio",
+      "concluida": false,
+      "xp": 300,
+      "gold": 0
+    }
+  ],
+  "bosses_defeated": {},
+  "relics": [],
+  "companion": null,
+  "visited": [
+    "Ironhold"
+  ],
+  "conquistas": [],
+  "sessions": 2,
+  "log": [
+    "⚠️ Classe já escolhida. Use `rpg:reiniciar` para recomeçar.",
+    "✨ Habilidade: **Rajada Mística** · `rpg:habilidade` em combate",
+    "👁️ **Classe: Bruxo** — _O CLT das trevas. Vendeu a alma para um sugar-daddy cósmico do Pacto das Sombras e agora reclama de bater ponto._",
+    "⚔️ Bem-vindo, **@testUser**! Escolha sua classe para começar.",
+    "⚔️ Bem-vindo a Aethoria!",
+    "_Uma tatuagem arcana pulsa em seu pulso._",
+    "🧙 Escolha sua classe para começar!"
+  ],
+  "active_monster": null,
+  "boss_phase": 0,
+  "poison_stacks": 0,
+  "fury_bonus": false,
+  "dragon_mount": false,
+  "prestige_count": 0,
+  "crafted_count": 0,
+  "pvp_wins": 0,
+  "raid_count": 0,
+  "raid_mvp_count": 0,
+  "raid_bosses_killed": [],
+  "last_played": "2026-04-24T02:20:29.585093+00:00",
+  "factions": {
+    "ordem": 0,
+    "circulo": 0,
+    "pacto": 0
+  }
+}
