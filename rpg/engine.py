@@ -221,7 +221,7 @@ CLASSES = {
     "mago":     {"nome":"Mago","emoji":"🔮","hp":85,"mana":100,"atk":(8,16),"def":4,
                  "atributos":{"FOR":6,"DES":10,"INT":18,"CON":8,"CAR":11},
                  "habilidades":[
-                     {"nome":"Tempestade Arcana","emoji":"⚡","cost":30,"multi":3.0,"desc":"Libera poder bruto dos grimórios que leu."},
+                     {"nome":"Tempestade Arcana","emoji":"⚡","cost":30,"multi":3.0,"desc":"Libera poder bruto dos grimórios que leu.","is_aoe":True},
                      {"nome":"Barreira de Cristal","emoji":"🛡️","cost":20,"multi":0.0,"desc":"Ignora ataques baseando-se em sua superioridade intelectual."}
                  ],
                  "skill":"Tempestade Arcana","skill_e":"⚡","skill_cost":30,"skill_multi":3.0,
@@ -257,7 +257,7 @@ CLASSES = {
     "necromante":{"nome":"Necromante","emoji":"💀","hp":85,"mana":120,"atk":(9,15),"def":4,
                  "atributos":{"FOR":7,"DES":9,"INT":16,"CON":9,"CAR":6},
                  "habilidades":[
-                     {"nome":"Exército de Ossos","emoji":"🦴","cost":35,"multi":2.5,"desc":"Recicla cadáveres para não se sentir sozinho."},
+                     {"nome":"Exército de Ossos","emoji":"🦴","cost":35,"multi":2.5,"desc":"Recicla cadáveres para não se sentir sozinho.","is_aoe":True},
                      {"nome":"Drenar Vida","emoji":"🩸","cost":20,"multi":1.5,"desc":"Rouba a vontade de viver dos outros, que ele também não tem."}
                  ],
                  "skill":"Exército de Ossos","skill_e":"🦴","skill_cost":35,"skill_multi":2.5,
@@ -266,7 +266,7 @@ CLASSES = {
     "bardo":    {"nome":"Bardo","emoji":"🎵","hp":95,"mana":85,"atk":(9,17),"def":6,
                  "atributos":{"FOR":8,"DES":14,"INT":12,"CON":9,"CAR":18},
                  "habilidades":[
-                     {"nome":"Canção do Caos","emoji":"🎶","cost":20,"multi":2.0,"desc":"Uma melodia sensual que confunde o inimigo."},
+                     {"nome":"Canção do Caos","emoji":"🎶","cost":20,"multi":2.0,"desc":"Uma melodia sensual que confunde o inimigo.","is_aoe":True},
                      {"nome":"Charme Irresistível","emoji":"😘","cost":15,"multi":0.0,"desc":"Tenta seduzir o monstro. (Nem sempre funciona)"}
                  ],
                  "skill":"Canção do Caos","skill_e":"🎶","skill_cost":20,"skill_multi":2.0,
@@ -293,7 +293,7 @@ CLASSES = {
     "barbaro":  {"nome":"Bárbaro","emoji":"🪓","hp":150,"mana":20,"atk":(15,28),"def":8,
                  "atributos":{"FOR":18,"DES":10,"INT":4,"CON":17,"CAR":8},
                  "habilidades":[
-                     {"nome":"Fúria Cega","emoji":"💢","cost":15,"multi":2.0,"desc":"Resolve no grito porque faltam palavras."},
+                     {"nome":"Fúria Cega","emoji":"💢","cost":15,"multi":2.0,"desc":"Resolve no grito porque faltam palavras.","is_aoe":True},
                      {"nome":"Cabeçada","emoji":"🤕","cost":10,"multi":1.8,"desc":"Usa a cabeça da única forma que sabe."}
                  ],
                  "skill":"Fúria Cega","skill_e":"💢","skill_cost":15,"skill_multi":2.0,
@@ -531,7 +531,7 @@ def load_player(u):
         "bosses_defeated":{},"relics":[],"companion":None,
         "visited":["Ironhold"],"conquistas":[],"sessions":0,
         "log":["⚔️ Bem-vindo a Aethoria!","_Uma tatuagem arcana pulsa em seu pulso._","🧙 Escolha sua classe para começar!"],
-        "active_monster":None,"boss_phase":0,"poison_stacks":0,"fury_bonus":False,
+        "active_monsters":[],"boss_phase":0,"poison_stacks":0,"fury_bonus":False,
         "dragon_mount":False,"prestige_count":0,"crafted_count":0,"pvp_wins":0,
         "raid_count":0,"raid_mvp_count":0,"raid_bosses_killed":[],
         "last_played":datetime.now(timezone.utc).isoformat(),
@@ -750,7 +750,7 @@ def monster_hits(p,m):
 def death_reset(p):
     c=cls(p); p["hp"]=max(30,(c["hp"]if c else 100)//3); p["mana"]=max(10,p["max_mana"]//2)
     p["position"]={"x":2,"y":2}; p["gold"]=max(0,p["gold"]-12)
-    p["active_monster"]=None; p["boss_phase"]=0; p["poison_stacks"]=0
+    p["active_monsters"]=[]; p["boss_phase"]=0; p["poison_stacks"]=0
     
     # Sistema de Herança (Roguelite)
     legacy = p.get("legacy_stacks", 0)
@@ -789,7 +789,6 @@ def resolve_kill(p,m,gs):
         push_log(p,f"💀 **{m['nome']} derrotado!** +{g} XP · +{gold}g")
         if random.random()<0.12: p["potions"]+=1; push_log(p,"🧪 Poção encontrada no corpo!")
         if sk.get("regen",0)>0: p["hp"]=min(p["max_hp"],p["hp"]+sk["regen"])
-    p["active_monster"]=None
 
 def action_create_raid(p, gs, boss_slug):
     """Create a new raid by opening a GitHub Issue and initializing raids.json."""
@@ -996,7 +995,7 @@ def action_class(p,gs,cls_key):
 DIRS={"rpg:norte":(0,-1,"Norte ⬆️"),"rpg:sul":(0,1,"Sul ⬇️"),"rpg:leste":(1,0,"Leste ▶️"),"rpg:oeste":(-1,0,"Oeste ◀️")}
 
 def action_move(p,gs,dx,dy,dname):
-    if p.get("active_monster"): push_log(p,"⚔️ Termine o combate antes de mover!"); return
+    if p.get("active_monsters") or p.get("active_monster"): push_log(p,"⚔️ Termine o combate antes de mover!"); return
     nx,ny=p["position"]["x"]+dx,p["position"]["y"]+dy
     if not(0<=nx<5 and 0<=ny<5): push_log(p,"🚧 O mundo de Aethoria termina aqui."); return
     # Poison tick on move
@@ -1015,8 +1014,8 @@ def action_move(p,gs,dx,dy,dname):
     if t not in SAFE_ZONES:
         if t in BOSSES and not p.get("bosses_defeated",{}).get(t):
             bd=BOSSES[t]; ph=bd["phases"][0]
-            p["active_monster"]={"nome":bd["nome"],"hp":ph["hp"],"max_hp":ph["hp"],"atk":ph["atk"],
-                                  "xp_reward":bd["xp"],"gold_range":bd["gold_range"],"emoji":bd["emoji"],"is_boss":True}
+            p["active_monsters"]=[{"nome":bd["nome"],"hp":ph["hp"],"max_hp":ph["hp"],"atk":ph["atk"],
+                                  "xp_reward":bd["xp"],"gold_range":bd["gold_range"],"emoji":bd["emoji"],"is_boss":True}]
             p["boss_phase"]=0
             push_log(p,f"{bd['emoji']} **[CHEFÃO]** __{bd['nome']}__ surge!"); push_log(p,ph["desc"])
         else:
@@ -1025,30 +1024,61 @@ def action_move(p,gs,dx,dy,dname):
             for m in mons:
                 if random.random()<(m[4]+night_b+ev_enc):
                     ev_hp=ev.get("monster_hp_mult",1.0); mhp=int(m[1]*ev_hp)
-                    p["active_monster"]={"nome":m[0],"hp":mhp,"max_hp":mhp,"atk":m[2],"xp_reward":m[3],"gold_range":(2,10),"emoji":"👹","is_boss":False}
-                    push_log(p,f"⚠️ **{m[0]}** surge{' (fortalecido pelo evento mundial!)' if ev_hp>1 else ''}!"); break
+                    is_horde = random.random() < 0.3
+                    qty = random.randint(2, 3) if is_horde else 1
+                    if qty == 1:
+                        p["active_monsters"]=[{"nome":m[0],"hp":mhp,"max_hp":mhp,"atk":m[2],"xp_reward":m[3],"gold_range":(2,10),"emoji":"👹","is_boss":False}]
+                        push_log(p,f"⚠️ **{m[0]}** surge{' (fortalecido pelo evento mundial!)' if ev_hp>1 else ''}!")
+                    else:
+                        p["active_monsters"]=[{"nome":f"{m[0]} {i+1}","hp":mhp,"max_hp":mhp,"atk":m[2],"xp_reward":m[3],"gold_range":(2,10),"emoji":"👹","is_boss":False} for i in range(qty)]
+                        push_log(p,f"⚠️ Uma horda de **{qty} {m[0]}s** surge{' (fortalecido!)' if ev_hp>1 else ''}!")
+                    break
+
+def _process_monsters_turn(p, gs, stunned_indices=None):
+    if stunned_indices is None: stunned_indices = []
+    mons = p.get("active_monsters", [])
+    if not mons: return
+    
+    survivors = []
+    for i, m in enumerate(mons):
+        if m.get("is_boss") and m["hp"]>0: _check_boss_phase(p,gs,m)
+        if m["hp"]<=0:
+            resolve_kill(p, m, gs)
+        else:
+            if i not in stunned_indices:
+                monster_hits(p, m)
+                if p["hp"] <= 0: return # player died
+            else:
+                push_log(p,f"😵 {m['nome']} perde o próximo ataque!")
+            survivors.append(m)
+    p["active_monsters"] = survivors
+    if "active_monster" in p: del p["active_monster"]
 
 def action_attack(p,gs):
-    m=p.get("active_monster")
-    if not m: push_log(p,"😅 Nenhum inimigo. Explore o mapa!"); return
+    mons = p.get("active_monsters", [])
+    if not mons and p.get("active_monster"):
+        mons = [p.pop("active_monster")]
+        p["active_monsters"] = mons
+    if not mons: push_log(p,"😅 Nenhum inimigo. Explore o mapa!"); return
     sk=sb(p); comp=p.get("companion"); ev=get_event(gs)
+    
+    m = mons[0] # Alvo focado (o primeiro)
     first=m.get("hp")==m.get("max_hp") and sk.get("first_strike")
     dmg=atk_dmg(p); 
     if first: dmg=int(dmg*2.0); push_log(p,"🌑 **Primeiro Golpe Crítico!**")
     if comp: dmg+=comp.get("atk_bonus",0)+sk.get("companion_atk",0)
-    # Burn from mago skill
+    
     if sk.get("burn",0)>0 and m.get("burning"): m["hp"]-=sk["burn"]; push_log(p,f"🔥 Queima: **{sk['burn']} dmg**!")
     if sk.get("poison_chance",0)>0 and random.random()<sk["poison_chance"]:
         m["poison"]=m.get("poison",0)+1
         if sk.get("poison_debuff",0)>0: m["atk"]=int(m["atk"]*(1-sk["poison_debuff"]))
     if m.get("poison",0)>0: pdmg=m["poison"]*8; m["hp"]-=pdmg; push_log(p,f"🐍 Veneno: **{pdmg} dmg** em {m['nome']}!")
     doubles=sk.get("always_double",False) or (sk.get("double_atk",0)>0 and random.random()<sk["double_atk"])
+    
     if doubles: total=dmg*2; m["hp"]-=total; push_log(p,f"⚔️⚔️ **Ataque Duplo!** 2×{dmg}={total}!")
     else: m["hp"]-=dmg; push_log(p,f"⚔️ **{dmg} de dano** em {m['nome']}!")
-    # Boss phase check
-    if m.get("is_boss") and m["hp"]>0: _check_boss_phase(p,gs,m)
-    if m["hp"]<=0: resolve_kill(p,m,gs)
-    else: monster_hits(p,m)
+    
+    _process_monsters_turn(p, gs)
 
 def _check_boss_phase(p,gs,m):
     t=terrain(p); bd=BOSSES.get(t)
@@ -1066,8 +1096,11 @@ def _check_boss_phase(p,gs,m):
 def action_skill(p,gs,idx=0):
     cls_key=p.get("classe")
     if not cls_key: push_log(p,"⚠️ Escolha sua classe primeiro!"); return
-    m=p.get("active_monster")
-    if not m: push_log(p,"⚠️ Nenhum inimigo. Explore o mapa!"); return
+    mons = p.get("active_monsters", [])
+    if not mons and p.get("active_monster"):
+        mons = [p.pop("active_monster")]
+        p["active_monsters"] = mons
+    if not mons: push_log(p,"⚠️ Nenhum inimigo. Explore o mapa!"); return
     c=CLASSES[cls_key]; sk=sb(p)
     habs = c.get("habilidades", [])
     if idx < 0 or idx >= len(habs):
@@ -1080,16 +1113,31 @@ def action_skill(p,gs,idx=0):
     p["mana"]-=cost
     dmg=atk_dmg(p); multi=hab["multi"]
     if cls_key=="cacador" and sk.get("precision_multi",0)>0: multi=sk["precision_multi"]
-    dmg=int(dmg*multi); stun=False
-    if cls_key=="mago":
-        if sk.get("burn",0)>0: m["burning"]=True
-        if sk.get("stun",0)>0 and random.random()<sk["stun"]: stun=True
-    if cls_key=="ladino" and random.random()<0.40: stun=True
-    m["hp"]-=dmg; push_log(p,f"{hab['emoji']} **{hab['nome']}!** **{dmg} de dano!**{' 😵 Atordoado!' if stun else ''}")
-    if m.get("is_boss") and m["hp"]>0: _check_boss_phase(p,gs,m)
-    if m["hp"]<=0: resolve_kill(p,m,gs)
-    elif stun: push_log(p,f"😵 {m['nome']} perde o próximo ataque!")
-    else: monster_hits(p,m)
+    dmg=int(dmg*multi)
+    is_aoe=hab.get("is_aoe", False)
+    stunned_indices = []
+
+    if is_aoe:
+        push_log(p, f"{hab['emoji']} **{hab['nome']}!** (Dano em Área)")
+        for i, m in enumerate(mons):
+            stun=False
+            if cls_key=="mago":
+                if sk.get("burn",0)>0: m["burning"]=True
+                if sk.get("stun",0)>0 and random.random()<sk["stun"]: stun=True
+            if cls_key=="ladino" and random.random()<0.40: stun=True
+            m["hp"]-=dmg; push_log(p,f"💥 **{dmg} dmg** em {m['nome']}!{' 😵 Stun!' if stun else ''}")
+            if stun: stunned_indices.append(i)
+    else:
+        m = mons[0]
+        stun=False
+        if cls_key=="mago":
+            if sk.get("burn",0)>0: m["burning"]=True
+            if sk.get("stun",0)>0 and random.random()<sk["stun"]: stun=True
+        if cls_key=="ladino" and random.random()<0.40: stun=True
+        m["hp"]-=dmg; push_log(p,f"{hab['emoji']} **{hab['nome']}!** **{dmg} dmg** em {m['nome']}!{' 😵 Stun!' if stun else ''}")
+        if stun: stunned_indices.append(0)
+
+    _process_monsters_turn(p, gs, stunned_indices)
 
 def action_unlock_skill(p,sid):
     if p.get("skill_points",0)<=0: push_log(p,"❌ Sem pontos! Suba de nível para ganhar."); return
@@ -1493,11 +1541,14 @@ def build_block(p,gs,lb):
         if v>-1: return "🟡🟡⬜⬜⬜ Neutro"
         if v>-3: return "🔴🔴⬜⬜⬜ Hostil"
         return "🔴🔴🔴🔴🔴 Inimigo"
-    m = p.get("active_monster")
+    mons = p.get("active_monsters", [])
+    if not mons and p.get("active_monster"):
+        mons = [p["active_monster"]]
+    
     m_block=""
-    if m:
-        tag="⚠️ **[CHEFÃO]**" if m.get("is_boss") else "👹"
-        phase_str=f" _(Fase {p.get('boss_phase',0)+1})_" if m.get("is_boss") else ""
+    if mons:
+        tag="⚠️ **[CHEFÃO]**" if mons[0].get("is_boss") else "👹"
+        phase_str=f" _(Fase {p.get('boss_phase',0)+1})_" if mons[0].get("is_boss") else ""
         
         hab_links = []
         habs = c.get('habilidades', [])
@@ -1508,11 +1559,15 @@ def build_block(p,gs,lb):
         else:
             habs_str = f"**[{c.get('skill_e','✨')} {c.get('skill','Habilidade')}]({base}rpg%3Ahabilidade)**"
             
+        group_tag = f" {len(mons)} Inimigos" if len(mons) > 1 else f" {mons[0]['emoji']} {mons[0]['nome']}"
+        enemy_rows = "\n".join(f"| {m['emoji']} {m['nome']} | {hp_bar(m['hp'],m['max_hp'])} |" for m in mons)
+
         m_block=f"""
 ---
-### {tag} {m['emoji']} {m['nome']}{phase_str}
-| HP | {hp_bar(m['hp'],m['max_hp'])} |
+### {tag}{group_tag}{phase_str}
+| Inimigo | HP |
 |---|---|
+{enemy_rows}
 
 > **[⚔️ Atacar]({base}rpg%3Aatacar)** · {habs_str} · **[🧪 Poção]({base}rpg%3Apocao)**
 """
