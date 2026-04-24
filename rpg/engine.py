@@ -210,42 +210,92 @@ BOSS_SLUGS = {
 # ══════════════════════════════════════════════════════════════════════════════
 CLASSES = {
     "guerreiro":{"nome":"Guerreiro","emoji":"⚔️","hp":130,"mana":40,"atk":(12,22),"def":10,
+                 "atributos":{"FOR":16,"DES":12,"INT":8,"CON":15,"CAR":10},
+                 "habilidades":[
+                     {"nome":"Investida Furiosa","emoji":"💥","cost":20,"multi":2.0,"desc":"Ataca sem pensar, focado na força bruta."},
+                     {"nome":"Grito de Provocação","emoji":"🗣️","cost":15,"multi":1.0,"desc":"Grita insultos genéricos. (Aumenta aggro)"}
+                 ],
                  "skill":"Investida Furiosa","skill_e":"💥","skill_cost":20,"skill_multi":2.0,
                  "weapon":"Espada de Aço","armor":"Cota de Malha",
                  "lore":"O clássico herói genérico. Sem memória, confia na espada e jura que a Estrela de Wyrd é um mapa para uma princesa em outro castelo."},
     "mago":     {"nome":"Mago","emoji":"🔮","hp":85,"mana":100,"atk":(8,16),"def":4,
+                 "atributos":{"FOR":6,"DES":10,"INT":18,"CON":8,"CAR":11},
+                 "habilidades":[
+                     {"nome":"Tempestade Arcana","emoji":"⚡","cost":30,"multi":3.0,"desc":"Libera poder bruto dos grimórios que leu."},
+                     {"nome":"Barreira de Cristal","emoji":"🛡️","cost":20,"multi":0.0,"desc":"Ignora ataques baseando-se em sua superioridade intelectual."}
+                 ],
                  "skill":"Tempestade Arcana","skill_e":"⚡","skill_cost":30,"skill_multi":3.0,
                  "weapon":"Cetro do Wyrd","armor":"Manto Rúnico",
                  "lore":"Estudioso arrogante que tem pavor de sol. Acha todos idiotas por não lerem grimórios de 800 páginas sobre os Reis-Dragão."},
     "cacador":  {"nome":"Caçador","emoji":"🏹","hp":105,"mana":60,"atk":(10,20),"def":7,
+                 "atributos":{"FOR":10,"DES":17,"INT":12,"CON":11,"CAR":8},
+                 "habilidades":[
+                     {"nome":"Tiro de Precisão","emoji":"🎯","cost":25,"multi":2.2,"desc":"Foca no alvo solitário, como ele."},
+                     {"nome":"Armadilha de Espinhos","emoji":"🪤","cost":15,"multi":1.5,"desc":"Garante que ninguém se aproxime muito."}
+                 ],
                  "skill":"Tiro de Precisão","skill_e":"🎯","skill_cost":25,"skill_multi":2.2,
                  "weapon":"Arco de Teixo","armor":"Couro Endurecido",
                  "lore":"O lobo solitário 'edgy'. Fica nos cantos escuros de Ironhold dizendo que trabalha sozinho, mas não vive sem o grupo."},
     "ladino":   {"nome":"Ladino","emoji":"🗡️","hp":95,"mana":70,"atk":(14,26),"def":5,
+                 "atributos":{"FOR":9,"DES":18,"INT":11,"CON":10,"CAR":14},
+                 "habilidades":[
+                     {"nome":"Golpe Furtivo","emoji":"🌑","cost":20,"multi":2.0,"desc":"Ataca pelas costas, onde as carteiras ficam."},
+                     {"nome":"Bomba de Fumaça","emoji":"💨","cost":25,"multi":0.5,"desc":"Foge com o loot antes de dar explicação."}
+                 ],
                  "skill":"Golpe Furtivo","skill_e":"🌑","skill_cost":20,"skill_multi":2.0,
                  "weapon":"Adagas Gêmeas","armor":"Roupa das Sombras",
                  "lore":"Cleptomaníaco incurável. Jura que a Estrela de Wyrd é uma tatuagem de guilda. Se uma poção sumiu, olhe para ele."},
     "paladino": {"nome":"Paladino","emoji":"🛡️","hp":140,"mana":70,"atk":(10,18),"def":12,
+                 "atributos":{"FOR":14,"DES":9,"INT":10,"CON":16,"CAR":15},
+                 "habilidades":[
+                     {"nome":"Julgamento Divino","emoji":"✨","cost":25,"multi":1.8,"desc":"Punição guiada por fanatismo religioso."},
+                     {"nome":"Cura pela Luz","emoji":"💖","cost":30,"multi":0.0,"desc":"Sermão curativo, mas muito chato."}
+                 ],
                  "skill":"Julgamento Divino","skill_e":"✨","skill_cost":25,"skill_multi":1.8,
                  "weapon":"Martelo da Luz","armor":"Placas Abençoadas",
                  "lore":"O justiceiro fanático e insuportável. Grita 'Pela Luz!' para tudo e tenta converter cultistas do Pacto antes de matá-los."},
     "necromante":{"nome":"Necromante","emoji":"💀","hp":85,"mana":120,"atk":(9,15),"def":4,
+                 "atributos":{"FOR":7,"DES":9,"INT":16,"CON":9,"CAR":6},
+                 "habilidades":[
+                     {"nome":"Exército de Ossos","emoji":"🦴","cost":35,"multi":2.5,"desc":"Recicla cadáveres para não se sentir sozinho."},
+                     {"nome":"Drenar Vida","emoji":"🩸","cost":20,"multi":1.5,"desc":"Rouba a vontade de viver dos outros, que ele também não tem."}
+                 ],
                  "skill":"Exército de Ossos","skill_e":"🦴","skill_cost":35,"skill_multi":2.5,
                  "weapon":"Foice das Almas","armor":"Manto de Ossos",
                  "lore":"Gótico incompreendido. 'Por que reciclar lixo se podemos reciclar cadáveres?'. Leva seu esqueleto de estimação para passear."},
     "bardo":    {"nome":"Bardo","emoji":"🎵","hp":95,"mana":85,"atk":(9,17),"def":6,
+                 "atributos":{"FOR":8,"DES":14,"INT":12,"CON":9,"CAR":18},
+                 "habilidades":[
+                     {"nome":"Canção do Caos","emoji":"🎶","cost":20,"multi":2.0,"desc":"Uma melodia sensual que confunde o inimigo."},
+                     {"nome":"Charme Irresistível","emoji":"😘","cost":15,"multi":0.0,"desc":"Tenta seduzir o monstro. (Nem sempre funciona)"}
+                 ],
                  "skill":"Canção do Caos","skill_e":"🎶","skill_cost":20,"skill_multi":2.0,
                  "weapon":"Alaúde Encantado","armor":"Trajes Festivos",
                  "lore":"O sedutor compulsivo. Tenta flertar com TUDO que se move, desde as garçonetes da taverna até o próprio Destruidor de Mundos."},
     "monge":    {"nome":"Monge","emoji":"🥋","hp":115,"mana":50,"atk":(11,21),"def":8,
+                 "atributos":{"FOR":12,"DES":16,"INT":14,"CON":12,"CAR":9},
+                 "habilidades":[
+                     {"nome":"Punhos do Wyrd","emoji":"👊","cost":20,"multi":2.1,"desc":"Voadora concentrada com sabedoria duvidosa."},
+                     {"nome":"Meditação Profunda","emoji":"🧘","cost":10,"multi":0.0,"desc":"Tira um cochilo no meio da luta para curar a ressaca."}
+                 ],
                  "skill":"Punhos do Wyrd","skill_e":"👊","skill_cost":20,"skill_multi":2.1,
                  "weapon":"Manoplas Espirituais","armor":"Traje de Monge",
                  "lore":"O mestre zen (ou apenas de ressaca). Fala provérbios de biscoito da sorte com a maior seriedade enquanto distribui voadoras."},
     "bruxo":    {"nome":"Bruxo","emoji":"👁️","hp":90,"mana":110,"atk":(10,18),"def":5,
+                 "atributos":{"FOR":7,"DES":11,"INT":15,"CON":10,"CAR":16},
+                 "habilidades":[
+                     {"nome":"Rajada Mística","emoji":"☄️","cost":25,"multi":2.6,"desc":"Poder direto do seu sugar-daddy cósmico."},
+                     {"nome":"Contrato Sombrio","emoji":"📜","cost":15,"multi":0.0,"desc":"Reclama do salário e transfere dano pro patrão."}
+                 ],
                  "skill":"Rajada Mística","skill_e":"☄️","skill_cost":25,"skill_multi":2.6,
                  "weapon":"Tomo Sombrio","armor":"Vestes do Pacto",
                  "lore":"O CLT das trevas. Vendeu a alma para um sugar-daddy cósmico do Pacto das Sombras e agora reclama de bater ponto."},
     "barbaro":  {"nome":"Bárbaro","emoji":"🪓","hp":150,"mana":20,"atk":(15,28),"def":8,
+                 "atributos":{"FOR":18,"DES":10,"INT":4,"CON":17,"CAR":8},
+                 "habilidades":[
+                     {"nome":"Fúria Cega","emoji":"💢","cost":15,"multi":2.0,"desc":"Resolve no grito porque faltam palavras."},
+                     {"nome":"Cabeçada","emoji":"🤕","cost":10,"multi":1.8,"desc":"Usa a cabeça da única forma que sabe."}
+                 ],
                  "skill":"Fúria Cega","skill_e":"💢","skill_cost":15,"skill_multi":2.0,
                  "weapon":"Machado Duplo","armor":"Peles de Urso",
                  "lore":"Uma montanha de músculos com QI de dois dígitos. Resolve tudo no grito e acha que livros arcanos são um ótimo lanche."}
@@ -1003,23 +1053,29 @@ def _check_boss_phase(p,gs,m):
         push_log(p,next_ph["desc"])
         push_world(gs,f"⚠️ **{m['nome']}** entrou em nova fase durante batalha contra @{p['username']}!")
 
-def action_skill(p,gs):
+def action_skill(p,gs,idx=0):
     cls_key=p.get("classe")
     if not cls_key: push_log(p,"⚠️ Escolha sua classe primeiro!"); return
     m=p.get("active_monster")
     if not m: push_log(p,"⚠️ Nenhum inimigo. Explore o mapa!"); return
     c=CLASSES[cls_key]; sk=sb(p)
-    cost=max(5,c["skill_cost"]-sk.get("skill_cost_off",0))
+    habs = c.get("habilidades", [])
+    if idx < 0 or idx >= len(habs):
+        hab = {"nome":c["skill"], "emoji":c["skill_e"], "cost":c["skill_cost"], "multi":c["skill_multi"]}
+    else:
+        hab = habs[idx]
+
+    cost=max(5,hab["cost"]-sk.get("skill_cost_off",0))
     if p["mana"]<cost: push_log(p,f"💧 Mana insuficiente! Precisa {cost} (tem {p['mana']})."); return
     p["mana"]-=cost
-    dmg=atk_dmg(p); multi=c["skill_multi"]
+    dmg=atk_dmg(p); multi=hab["multi"]
     if cls_key=="cacador" and sk.get("precision_multi",0)>0: multi=sk["precision_multi"]
     dmg=int(dmg*multi); stun=False
     if cls_key=="mago":
         if sk.get("burn",0)>0: m["burning"]=True
         if sk.get("stun",0)>0 and random.random()<sk["stun"]: stun=True
     if cls_key=="ladino" and random.random()<0.40: stun=True
-    m["hp"]-=dmg; push_log(p,f"{c['skill_e']} **{c['skill']}!** **{dmg} de dano!**{' 😵 Atordoado!' if stun else ''}")
+    m["hp"]-=dmg; push_log(p,f"{hab['emoji']} **{hab['nome']}!** **{dmg} de dano!**{' 😵 Atordoado!' if stun else ''}")
     if m.get("is_boss") and m["hp"]>0: _check_boss_phase(p,gs,m)
     if m["hp"]<=0: resolve_kill(p,m,gs)
     elif stun: push_log(p,f"😵 {m['nome']} perde o próximo ataque!")
@@ -1335,7 +1391,17 @@ def build_block(p,gs,lb):
 
     class_rows = []
     for c_id, c_data in CLASSES.items():
-        row = f"| [{c_data['emoji']} {c_data['nome']}]({base}rpg%3Aclasse%3A{c_id}) | {c_data['lore']} | {c_data['hp']} | {c_data['mana']} | {c_data['def']} | {c_data['skill']} ({c_data['skill_multi']}×) |"
+        ats = c_data.get('atributos', {})
+        attr_str = f"**FOR:** {ats.get('FOR',0)}<br>**DES:** {ats.get('DES',0)}<br>**INT:** {ats.get('INT',0)}<br>**CON:** {ats.get('CON',0)}<br>**CAR:** {ats.get('CAR',0)}"
+        
+        habs = c_data.get('habilidades', [])
+        if not habs:
+            hab_str = f"{c_data.get('skill_e')} {c_data.get('skill')}"
+        else:
+            hab_str = "<br>".join(f"{h['emoji']} **{h['nome']}**" for h in habs)
+            
+        stats_str = f"❤️ {c_data['hp']}<br>💧 {c_data['mana']}<br>🛡️ {c_data['def']}"
+        row = f"| [{c_data['emoji']} {c_data['nome']}]({base}rpg%3Aclasse%3A{c_id}) | {c_data['lore']} | {stats_str} | {attr_str} | {hab_str} |"
         class_rows.append(row)
     class_table = "\n".join(class_rows)
 
@@ -1352,8 +1418,8 @@ def build_block(p,gs,lb):
 > *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd, destinado a restaurar a luz. Por um acaso do destino (ou uma ressaca coletiva), 10 heróis com passados estereotipados acordaram na mesma Taverna em Ironhold sem memórias recentes.*
 > *Todos eles possuem uma tatuagem arcana pulsando no pulso. Suas histórias se cruzaram aqui. A jornada pertence a quem ousa começar.*
 
-| Classe | Lore | HP | Mana | DEF | Habilidade |
-|--------|------|:--:|:----:|:---:|------------|
+| Classe | Lore | Stats | Atributos | Habilidades |
+|--------|------|:---:|:-------:|-------------|
 {class_table}
 
 > 🎮 *Clique em uma classe para começar! Qualquer visitante pode jogar.*
@@ -1396,13 +1462,23 @@ def build_block(p,gs,lb):
     if m:
         tag="⚠️ **[CHEFÃO]**" if m.get("is_boss") else "👹"
         phase_str=f" _(Fase {p.get('boss_phase',0)+1})_" if m.get("is_boss") else ""
+        
+        hab_links = []
+        habs = c.get('habilidades', [])
+        if habs:
+            for i, h in enumerate(habs):
+                hab_links.append(f"**[{h['emoji']} {h['nome']}]({base}rpg%3Ahabilidade%3A{i})**")
+            habs_str = " · ".join(hab_links)
+        else:
+            habs_str = f"**[{c.get('skill_e','✨')} {c.get('skill','Habilidade')}]({base}rpg%3Ahabilidade)**"
+            
         m_block=f"""
 ---
 ### {tag} {m['emoji']} {m['nome']}{phase_str}
 | HP | {hp_bar(m['hp'],m['max_hp'])} |
 |---|---|
 
-> **[⚔️ Atacar]({base}rpg%3Aatacar)** · **[{c['skill_e']} {c['skill']}]({base}rpg%3Ahabilidade)** · **[🧪 Poção]({base}rpg%3Apocao)**
+> **[⚔️ Atacar]({base}rpg%3Aatacar)** · {habs_str} · **[🧪 Poção]({base}rpg%3Apocao)**
 """
     raids = load_raids()
     active_raids_block = ""
@@ -1421,6 +1497,18 @@ def build_block(p,gs,lb):
         
     log_txt="\n".join(f"> {l}" for l in p.get("log",[])[:7])
     wlog="\n".join(f"> 🌍 {l}" for l in gs.get("world_log",[])[:4])
+    
+    c_ats = c.get('atributos', {})
+    c_attr_str = f"FOR:{c_ats.get('FOR',0)} DES:{c_ats.get('DES',0)} INT:{c_ats.get('INT',0)} CON:{c_ats.get('CON',0)} CAR:{c_ats.get('CAR',0)}"
+    habs_status = " · ".join([f"{h['emoji']} {h['nome']}" for h in c.get('habilidades', [])]) or f"{c.get('skill_e','')} {c.get('skill','')}"
+
+    hab_links_actions = []
+    if c.get('habilidades'):
+        for i, h in enumerate(c['habilidades']):
+            hab_links_actions.append(f"[{h['emoji']} {h['nome']}]({base}rpg%3Ahabilidade%3A{i})")
+        habs_str_actions = " · ".join(hab_links_actions)
+    else:
+        habs_str_actions = f"[{c.get('skill_e','✨')} {c.get('skill','Habilidade')}]({base}rpg%3Ahabilidade)"
 
     return f"""<!-- RPG_START -->
 ## ⚔️ AETHORIA: O REINO FRAGMENTADO{titulo}{prestige_badge}
@@ -1455,7 +1543,8 @@ def build_block(p,gs,lb):
 |---|---|
 | ❤️ HP | {hp_bar(p['hp'],p['max_hp'])} |
 | 💧 Mana | {mp_bar(p['mana'],p['max_mana'])} |
-| 🧙 Classe | {c['emoji']} **{c['nome']}** · Habilidade: {c['skill_e']} {c['skill']} |
+| 🧙 Classe | {c['emoji']} **{c['nome']}** · {c_attr_str} |
+| ✨ Habilidades | {habs_status} |
 | ⭐ Nível | {p['level']} · XP: {p['xp']}/{xp_next} · Total: {p.get('total_xp',0)} |
 | 💰 Ouro | {p['gold']}g |
 | 🧪 Poções | {p['potions']} · 🐍 Veneno: {p.get('poison_stacks',0)} cargas |
@@ -1496,7 +1585,7 @@ def build_block(p,gs,lb):
 ### 🎮 Ações — _Última jogada: @{p['username']}_
 
 **🧭 Mover:** [⬆️]({base}rpg%3Anorte) [⬇️]({base}rpg%3Asul) [◀️]({base}rpg%3Aoeste) [▶️]({base}rpg%3Aleste)
-**⚔️ Combate:** [⚔️ Atacar]({base}rpg%3Aatacar) · [{c['skill_e']} {c['skill']}]({base}rpg%3Ahabilidade) · [🧪 Poção]({base}rpg%3Apocao)
+**⚔️ Combate:** [⚔️ Atacar]({base}rpg%3Aatacar) · {habs_str_actions} · [🧪 Poção]({base}rpg%3Apocao)
 **🍺 Explorar:** [🔍 Interagir]({base}rpg%3Ainteragir) · [😴 Descansar]({base}rpg%3Adescansar) · [🍺 Taverna]({base}rpg%3Ataverna)
 **🛒 Comprar:** [🧪-8g]({base}rpg%3Acomprar%3Apocao_menor) · [💊-15g]({base}rpg%3Acomprar%3Apocao) · [💙-12g]({base}rpg%3Acomprar%3Aelixir_mana) · [🌿-10g]({base}rpg%3Acomprar%3Aantidoto)
 **🔨 Crafting:** [Poção Superior]({base}rpg%3Acraftar%3Apocao_maior) · [Elixir Wyrd]({base}rpg%3Acraftar%3Aelixir_wyrd) · [Pó de Relíquias]({base}rpg%3Acraftar%3Apo_reliquias)
@@ -1548,7 +1637,10 @@ def main():
     if raw in DIRS:
         dx,dy,name=DIRS[raw]; action_move(p,gs,dx,dy,name)
     elif raw=="rpg:atacar":     action_attack(p,gs)
-    elif raw=="rpg:habilidade": action_skill(p,gs)
+    elif raw.startswith("rpg:habilidade"):
+        parts = raw.split(":")
+        idx = int(parts[2]) if len(parts) > 2 else 0
+        action_skill(p,gs,idx)
     elif raw=="rpg:pocao":      action_potion(p)
     elif raw=="rpg:interagir":  action_interact(p,gs)
     elif raw=="rpg:descansar":  action_rest(p)
