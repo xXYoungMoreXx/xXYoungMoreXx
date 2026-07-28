@@ -1,0 +1,8 @@
+# O engine roda no runner Linux (LF) e às vezes localmente no Windows (CRLF).
+# Sem isto, cada troca de plataforma reescreve os JSON de estado inteiros e o diff
+# de um turno vira "arquivo todo alterado".
+*.json   text eol=lf
+*.py     text eol=lf
+*.yml    text eol=lf
+*.md     text eol=lf
+*.gitkeep text eol=lf
