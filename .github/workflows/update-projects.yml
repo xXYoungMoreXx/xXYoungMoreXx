@@ -5,6 +5,11 @@ on:
     - cron: '0 */12 * * *'   # a cada 12 horas
   workflow_dispatch:
 
+# Mesmo grupo do rpg.yml: os dois escrevem README.md e dão push na mesma branch.
+concurrency:
+  group: readme-writer
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -50,12 +55,16 @@ jobs:
                           url = f"https://github.com/{username}/{repo}"
                           # Card stats premium azul com bordas arredondadas e tamanho fixo
                           img = f"https://github-readme-stats.vercel.app/api/pin/?username={username}&repo={repo}&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true"
-                          block += f"      <td align=\"center\" width=\"400\">\n        <a href=\"{url}\">\n          <img src=\"{img}\" width=\"380\" height=\"120\" />\n        </a>\n      </td>\n"
+                          # alt obrigatório: sem ele o leitor de tela não anuncia nada.
+                          alt = f"{username}/{repo} — estatísticas do repositório"
+                          block += f"      <td align=\"center\" width=\"400\">\n        <a href=\"{url}\">\n          <img src=\"{img}\" alt=\"{alt}\" width=\"380\" height=\"120\" />\n        </a>\n      </td>\n"
                   block += "    </tr>\n"
               block += "  </table>\n</div>\n<!-- PROJECTS_END -->"
 
               pattern = r"<!-- PROJECTS_START -->.*?<!-- PROJECTS_END -->"
-              new_readme = re.sub(pattern, block, readme, flags=re.DOTALL)
+              # lambda, não string: como replacement string, um "\g" ou "\1" vindo de um
+              # nome de repo seria interpretado como backreference pelo re.
+              new_readme = re.sub(pattern, lambda _m: block, readme, flags=re.DOTALL)
 
               if new_readme != readme:
                   open("README.md", "w", encoding="utf-8").write(new_readme)
@@ -70,7 +79,21 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git add -- README.md
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
           git commit -m "📦 auto: update featured projects"
-          git push
+
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Push OK na tentativa $attempt."
+              exit 0
+            fi
+            echo "Push rejeitado (tentativa $attempt), rebase e retry..."
+            git pull --rebase origin main
+            sleep 3
+          done
+          echo "::error::Push falhou após 3 tentativas."
+          exit 1
