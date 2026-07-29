@@ -218,67 +218,86 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 > *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd. Você acordou em Ironhold sem memórias.*
 > *Qualquer visitante pode agir — a história pertence a quem ousa escrever.*
 
-> Turno **#80** · ☀️ Dia · Jogando como: **@xXYoungMoreXx**
+> Turno **#80** · 🌙 Noite · Jogando como: **@xXYoungMoreXx**
 
 ---
 
-### 🌍 Evento Mundial — 🌩️ Tormenta Arcana
-> _Energia mágica instável amplifica todos os poderes mágicos._
-> Efeitos: Monstros +10% HP · Encontros +5% · XP ×1.4 · Preços +0%
+### 📖 O que acabou de acontecer — @xXYoungMoreXx
+> ⚔️ Engine v3.1 — estado validado. Nível 5, 392g, 16 kills. A jornada continua.
 
----
-
-### 🗺️ Mapa de Aethoria
-```
-🧙🏔️🗼🌊🏝️
-🌲🏘️🏚️🏰⛵
-🌑🌾🏙️⛏️🌊
-🌳🛕🏡⚙️⚓
-🕳️💀⛪🕵️🔱
-```
-> 🧙 Você · 🌨️Tundra · 🏔️Pico · 🗼Oráculo · 🌲Mirewood · 🏘️Ashenvale · 🏚️Vel'Moran · 🏰Fortaleza
-> 🌑Pântano · 🌾Planície · 🏙️Ironhold · ⛏️Kragdor · 🌳Floresta · 🛕Templo · 🏡Ravenford
-
-📍 **Tundra Glacial** — _Ventos cortantes. Crânios de criaturas antigas emergem do gelo como avisos._
+> ⏱️ _Cada ação abre uma Issue e leva ~40s para processar. Recarregue o README depois disso._
 
 ---
 
 ### 📊 Status
 | Atributo | |
 |---|---|
-| ❤️ HP | `[██████████]` 10035/10035 |
-| 💧 Mana | `[▓▓▓▓▓▓▓▓]` 10079/10079 |
+| ❤️ HP | `[██████████]` 202/202 |
+| 💧 Mana | `[▓▓▓▓▓▓▓▓]` 80/80 |
 | 🧙 Classe | ⚔️ **Guerreiro** · FOR:16 DES:12 INT:8 CON:15 CAR:10 |
+| 🛡️ Defesa efetiva | 10 _(base 10 + 0 da árvore)_ |
 | ✨ Habilidades | 💥 Investida Furiosa · 🗣️ Grito de Provocação |
 | ⭐ Nível | 5 · XP: 655/680 · Total: 658 |
 | 💰 Ouro / ⚖️ Karma | 392g / 0 (⚖️ Neutro) |
-| 🧪 Poções | 4 · 🐍 Veneno: 0 cargas |
-| ☠️ Kills/Mortes | 16 / 0 |
+| 🧪 Poções | 4 básica(s) · 🐍 Veneno: 0 cargas |
+| 🎒 Inventário | _vazio_ |
 | 🗡️ Arma / 🛡️ Armadura | Espada de Aço / Cota de Malha |
 | 💎 Relíquias | _nenhuma_ |
-| 🎖️ Conquistas | 🩸 Primeiro Sangue, 🗡️ Caçador, 👑 Caçador de Chefões, ⭐ Aventureiro, 💰 Barão do Ouro, 🏰 Sobrevivente do Abismo, 💎 Perfeição Abissal |
+| ☠️ Kills / Mortes | 16 / 0 |
+| 🏰 Masmorras | 1 completa · 💎 última sem poção |
+| 🎖️ Conquistas | 🩸 Primeiro Sangue, 🗡️ Caçador, ⭐ Aventureiro, 💰 Barão do Ouro, 🏰 Sobrevivente do Abismo, 💎 Perfeição Abissal |
 | 🌐 GitHub | @xXYoungMoreXx · 6 repos · 0⭐ · 6 followers · `Python` |
+
+---
+
+### 🌍 Evento Mundial — 🌫️ Névoa do Esquecimento
+> _Uma névoa arcana cobre Aethoria. Monstros ficam confusos — mais fracos._
+> Efeitos: Monstros -25% HP · Encontros +0% · XP ×1.1 · Preços +0%
+> _Rotaciona em 0h04min._
+
+---
+
+### 🗺️ Mapa de Aethoria
+| | 0 | 1 | 2 | 3 | 4 |
+|---|:-:|:-:|:-:|:-:|:-:|
+| **0** | 🧙 | 🏔️ | 🗼 | 🌊 | 🏝️ |
+| **1** | 🌲 | 🏘️ | 🏚️ | 🏰 | ⛵ |
+| **2** | 🌑 | 🌾 | 🏙️ | ⛏️ | 🌊 |
+| **3** | 🌳 | 🛕 | 🏡 | ⚙️ | ⚓ |
+| **4** | 🕳️ | 💀 | ⛪ | 🕵️ | 🔱 |
+
+> **0** · 🧙 🌨️ Tundra Glacial · 🏔️ Pico de Frostmourne · 🗼 Torre do Oráculo · 🌊 Mar Cinzento · 🏝️ Ilhas do Exílio
+> **1** · 🌲 Floresta de Mirewood · 🏘️🔵 Aldeia de Ashenvale · 🏚️ Ruínas de Vel'Moran · 🏰 Fortaleza das Sombras · ⛵ Costa dos Náufragos
+> **2** · 🌑 Pântano de Morgraen · 🌾 Planície Dourada · 🏙️🔵 Ironhold · ⛏️ Masmorra de Kragdor · 🌊 Mar do Sul
+> **3** · 🌳 Floresta Profunda · 🛕 Templo Esquecido · 🏡🔵 Vilarejo de Ravenford · ⚙️ Minas de Ferro · ⚓🔵 Porto da Perdição
+> **4** · 🕳️ Cavernas Abissais · 💀 Floresta Amaldiçoada · ⛪ Catedral em Ruínas · 🕵️🔵 Mercado Negro · 🔱 Litoral Proibido
+> 🧙 = você · 🔵 = zona segura (compra, descanso, taverna)
+
+📍 **Tundra Glacial** — _Ventos cortantes. Crânios de criaturas antigas emergem do gelo como avisos._
+
+---
+
+### 🎮 Ações
+**🧭 Mover:** [⬆️ Norte](../../issues/new?labels=rpg-action&title=rpg%3Anorte) · [⬇️ Sul](../../issues/new?labels=rpg-action&title=rpg%3Asul) · [◀️ Oeste](../../issues/new?labels=rpg-action&title=rpg%3Aoeste) · [▶️ Leste](../../issues/new?labels=rpg-action&title=rpg%3Aleste)
+**⚔️ Combate:** _sem inimigo à vista — explore o mapa._
+**🍺 Explorar:** [🔍 Interagir](../../issues/new?labels=rpg-action&title=rpg%3Ainteragir) · [🏰 Masmorra](../../issues/new?labels=rpg-action&title=rpg%3Amasmorra)
+**⚖️ Moralidade:** _há escolhas morais em Ironhold e Ravenford._
+**🛒 Comprar:** _só em zona segura (🔵 no mapa)._
+**🔨 Crafting:** [🔴 Poção Superior](../../issues/new?labels=rpg-action&title=rpg%3Acraftar%3Apocao_maior) · [✨ Elixir de Wyrd](../../issues/new?labels=rpg-action&title=rpg%3Acraftar%3Aelixir_wyrd) · [💠 Pó de Relíquias](../../issues/new?labels=rpg-action&title=rpg%3Acraftar%3Apo_reliquias)
+**⚙️ Outros:** [🔄 Reiniciar](../../issues/new?labels=rpg-action&title=rpg%3Areiniciar) · `rpg:desafiar:USUARIO` · `rpg:mensagem:TEXTO`
+
 
 ---
 
 ### 🌳 Árvore de Habilidades (2 ponto(s))
 **2 ponto(s) disponível(is)**
-⚔️ Força: 🔓`gf1` **Lâmina Afiada** — _+6 ATK base_ → 🔒`gf2` **Golpe Devastador** — _+14 ATK · Crítico +12%_
-🛡️ Defesa: 🔓`gd1` **Escudo de Ferro** — _+8 DEF_ → 🔒`gd2` **Muralha Viva** — _+15 DEF · +35 HP máx_
-🔥 Fúria: 🔓`gv1` **Sede de Sangue** — _Ao matar: próx. ataque +20%_ → 🔒`gv2` **Berserker** — _HP<30% → +80% ATK_
+⚔️ Força: 🔓 **[Lâmina Afiada](../../issues/new?labels=rpg-action&title=rpg%3Askill%3Agf1)** — _+6 ATK base_ → 🔒 `gf2` **Golpe Devastador** — _+14 ATK · Crítico +12%_
+🛡️ Defesa: 🔓 **[Escudo de Ferro](../../issues/new?labels=rpg-action&title=rpg%3Askill%3Agd1)** — _+8 DEF_ → 🔒 `gd2` **Muralha Viva** — _+15 DEF · +35 HP máx_
+🔥 Fúria: 🔓 **[Sede de Sangue](../../issues/new?labels=rpg-action&title=rpg%3Askill%3Agv1)** — _Ao matar: próx. ataque +20%_ → 🔒 `gv2` **Berserker** — _HP<30% → +80% ATK_
 
----
+<details>
+<summary><b>📜 Missões · 👹 Chefões · 🏹 Facções</b></summary>
 
-### 🏹 Facções
-| Facção | Reputação |
-|---|---|
-| ⚔️ Ordem do Aço | 🟡🟡⬜⬜⬜ Neutro |
-| 🌿 Círculo Verdante | 🟡🟡⬜⬜⬜ Neutro |
-| 🖤 Pacto das Sombras | 🟡🟡⬜⬜⬜ Neutro |
-
----
-
-### 📜 Missões
 | | Missão | Objetivo |
 |---|---|---|
 | 📜 | **A Chama de Ashenvale** | _Visite Aldeia de Ashenvale_ |
@@ -287,40 +306,22 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 | 📜 | **O Dragão Ancião** | _Derrote Drakar em Kragdor_ |
 | 📜 | **O Deus Esquecido** | _Derrote Xal'thar nas Ilhas do Exílio_ |
 
----
-
-### 👹 Chefões
-| | | Local | Status |
+| | Chefão | Local | Status |
 |---|---|---|---|
 | 💀 | **Vel'Krath, o Não-Morto** | Ruínas de Vel'Moran | 😈 Vivo |
 | 🧟 | **Lord Malachar, das Trevas** | Fortaleza das Sombras | 😈 Vivo |
 | 🐉 | **Drakar, o Dragão Ancião** | Masmorra de Kragdor | 😈 Vivo |
 | 👁️ | **Xal'thar, o Deus Esquecido** | Ilhas do Exílio | 😈 Vivo |
 
+| Facção | Reputação |
+|---|---|
+| ⚔️ Ordem do Aço | 🟡🟡⬜⬜⬜ Neutro |
+| 🌿 Círculo Verdante | 🟡🟡⬜⬜⬜ Neutro |
+| 🖤 Pacto das Sombras | 🟡🟡⬜⬜⬜ Neutro |
+
+</details>
 
 ---
-
-### 🎮 Ações — _Última jogada: @xXYoungMoreXx_
-
-**🧭 Mover:** [⬆️](../../issues/new?labels=rpg-action&title=rpg%3Anorte) [⬇️](../../issues/new?labels=rpg-action&title=rpg%3Asul) [◀️](../../issues/new?labels=rpg-action&title=rpg%3Aoeste) [▶️](../../issues/new?labels=rpg-action&title=rpg%3Aleste)
-**⚔️ Combate:** [⚔️ Atacar](../../issues/new?labels=rpg-action&title=rpg%3Aatacar) · [💥 Investida Furiosa](../../issues/new?labels=rpg-action&title=rpg%3Ahabilidade%3A0) · [🗣️ Grito de Provocação](../../issues/new?labels=rpg-action&title=rpg%3Ahabilidade%3A1) · [🧪 Poção](../../issues/new?labels=rpg-action&title=rpg%3Apocao) · [🏃 Fugir](../../issues/new?labels=rpg-action&title=rpg%3Afugir)
-**🍺 Explorar:** [🔍 Interagir](../../issues/new?labels=rpg-action&title=rpg%3Ainteragir) · [😴 Descansar](../../issues/new?labels=rpg-action&title=rpg%3Adescansar) · [🍺 Taverna](../../issues/new?labels=rpg-action&title=rpg%3Ataverna) · [🏰 Explorar Masmorra (nív.3+)](../../issues/new?labels=rpg-action&title=rpg%3Amasmorra)
-**⚖️ Moralidade:** [🛡️ Escolha Boa (Ironhold/Ravenford)](../../issues/new?labels=rpg-action&title=rpg%3Akarma%3Agood) · [🗡️ Escolha Maligna](../../issues/new?labels=rpg-action&title=rpg%3Akarma%3Abad)
-**🛒 Comprar:** [🧪-8g](../../issues/new?labels=rpg-action&title=rpg%3Acomprar%3Apocao_menor) · [💊-15g](../../issues/new?labels=rpg-action&title=rpg%3Acomprar%3Apocao) · [💙-12g](../../issues/new?labels=rpg-action&title=rpg%3Acomprar%3Aelixir_mana) · [🌿-10g](../../issues/new?labels=rpg-action&title=rpg%3Acomprar%3Aantidoto)
-**🔨 Crafting:** [Poção Superior](../../issues/new?labels=rpg-action&title=rpg%3Acraftar%3Apocao_maior) · [Elixir Wyrd](../../issues/new?labels=rpg-action&title=rpg%3Acraftar%3Aelixir_wyrd) · [Pó de Relíquias](../../issues/new?labels=rpg-action&title=rpg%3Acraftar%3Apo_reliquias)
-**🌳 Skill:** `rpg:skill:ID` — [⚔️ Ver IDs no SETUP.md](../../blob/main/SETUP.md)
-**⚙️ Outros:** [🔄 Reiniciar](../../issues/new?labels=rpg-action&title=rpg%3Areiniciar) · [🔮 Prestígio (nív.10)](../../issues/new?labels=rpg-action&title=rpg%3Aprestigio) · `rpg:desafiar:USERNAME` · `rpg:montar:DESTINO`
-
----
-
-### 📖 Log de @xXYoungMoreXx
-> ⚔️ Escolha sua classe para começar!
-> 🔄 **Nova lenda começa em Aethoria...**
-> 🏆 **CONQUISTA: 💎 Perfeição Abissal**
-> 🏆 **CONQUISTA: 🏰 Sobrevivente do Abismo**
-> 🏆 **CONQUISTA: 💰 Barão do Ouro**
-> 🏆 **CONQUISTA: ⭐ Aventureiro**
-> 🏰 Masmorras completas: 1
 
 ### 🌍 Eventos Recentes do Mundo
 > 🌍 🔄 @xXYoungMoreXx reiniciou sua jornada.
@@ -333,10 +334,8 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
 ### 🏆 Quadro da Guilda — Top Aventureiros
 | # | Aventureiro | Classe | Nível | Score | Bosses | Conquistas | Lang |
 |---|---|---|---|---|---|---|---|
-| 🥇 | **@xXYoungMoreXx** | ⚔️ Guerreiro | 5 | 1258 | 1 | 7 | `Python` |
-| 🥈 | **@UnregisteredUser123** | — | 1 | 0 | 0 | 0 | — |
-| 🥉 | **@testUser** | 👁️ Bruxo | 1 | 0 | 0 | 0 | — |
-> _Score = XP + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · 24/04/2026 03:15 UTC_
+| 🥇 | **@xXYoungMoreXx** | ⚔️ Guerreiro | 5 | 1128 | 0 | 6 | `Python` |
+> _Score = XP + kills×5 + chefões×100 + conquistas×30 + prestígio×500 + repos×10 + estrelas×50 · 28/07/2026 23:55 UTC_
 
 <!-- RPG_END -->
 

