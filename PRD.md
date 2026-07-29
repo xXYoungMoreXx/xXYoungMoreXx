@@ -70,7 +70,7 @@ Transformar o README do perfil GitHub em uma **experiência interativa multi-usu
 | Feature | Descrição | Status |
 |---------|-----------|--------|
 | Mapa 5×5 | 25 locais únicos com lore individual | ✅ |
-| 4 Classes | Guerreiro, Mago, Caçador, Ladino | ✅ |
+| 10 Classes | Guerreiro, Mago, Caçador, Ladino, Paladino, Necromante, Bardo, Monge, Bruxo, Bárbaro | ✅ |
 | Sistema de Combate | ATK/DEF/Mana/HP + contra-ataque | ✅ |
 | 4 Chefões | Vel'Krath, Malachar, Drakar, Xal'thar | ✅ |
 | 5 Missões | Narrativa conectada à lore | ✅ |
@@ -112,7 +112,7 @@ Transformar o README do perfil GitHub em uma **experiência interativa multi-usu
 | NPCs com Memória | 4 NPCs com diálogos contextuais por jogador | ✅ |
 | Sistema de Veneno | DoT com stacks + antídoto | ✅ |
 | PvP Fantasma | `rpg:desafiar:username` compara scores | ✅ |
-| 17 Conquistas | Sistema de achievements persistentes | ✅ |
+| 24 Conquistas | Sistema de achievements persistentes | ✅ |
 | Companheira Lyra | Companion que dá ATK bônus | ✅ |
 
 ---
@@ -121,12 +121,16 @@ Transformar o README do perfil GitHub em uma **experiência interativa multi-usu
 
 ### 5.1 Stack
 ```
-Linguagem:    Python 3.11 (stdlib only — zero pip installs)
+Linguagem:    Python 3 (stdlib only — zero pip installs)
 Storage:      JSON files commitados no repositório
 CI/CD:        GitHub Actions (gratuito para repos públicos)
 API:          GitHub REST API v3 (via urllib, sem libs externas)
 Rendering:    Markdown + GitHub README rendering
+Testes:       unittest (stdlib) — python3 -m unittest discover -s tests
 ```
+
+> Sem `actions/setup-python` no workflow: o runner `ubuntu-latest` já traz python3, e
+> `cache: pip` sem requirements.txt/pyproject.toml faz o step do setup-python falhar.
 
 ### 5.2 Fluxo de uma Jogada
 ```
@@ -166,20 +170,28 @@ xXYoungMoreXx/
 ├── CONTRIBUTING.md                     ← guia de contribuição
 ├── CODE_OF_CONDUCT.md                  ← código de conduta
 ├── SECURITY.md                         ← política de segurança
-├── SETUP.md                            ← guia de instalação
+├── SETUP.md                            ← guia de instalação + referência de ações
+├── .gitattributes                      ← eol=lf (estado não oscila CRLF/LF)
+├── docs/
+│   └── PLAN-v3.1-hardening.md          ← plano da rodada de correções v3.1
 ├── rpg/
-│   ├── engine.py                       ← motor v3 (~1150 linhas)
+│   ├── engine.py                       ← motor (~2400 linhas)
 │   ├── state.json                      ← estado global (mundo, eventos, NPCs)
 │   ├── leaderboard.json                ← ranking top 20
+│   ├── raids.json                      ← criado na primeira raid (não versionado até então)
 │   └── players/
 │       ├── .gitkeep
 │       └── {username}.json             ← save individual por jogador
+├── tests/
+│   └── test_engine.py                  ← 52 testes (unittest, stdlib)
 └── .github/
     ├── workflows/
-    │   ├── rpg.yml                     ← action principal (otimizada)
+    │   ├── rpg.yml                     ← action principal do jogo
+    │   ├── update-projects.yml          ← projetos em destaque (cron 12h)
     │   └── snake.yml                   ← animação de contribuições
     └── ISSUE_TEMPLATE/
-        └── rpg_action.yml              ← template de issue para o jogo
+        ├── rpg_action.yml              ← template de issue para o jogo
+        └── criar_raid.yml              ← template para convocar Raid
 ```
 
 ---
@@ -200,11 +212,22 @@ xXYoungMoreXx/
 
 | Limitação | Impacto | Mitigação |
 |-----------|---------|-----------|
-| Latência 30-90s | Jogo assíncrono, não tempo real | Esperado para o formato |
+| Latência 30-90s | Jogo assíncrono, não tempo real | Esperado para o formato; o README avisa |
 | README cache GitHub | Pode demorar ~2min para atualizar | Instruir jogador a dar F5 |
-| Conflito de commits | Dois jogadores simultâneos | `concurrency` group resolve via fila |
+| Conflito de commits | Dois jogadores simultâneos | `concurrency` group `readme-writer`, compartilhado com o cron de projetos, + retry com rebase no push |
+| Fila global | Latência cresce com jogadores concorrentes; teto prático ~5 simultâneos | Aceito — o formato é assíncrono por natureza |
 | Rate limit GitHub API | 5k req/hora (com token) | Mais do que suficiente |
-| GitHub API offline | Novo jogador não recebe bônus | Tratado com try/except silencioso |
+| GitHub API offline | Novo jogador não recebe bônus | `try/except` com `::warning::` no log da Action |
+| Sem rate limit por autor | Um bot pode abrir issues em massa e consumir minutos de Actions | **Em aberto** — precisa de decisão de produto (ações/hora por jogador) |
+| Conteúdo hardcoded no engine | Editar mapa/monstros/classes exige mexer no arquivo de lógica | **Em aberto** — extração para JSON planejada para v3.2, agora que há suíte de testes |
+
+## 7.1 Débito Técnico Registrado
+
+| Item | Por que ficou de fora |
+|------|----------------------|
+| Extrair conteúdo (mapa, monstros, classes, lore) para JSON | ~600 linhas de dados; refactor mecânico de alto alcance sem ganho funcional imediato. Faz sentido depois que a suíte de testes estiver estabelecida como rede de segurança. |
+| Dividir `engine.py` em pacote | Mesma justificativa. |
+| Rate limit por autor | Precisa de decisão de produto antes de código. |
 
 ---
 

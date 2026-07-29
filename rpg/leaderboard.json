@@ -2,43 +2,17 @@
   "players": [
     {
       "username": "xXYoungMoreXx",
-      "score": 1258,
+      "score": 1128,
       "level": 5,
       "prestige": 0,
       "classe": "guerreiro",
       "kills": 16,
-      "bosses": 1,
-      "conquistas": 7,
+      "bosses": 0,
+      "conquistas": 6,
       "titulo": null,
       "top_lang": "Python",
-      "last_played": "2026-04-24T03:14:58.587577+00:00"
-    },
-    {
-      "username": "UnregisteredUser123",
-      "score": 0,
-      "level": 1,
-      "prestige": 0,
-      "classe": null,
-      "kills": 0,
-      "bosses": 0,
-      "conquistas": 0,
-      "titulo": null,
-      "top_lang": null,
-      "last_played": "2026-04-23T23:54:08.281167+00:00"
-    },
-    {
-      "username": "testUser",
-      "score": 0,
-      "level": 1,
-      "prestige": 0,
-      "classe": "bruxo",
-      "kills": 0,
-      "bosses": 0,
-      "conquistas": 0,
-      "titulo": null,
-      "top_lang": null,
-      "last_played": "2026-04-24T02:18:12.780915+00:00"
+      "last_played": "2026-04-24T03:15:26.295570+00:00"
     }
   ],
-  "updated": "24/04/2026 03:15 UTC"
+  "updated": "28/07/2026 23:55 UTC"
 }

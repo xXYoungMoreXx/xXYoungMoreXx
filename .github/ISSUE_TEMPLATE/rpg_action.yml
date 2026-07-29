@@ -10,27 +10,39 @@ body:
 
         Edite o **título** desta issue para a ação desejada.
 
-        ### Ações disponíveis:
+        > 💡 O mais fácil é clicar nos botões do
+        > [README do perfil](https://github.com/xXYoungMoreXx#readme) — eles já vêm com o
+        > título certo. Esta issue é para quem quiser digitar a ação à mão.
+
+        ### Classes (escolha uma para começar)
+        `rpg:classe:` + `guerreiro` · `mago` · `cacador` · `ladino` · `paladino` ·
+        `necromante` · `bardo` · `monge` · `bruxo` · `barbaro`
+
+        ### Ações disponíveis
         | Título | Efeito |
         |--------|--------|
-        | `rpg:classe:guerreiro` | Escolher classe Guerreiro |
-        | `rpg:classe:mago` | Escolher classe Mago |
-        | `rpg:classe:cacador` | Escolher classe Caçador |
-        | `rpg:classe:ladino` | Escolher classe Ladino |
-        | `rpg:norte` / `rpg:sul` / `rpg:leste` / `rpg:oeste` | Mover |
+        | `rpg:norte` / `rpg:sul` / `rpg:leste` / `rpg:oeste` | Mover no mapa 5×5 |
         | `rpg:atacar` | Atacar inimigo |
-        | `rpg:habilidade` | Usar habilidade especial |
-        | `rpg:pocao` | Usar poção |
+        | `rpg:habilidade` / `rpg:habilidade:1` | Usar habilidade (por índice) |
+        | `rpg:pocao` | Usar o melhor consumível |
+        | `rpg:fugir` | Fugir do combate ou da masmorra |
         | `rpg:interagir` | Interagir com local/NPC |
         | `rpg:descansar` | Descansar (zona segura) |
         | `rpg:taverna` | Ouvir rumores na taverna |
+        | `rpg:mensagem:TEXTO` | Deixar mensagem na taverna |
+        | `rpg:masmorra` | Entrar na masmorra instanciada (nível 3+) |
+        | `rpg:avancar` | Avançar de sala na masmorra |
+        | `rpg:karma:good` / `rpg:karma:bad` | Escolha moral (Ironhold/Ravenford) |
         | `rpg:skill:ID` | Desbloquear habilidade (ex: `rpg:skill:gf1`) |
-        | `rpg:comprar:pocao` | Comprar item (ex: pocao, elixir_mana) |
-        | `rpg:craftar:pocao_maior` | Fabricar item |
+        | `rpg:comprar:pocao_menor` | Comprar (pocao_menor, pocao, elixir_mana, antidoto) |
+        | `rpg:craftar:pocao_maior` | Fabricar (pocao_maior, elixir_wyrd, po_reliquias) |
         | `rpg:montar:ironhold` | Viajar via montaria dracônica |
-        | `rpg:desafiar:USERNAME` | Desafiar outro jogador em PvP |
+        | `rpg:desafiar:USUARIO` | Desafiar outro jogador em PvP |
+        | `rpg:criar_raid:tita_de_gelo` | Convocar uma Raid (nível 5+) |
         | `rpg:prestigio` | Ativar prestígio (nível 10 necessário) |
         | `rpg:reiniciar` | Reiniciar seu personagem |
+
+        Referência completa em [SETUP.md](https://github.com/xXYoungMoreXx/xXYoungMoreXx/blob/main/SETUP.md).
 
         **Simplesmente edite o título acima e clique em Submit!**
 

@@ -44,10 +44,20 @@ Aguarde ~1 min. Branch `output` será criado.
 **Issues → Labels → New label:**
 - Nome: `rpg-action` · Cor: `#7c3aed` · Save
 
-## 6. Repositórios em Destaque (já configurados)
+## 6. Repositórios em Destaque
 
-Os 4 repositórios em destaque já estão preenchidos no README:
-- `WP_Cogitari_Theme` · `RAG_Agent` · `xXYoungMoreXx.github.io` · `Curso-Em-V-deo---Python-3`
+Preenchidos **automaticamente** por `update-projects.yml`: a cada 12h ele busca os 4 repos
+com push mais recente (exceto forks e o próprio repo de perfil) e reescreve o bloco entre
+`<!-- PROJECTS_START -->` e `<!-- PROJECTS_END -->`. Nada a configurar à mão.
+
+## 7. Rodar os testes
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+Zero dependências — `unittest` é stdlib, igual ao engine. 52 testes cobrindo todas as
+ações despacháveis e um teste de regressão por bug corrigido na v3.1.
 
 ---
 
@@ -58,39 +68,64 @@ Os 4 repositórios em destaque já estão preenchidos no README:
 - [ ] Read/write permissions ativadas
 - [ ] Snake rodou (branch `output` existe)
 - [ ] Label `rpg-action` criada
-- [ ] Repositórios em destaque configurados
+- [ ] `python3 -m unittest discover -s tests` verde
 
 ---
 
 ## 🎮 Referência Completa de Ações
 
+> Esta lista espelha exatamente o que `dispatch()` em `rpg/engine.py` aceita. Qualquer
+> outro título recebe "Ação desconhecida" no log — sem quebrar o turno.
+
 ### Movimento
 | Issue | Efeito |
 |-------|--------|
-| `rpg:norte/sul/leste/oeste` | Move no mapa 5×5 |
+| `rpg:norte` / `rpg:sul` / `rpg:leste` / `rpg:oeste` | Move no mapa 5×5 |
+| `rpg:montar` | Lista os destinos da montaria dracônica |
 | `rpg:montar:ironhold` | Teleporte dracônico para Ironhold |
 | `rpg:montar:ashenvale` | Teleporte para Aldeia de Ashenvale |
 | `rpg:montar:porto` | Teleporte para Porto da Perdição |
 
-### Personagem
+### Personagem — 10 classes
 | Issue | Efeito |
 |-------|--------|
-| `rpg:classe:guerreiro` | Escolhe Guerreiro (HP:130, DEF:10) |
-| `rpg:classe:mago` | Escolhe Mago (HP:85, MANA:100) |
-| `rpg:classe:cacador` | Escolhe Caçador (HP:105, equilibrado) |
-| `rpg:classe:ladino` | Escolhe Ladino (HP:95, críticos altos) |
-| `rpg:classe:paladino` | Escolhe Paladino (HP:140, DEF:12) |
-| `rpg:classe:necromante` | Escolhe Necromante (HP:85, MANA:120) |
-| `rpg:classe:bardo` | Escolhe Bardo (HP:95, equilibrado) |
-| `rpg:prestigio` | Prestígio (requer nível 10) |
-| `rpg:reiniciar` | Reseta seu personagem |
+| `rpg:classe:guerreiro` | Guerreiro (HP:130, DEF:10) |
+| `rpg:classe:mago` | Mago (HP:85, MANA:100) |
+| `rpg:classe:cacador` | Caçador (HP:105, equilibrado) |
+| `rpg:classe:ladino` | Ladino (HP:95, críticos altos) |
+| `rpg:classe:paladino` | Paladino (HP:140, DEF:12) |
+| `rpg:classe:necromante` | Necromante (HP:85, MANA:120) |
+| `rpg:classe:bardo` | Bardo (HP:95, CAR:18) |
+| `rpg:classe:monge` | Monge (HP:115, DES:16) |
+| `rpg:classe:bruxo` | Bruxo (HP:90, MANA:110) |
+| `rpg:classe:barbaro` | Bárbaro (HP:150, FOR:18) |
+| `rpg:prestigio` | Prestígio (requer nível 10; zera nível e árvore, +HP/Mana base) |
+| `rpg:reiniciar` | Reseta seu personagem de verdade |
 
 ### Combate
 | Issue | Efeito |
 |-------|--------|
-| `rpg:atacar` | Ataque básico |
-| `rpg:habilidade` | Habilidade especial (consome mana) |
-| `rpg:pocao` | Usa uma poção de cura |
+| `rpg:atacar` | Ataque básico no primeiro inimigo |
+| `rpg:habilidade` | Primeira habilidade da classe |
+| `rpg:habilidade:0` / `rpg:habilidade:1` | Habilidade por índice (índice inválido cai na 0) |
+| `rpg:pocao` | Usa o melhor consumível do inventário; sem inventário, uma poção básica |
+| `rpg:fugir` | Foge do combate — ou da masmorra, perdendo 50% do ouro |
+
+### Masmorras instanciadas
+| Issue | Efeito |
+|-------|--------|
+| `rpg:masmorra` | Entra na masmorra do terreno atual (nível 3+, fora de zona segura) |
+| `rpg:avancar` | Avança para a próxima sala (10 salas; a 10ª tem o Mestre da Masmorra) |
+
+> O Mestre da Masmorra dá XP, ouro e conta para as conquistas de masmorra — **não** conta
+> como chefão do mundo nem dropa relíquia de chefão.
+
+### Moralidade e social
+| Issue | Efeito |
+|-------|--------|
+| `rpg:karma:good` / `rpg:karma:bad` | Escolha moral (só em Ironhold e Ravenford) |
+| `rpg:mensagem:TEXTO` | Deixa uma mensagem na taverna (até 100 chars, sanitizada) |
+| `rpg:desafiar:USUARIO` | PvP fantasma — compara scores (o login preserva maiúsculas) |
 
 ### Exploração
 | Issue | Efeito |
@@ -109,12 +144,15 @@ Os 4 repositórios em destaque já estão preenchidos no README:
 
 > Preços variam -20% a +40% conforme reputação com a facção local.
 
-### Crafting (combina itens do inventário)
+### Crafting
 | Issue | Ingredientes | Resultado |
 |-------|-------------|-----------|
-| `rpg:craftar:pocao_maior` | 3× Poção Menor | Poção Superior (+120 HP) |
-| `rpg:craftar:elixir_wyrd` | 1× Poção + 1× Elixir Mana | Elixir Wyrd (+40 HP +40 Mana) |
+| `rpg:craftar:pocao_maior` | 3× Poção Menor | Poção Superior (+120 HP) → inventário |
+| `rpg:craftar:elixir_wyrd` | 1× Poção Menor + 1× Elixir Mana | Elixir Wyrd (+40 HP +40 Mana) → inventário |
 | `rpg:craftar:po_reliquias` | 2× Relíquias | Pó de Relíquias (+200 XP) |
+
+> ⚠️ `po_reliquias` **consome** as relíquias, e com elas os passivos permanentes (+20 ATK,
+> +30% XP, imunidade a 1 morte). A troca é intencional; o log diz quais foram gastas.
 
 ### Habilidades (Skill Tree)
 Ganhe pontos ao subir de nível. Use `rpg:skill:ID` para desbloquear.
@@ -219,26 +257,24 @@ Ganhe pontos ao subir de nível. Use `rpg:skill:ID` para desbloquear.
 | `bas1` | Sede de Sangue | 1 | — | Ao matar: próx. atk +30% |
 | `bas2` | Incontrolável | 2 | bas1 | Fuga sempre funciona |
 
-### Social
-| Issue | Efeito |
-|-------|--------|
-| `rpg:desafiar:USERNAME` | PvP fantasma vs outro jogador |
-
 ---
 
 ## 🗺️ Guia do Mapa
 
-```
-🌨️🏔️🗼🌊🏝️   ← Linha 0 (Norte extremo)
-🌲🏘️🏚️🏰⛵   ← Linha 1
-🌑🌾🏙️⛏️🌊   ← Linha 2 (começo: 🏙️ Ironhold x=2,y=2)
-🌳🛕🏡⚙️⚓   ← Linha 3
-🕳️💀⛪🕵️🔱   ← Linha 4 (Sul extremo)
-```
+|   | 0 | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|---|
+| **0** | 🌨️ Tundra Glacial | 🏔️ Pico de Frostmourne | 🗼 Torre do Oráculo | 🌊 Mar Cinzento | 🏝️ Ilhas do Exílio |
+| **1** | 🌲 Floresta de Mirewood | 🏘️ Aldeia de Ashenvale | 🏚️ Ruínas de Vel'Moran | 🏰 Fortaleza das Sombras | ⛵ Costa dos Náufragos |
+| **2** | 🌑 Pântano de Morgraen | 🌾 Planície Dourada | 🏙️ **Ironhold** _(início)_ | ⛏️ Masmorra de Kragdor | 🌊 Mar do Sul |
+| **3** | 🌳 Floresta Profunda | 🛕 Templo Esquecido | 🏡 Vilarejo de Ravenford | ⚙️ Minas de Ferro | ⚓ Porto da Perdição |
+| **4** | 🕳️ Cavernas Abissais | 💀 Floresta Amaldiçoada | ⛪ Catedral em Ruínas | 🕵️ Mercado Negro | 🔱 Litoral Proibido |
 
-**Zonas seguras** (sem encontros, compra, descanso): 🏙️ Ironhold · 🏘️ Ashenvale · 🏡 Ravenford · 🕵️ Mercado Negro · ⚓ Porto da Perdição
+**Zonas seguras** (sem encontros; compra, descanso e taverna): 🏙️ Ironhold · 🏘️ Ashenvale · 🏡 Ravenford · 🕵️ Mercado Negro · ⚓ Porto da Perdição
 
 **Chefões**: 🏚️ Vel'Krath · 🏰 Lord Malachar · ⛏️ Drakar · 🏝️ Xal'thar
+
+**Relógio do mundo**: dia/noite e o evento mundial seguem o horário **UTC** — noite entre
+18h e 6h, e o evento rotaciona a cada 6h. Não depende de quantas ações foram jogadas.
 
 ---
 

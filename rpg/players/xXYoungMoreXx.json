@@ -15,10 +15,10 @@
     "👥 6 seguidores → **+3 XP** inicial!",
     "💻 Linguagem principal **Python** → afinidade com **Mago** _(bônus ao escolher esta classe!)_"
   ],
-  "hp": 10035,
-  "max_hp": 10035,
-  "mana": 10079,
-  "max_mana": 10079,
+  "hp": 202,
+  "max_hp": 202,
+  "mana": 80,
+  "max_mana": 80,
   "xp": 655,
   "total_xp": 658,
   "level": 5,
@@ -82,9 +82,7 @@
       "gold": 0
     }
   ],
-  "bosses_defeated": {
-    "Tundra Glacial": true
-  },
+  "bosses_defeated": {},
   "relics": [],
   "companion": null,
   "visited": [
@@ -94,7 +92,6 @@
   "conquistas": [
     "primeiro_sangue",
     "caçador_10",
-    "primeiro_chefao",
     "nivel_5",
     "rico",
     "dungeon_clear",
@@ -102,13 +99,7 @@
   ],
   "sessions": 75,
   "log": [
-    "⚔️ Escolha sua classe para começar!",
-    "🔄 **Nova lenda começa em Aethoria...**",
-    "🏆 **CONQUISTA: 💎 Perfeição Abissal**",
-    "🏆 **CONQUISTA: 🏰 Sobrevivente do Abismo**",
-    "🏆 **CONQUISTA: 💰 Barão do Ouro**",
-    "🏆 **CONQUISTA: ⭐ Aventureiro**",
-    "🏰 Masmorras completas: 1"
+    "⚔️ Engine v3.1 — estado validado. Nível 5, 392g, 16 kills. A jornada continua."
   ],
   "boss_phase": 0,
   "poison_stacks": 0,
@@ -131,5 +122,12 @@
   "dungeon_room": 0,
   "dungeon_terrain": "Tundra Glacial",
   "dungeons_cleared": 1,
-  "dungeon_flawless": true
+  "dungeon_flawless": true,
+  "karma": 0,
+  "legacy_stacks": 0,
+  "affinity_bonus": false,
+  "tavern_bonus": {},
+  "death_immunity_used": false,
+  "mana_elixirs": 0,
+  "dungeon_flawless_count": 1
 }

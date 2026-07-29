@@ -15,7 +15,7 @@
 ║                 Eragon · Trono de Vidro · Corte de Espinhos e Rosas         ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
-import json, sys, random, re, os, unicodedata
+import json, sys, random, re, os, unicodedata, traceback
 from pathlib import Path
 from datetime import datetime, timezone
 from urllib.request import Request, urlopen
@@ -482,7 +482,7 @@ CONQUISTAS = [
     ("raid_titan",        "👑 Matador de Titãs",       "Derrotou ambos os World Bosses",          lambda p:len(p.get("raid_bosses_killed",[]))>=len(WORLD_BOSSES)),
     ("dungeon_clear",     "🏰 Sobrevivente do Abismo","Completou uma Masmorra Instanciada",      lambda p:p.get("dungeons_cleared",0)>=1),
     ("dungeon_5",         "🗝️ Rato de Masmorra",      "5 Masmorras completadas",                 lambda p:p.get("dungeons_cleared",0)>=5),
-    ("dungeon_flawless",  "💎 Perfeição Abissal",      "Completou uma Masmorra sem usar poção",   lambda p:p.get("dungeon_flawless",False)),
+    ("dungeon_flawless",  "💎 Perfeição Abissal",      "Completou uma Masmorra sem usar poção",   lambda p:p.get("dungeon_flawless_count",0)>=1),
 ]
 
 # GitHub language → class affinity
@@ -495,6 +495,40 @@ LANG_CLASS = {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  SANITIZAÇÃO DE ENTRADA
+#  Tudo aqui existe porque o título da issue é 100% controlado por quem a abre, e o
+#  resultado é renderizado no README público do perfil.
+# ══════════════════════════════════════════════════════════════════════════════
+# Regra de login do GitHub: alfanumérico com hífens simples no meio, até 39 chars.
+_LOGIN_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$")
+# Caracteres que quebram markdown/HTML ou viram backreference em re.sub().
+_MD_UNSAFE = re.compile(r"[<>\[\]`|*_~\\\r\n{}]")
+
+def safe_username(u):
+    """Um login inválido nunca pode virar caminho de arquivo: `rpg:desafiar:../../x`
+    lia fora de rpg/players/."""
+    u = (u or "").strip()
+    return u if _LOGIN_RE.match(u) else "anon"
+
+def esc(s, limit=120):
+    r"""Neutraliza texto de jogador antes de entrar no README. Sem isto,
+    `rpg:mensagem:[clique](https://phishing.tld)` renderizava um link no perfil, e um
+    `\1` no título virava backreference no re.sub() do renderer."""
+    return _MD_UNSAFE.sub("", str(s))[:limit]
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  RELÓGIO DO MUNDO
+#  Dia/noite e eventos derivam do TEMPO, não do contador de turnos. Com `turn`
+#  global e compartilhado, 10 jogadores ativos faziam o dia virar noite em minutos e
+#  os eventos mundiais rotacionarem várias vezes por hora.
+# ══════════════════════════════════════════════════════════════════════════════
+WORLD_EPOCH = datetime(2026, 1, 1, tzinfo=timezone.utc)
+EVENT_HOURS = 6                      # cada evento mundial dura 6h
+NIGHT_START, NIGHT_END = 18, 6       # noite entre 18h e 6h UTC
+
+def _now(): return datetime.now(timezone.utc)
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  I/O LAYER
 # ══════════════════════════════════════════════════════════════════════════════
 def _rw(path, data=None):
@@ -502,7 +536,9 @@ def _rw(path, data=None):
     if data is None:
         return json.loads(p.read_text("utf-8")) if p.exists() else None
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(data, ensure_ascii=False, indent=2), "utf-8")
+    # newline="\n": sem isto o mesmo arquivo alterna CRLF (Windows local) e LF
+    # (runner), e o diff de um turno vira "arquivo inteiro alterado".
+    p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", "utf-8", newline="\n")
 
 def load_gs():
     s = _rw("rpg/state.json")
@@ -513,11 +549,12 @@ def load_gs():
 
 def save_gs(s): _rw("rpg/state.json", s)
 
-def load_player(u):
-    p = _rw(f"rpg/players/{u}.json")
-    if p: p.pop("_new", None); return p
+def new_player(u):
+    """Estado inicial. Precisa ser uma factory separada de load_player: action_reset
+    chamava load_player(), que relê o arquivo existente do disco — então
+    `rpg:reiniciar` copiava o save antigo de volta e não reiniciava nada."""
     return {
-        "_new":True,"username":u,"github_profile":None,"profile_bonuses":{},
+        "username":u,"github_profile":None,"profile_bonuses":[],
         "hp":0,"max_hp":0,"mana":0,"max_mana":0,
         "xp":0,"total_xp":0,"level":1,"gold":10,"potions":3,
         "kills":0,"deaths":0,"classe":None,"defense":5,"titulo":None,
@@ -537,23 +574,64 @@ def load_player(u):
         "active_monsters":[],"boss_phase":0,"poison_stacks":0,"fury_bonus":False,
         "dragon_mount":False,"prestige_count":0,"crafted_count":0,"pvp_wins":0,
         "raid_count":0,"raid_mvp_count":0,"raid_bosses_killed":[],
-        "last_played":datetime.now(timezone.utc).isoformat(),
+        "karma":0,"legacy_stacks":0,"factions":{"ordem":0,"circulo":0,"pacto":0},
+        "in_dungeon":False,"dungeon_room":0,"dungeons_cleared":0,
+        "dungeon_flawless":False,"affinity_bonus":False,"tavern_bonus":{},
+        "death_immunity_used":False,"mana_elixirs":0,
+        "last_played":_now().isoformat(),
     }
 
-def save_player(p): _rw(f"rpg/players/{p['username']}.json", p)
+def migrate_player(p):
+    """Normaliza save antigo e aplica clamp de sanidade.
+
+    Duas dívidas cobertas aqui: (1) cada fase do jogo adicionou chaves novas e o código
+    mistura acesso direto (p["kills"]) com defensivo (p.get("karma",0)) — um save de
+    versão anterior estourava KeyError; (2) não havia nenhum limite superior, e um save
+    com max_hp 10035 no nível 5 ficou meses exposto no perfil público."""
+    base = new_player(p.get("username", "anon"))
+    for k, v in base.items():
+        if k not in p:
+            p[k] = json.loads(json.dumps(v))  # cópia profunda, sem alias entre saves
+    if not isinstance(p.get("profile_bonuses"), list):
+        p["profile_bonuses"] = []
+    p["level"] = max(1, min(10, int(p.get("level", 1) or 1)))
+    for k in ("xp", "total_xp", "gold", "potions", "kills", "deaths", "skill_points"):
+        p[k] = max(0, int(p.get(k, 0) or 0))
+    recompute_maxima(p)
+    return p
+
+def load_player(u):
+    u = safe_username(u)
+    p = _rw(f"rpg/players/{u}.json")
+    if p:
+        p.pop("_new", None)
+        return migrate_player(p)
+    p = new_player(u)
+    p["_new"] = True
+    return p
+
+def save_player(p): _rw(f"rpg/players/{safe_username(p['username'])}.json", p)
+
+# Cache de processo: load_raids() era lido do disco 4x por turno (_cleanup_raids,
+# action_raid_attack, build_block, _render_raids_preclass). Como é um processo por
+# turno, o dict pode ser compartilhado — mutações ficam visíveis para todos.
+_raids_cache = None
 
 def load_raids():
-    r = _rw("rpg/raids.json")
-    if not r:
-        r = {}
-    return r
+    global _raids_cache
+    if _raids_cache is None:
+        _raids_cache = _rw("rpg/raids.json") or {}
+    return _raids_cache
 
-def save_raids(r): _rw("rpg/raids.json", r)
+def save_raids(r):
+    global _raids_cache
+    _raids_cache = r
+    _rw("rpg/raids.json", r)
 
 def _cleanup_raids():
     """Remove defeated raids older than 24 hours."""
     raids = load_raids()
-    now = datetime.now(timezone.utc)
+    now = _now()
     stale = [k for k, r in raids.items()
              if r.get("status") == "defeated" and r.get("defeated_at")
              and (now - datetime.fromisoformat(r["defeated_at"])).total_seconds() > 86400]
@@ -570,13 +648,19 @@ def save_lb(lb): _rw("rpg/leaderboard.json", lb)
 # ══════════════════════════════════════════════════════════════════════════════
 #  GITHUB API
 # ══════════════════════════════════════════════════════════════════════════════
+HTTP_TIMEOUT = 8
+
 def gh_get(ep, tok=None):
     h = {"Accept":"application/vnd.github.v3+json","User-Agent":"Aethoria-RPG/3.0"}
     if tok: h["Authorization"]=f"token {tok}"
     try:
-        with urlopen(Request(f"https://api.github.com{ep}",headers=h), timeout=8) as r:
+        with urlopen(Request(f"https://api.github.com{ep}",headers=h), timeout=HTTP_TIMEOUT) as r:
             return json.loads(r.read().decode())
-    except Exception: return None
+    except Exception as e:
+        # Antes era `except Exception: return None` seco — rate limit e token inválido
+        # ficavam indistinguíveis de "usuário não existe" e não apareciam em log algum.
+        print(f"::warning::GET {ep} falhou: {type(e).__name__}: {e}")
+        return None
 
 def fetch_profile(u, tok=None):
     user=gh_get(f"/users/{u}",tok)
@@ -590,8 +674,8 @@ def fetch_profile(u, tok=None):
         "login":u,"name":user.get("name") or u,"followers":user.get("followers",0),
         "public_repos":user.get("public_repos",0),"total_stars":stars,
         "top_language":max(langs,key=langs.get) if langs else None,
-        "account_age":datetime.now().year-int(user.get("created_at","2020")[:4]),
-        "bio":(user.get("bio") or "")[:80],"fetched_at":datetime.now(timezone.utc).isoformat(),
+        "account_age":_now().year-int((user.get("created_at") or "2020")[:4]),
+        "bio":esc(user.get("bio") or "", 80),"fetched_at":_now().isoformat(),
     }
 
 def apply_profile_bonuses(profile, p):
@@ -619,8 +703,12 @@ def terrain(p): return WORLD_MAP[p["position"]["y"]][p["position"]["x"]]
 def cls(p): return CLASSES.get(p.get("classe",""),None)
 
 def sb(p):
-    """Aggregate skill tree passive bonuses."""
-    b={"atk_flat":0,"def_flat":0,"hp_max":0,"mana_max":30,"crit":0.0,"dodge":0.0,
+    """Aggregate skill tree passive bonuses.
+
+    mana_max começa em 0, não em 30: o valor de 30 era semente do dicionário e o
+    level-up somava `10 + sk["mana_max"]`, dando +40 de mana máx por nível a quem não
+    tinha skill nenhuma."""
+    b={"atk_flat":0,"def_flat":0,"hp_max":0,"mana_max":0,"crit":0.0,"dodge":0.0,
        "companion_atk":0,"kill_fury":0.0,"low_hp_bonus":0.0,"burn":0,
        "stun":0.0,"poison_chance":0.0,"poison_debuff":0.0,"skill_cost_off":0,
        "regen":0,"precision_multi":0.0,"double_atk":0.0,"always_double":False,
@@ -638,7 +726,52 @@ def sb(p):
         pas=rel.get("passive","")
         if pas=="atk_flat_20": b["atk_flat"]+=20
         elif pas=="xp_boost_30": b["_xp_boost"]=1.30
+        elif pas=="dragon_rider": b["atk_flat"]+=12   # "+12 ATK" prometido na relíquia
     return b
+
+def recompute_maxima(p):
+    """max_hp/max_mana são DERIVADOS de classe + nível + prestígio + árvore.
+
+    Antes eram acumulados: `check_lu` fazia `max_hp += 18 + sk["hp_max"]`, ressomando o
+    bônus inteiro da árvore a cada nível. Derivar em vez de acumular torna a função
+    idempotente — pode ser chamada quantas vezes quiser no mesmo turno — e impossibilita
+    o drift que produziu um save com max_hp 10035 no nível 5."""
+    c = cls(p)
+    if not c:                       # sem classe escolhida ainda: 0/0, como antes
+        p.setdefault("max_hp", 0); p.setdefault("max_mana", 0)
+        p.setdefault("hp", 0); p.setdefault("mana", 0)
+        return
+    sk = sb(p)
+    prest = p.get("prestige_count", 0)
+    lvl = max(1, min(10, p.get("level", 1)))
+    p["max_hp"] = c["hp"] + 20*prest + 18*(lvl-1) + sk["hp_max"] + (15 if p.get("affinity_bonus") else 0)
+    p["max_mana"] = c["mana"] + 15*prest + 10*(lvl-1) + sk["mana_max"]
+    p["hp"] = max(0, min(p.get("hp", p["max_hp"]), p["max_hp"]))
+    p["mana"] = max(0, min(p.get("mana", p["max_mana"]), p["max_mana"]))
+
+def total_def(p, sk=None):
+    """Defesa efetiva = base da classe + `def_flat` da árvore.
+
+    `def_flat` era agregado em sb() e nunca lido por ninguém: os 14 nós defensivos
+    (Escudo de Ferro, Muralha Viva, Aura de Devoção, Bastião da Luz, Corpo Diamante,
+    Ignorar Dor...) eram placebo, embora anunciados no README e no SETUP.md."""
+    return p.get("defense", 5) + (sk or sb(p))["def_flat"]
+
+def in_combat(p):
+    """`active_monster` (singular) é a chave legada de antes das hordas. action_rest e
+    action_mount ainda checavam só ela, então dava para descansar e teleportar no meio
+    de um combate."""
+    return bool(p.get("active_monsters") or p.get("active_monster"))
+
+def consume_tavern_bonus(p, m):
+    """O rumor "+15 ATK contra ele na próxima batalha" era gravado em
+    p["tavern_bonus"]["boss_atk"] e nunca lido por ninguém."""
+    tb = p.get("tavern_bonus") or {}
+    if m and m.get("is_boss") and tb.get("boss_atk"):
+        bonus = int(tb.pop("boss_atk"))
+        push_log(p, f"🍺 O rumor da taverna se confirma: **+{bonus} ATK** contra {m['nome']}!")
+        return bonus
+    return 0
 
 def atk_dmg(p, bonuses=None):
     c=cls(p); sk=sb(p)
@@ -674,14 +807,47 @@ def mp_bar(v,mx):
     return f"`[{'▓'*f}{'░'*(8-f)}]` {v}/{mx}"
 
 def render_map(p):
+    """Tabela em vez de bloco de código: emoji com variation selector (🌨️, 🏔️) tem
+    largura diferente de emoji simples, então o grid dentro de ``` saía torto em boa
+    parte das fontes."""
     px,py=p["position"]["x"],p["position"]["y"]
-    return "\n".join("".join("🧙"if x==px and y==py else MAP_EMOJI.get(t,"❓")for x,t in enumerate(row))for y,row in enumerate(WORLD_MAP))
+    rows=["| | 0 | 1 | 2 | 3 | 4 |","|---|:-:|:-:|:-:|:-:|:-:|"]
+    for y,row in enumerate(WORLD_MAP):
+        cells=["🧙" if (x==px and y==py) else MAP_EMOJI.get(t,"❓") for x,t in enumerate(row)]
+        rows.append(f"| **{y}** | " + " | ".join(cells) + " |")
+    return "\n".join(rows)
 
-def dn(gs): return "🌙 Noite" if (gs["turn"]//3)%2 else "☀️ Dia"
+def render_legend(p):
+    """A legenda antiga listava 14 dos 25 locais — faltavam Mar Cinzento, Ilhas do
+    Exílio, Costa dos Náufragos, Mar do Sul, Minas, Porto, Cavernas, Amaldiçoada,
+    Catedral, Mercado Negro e Litoral. Agora é gerada do mapa, uma linha por fileira,
+    então dá para localizar a posição direto."""
+    px,py=p["position"]["x"],p["position"]["y"]
+    out=[]
+    for y,row in enumerate(WORLD_MAP):
+        parts=[]
+        for x,t in enumerate(row):
+            mark="🧙 " if (x==px and y==py) else ""
+            safe="🔵" if t in SAFE_ZONES else ""
+            parts.append(f"{mark}{MAP_EMOJI.get(t,'❓')}{safe} {t}")
+        out.append(f"> **{y}** · " + " · ".join(parts))
+    out.append("> 🧙 = você · 🔵 = zona segura (compra, descanso, taverna)")
+    return "\n".join(out)
 
-def get_event(gs):
-    idx=(gs["turn"]//15)%len(WORLD_EVENTS)
-    return WORLD_EVENTS[idx]
+def dn(gs=None, now=None):
+    h=(now or _now()).hour
+    return "🌙 Noite" if (h>=NIGHT_START or h<NIGHT_END) else "☀️ Dia"
+
+def get_event(gs=None, now=None):
+    slot=int((( now or _now())-WORLD_EPOCH).total_seconds()//(EVENT_HOURS*3600))
+    return WORLD_EVENTS[slot%len(WORLD_EVENTS)]
+
+def event_ends_in(now=None):
+    """Quanto falta para o evento mundial rotacionar — o jogador não tinha como saber."""
+    now=now or _now()
+    elapsed=(now-WORLD_EPOCH).total_seconds()%(EVENT_HOURS*3600)
+    mins=int((EVENT_HOURS*3600-elapsed)//60)
+    return f"{mins//60}h{mins%60:02d}min"
 
 def push_log(p,msg): p.setdefault("log",[]).insert(0,msg); p["log"]=p["log"][:7]
 def push_world(gs,msg): gs.setdefault("world_log",[]).insert(0,msg); gs["world_log"]=gs["world_log"][:8]
@@ -692,13 +858,17 @@ def xp_gain(p,xp,sk_bonus=None):
     return final
 
 def check_lu(p):
-    if p["level"]>=10: return ""
-    if p["xp"]>=XP_TABLE[p["level"]+1]:
-        p["level"]+=1; p["skill_points"]+=1
-        sk=sb(p); p["max_hp"]+=18+sk["hp_max"]; p["max_mana"]+=10+sk["mana_max"]
-        p["hp"]=p["max_hp"]; p["mana"]=p["max_mana"]
-        return f"🌟 **LEVEL UP → {p['level']}!** +1 ponto de habilidade · HP e Mana restaurados!"
-    return ""
+    """Sobe todos os níveis que o XP permitir (era um `if`, então um ganho grande de XP
+    parava no primeiro nível) e é idempotente, porque os máximos são derivados — antes
+    duas chamadas no mesmo turno davam dois níveis de bônus."""
+    ups=0
+    while p["level"]<10 and p["xp"]>=XP_TABLE[p["level"]+1]:
+        p["level"]+=1; p["skill_points"]+=1; ups+=1
+    if not ups: return ""
+    recompute_maxima(p)
+    p["hp"]=p["max_hp"]; p["mana"]=p["max_mana"]
+    plural="pontos" if ups>1 else "ponto"
+    return f"🌟 **LEVEL UP → {p['level']}!** +{ups} {plural} de habilidade · HP e Mana restaurados!"
 
 def check_quests(p,gs,t=None,boss=None):
     for q in p.get("quests",[]):
@@ -730,13 +900,15 @@ def check_conquistas(p,gs):
             push_world(gs,f"🏆 @{p['username']} conquistou **{cname}**!")
 
 def shop_price(p,base_price,t):
+    """Ordem dos testes corrigida: `rep<-1` vinha antes de `rep<-3`, então o ramo de
+    +40% era inalcançável e o SETUP.md prometia uma faixa que não existia."""
     faction=FACTION_ZONES.get(t)
     if not faction: return base_price
     rep=p.get("factions",{}).get(faction,0)
-    if rep>3: return int(base_price*0.80)
-    if rep>1: return int(base_price*0.90)
-    if rep<-1: return int(base_price*1.20)
+    if rep>3:  return int(base_price*0.80)
+    if rep>1:  return int(base_price*0.90)
     if rep<-3: return int(base_price*1.40)
+    if rep<-1: return int(base_price*1.20)
     return base_price
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -746,11 +918,20 @@ def monster_hits(p,m):
     sk=sb(p)
     if sk["dodge"]>0 and random.random()<sk["dodge"]:
         push_log(p,f"💨 Você esquivou do ataque de **{m['nome']}**!"); return
-    raw=random.randint(max(1,m["atk"]-5),m["atk"]); dmg=max(1,raw-p.get("defense",5))
+    raw=random.randint(max(1,m["atk"]-5),m["atk"]); dmg=max(1,raw-total_def(p,sk))
     p["hp"]=max(0,p["hp"]-dmg); push_log(p,f"🩸 **{m['nome']}**: **-{dmg} HP** (defesa bloqueou {raw-dmg})")
     if p["hp"]<=0: push_log(p,"💀 **Você caiu...** Ironhold te recebe."); death_reset(p)
 
 def death_reset(p):
+    # Relíquia "Espírito de Vel'Moran" prometia "imune a 1 morte por sessão" e o passivo
+    # death_immunity nunca era consultado em lugar nenhum.
+    if (any(r.get("passive")=="death_immunity" for r in p.get("relics",[]))
+            and not p.get("death_immunity_used")):
+        p["death_immunity_used"]=True
+        c=cls(p); p["hp"]=max(1,(c["hp"] if c else 100)//2)
+        p["active_monsters"]=[]; p["boss_phase"]=0; p["poison_stacks"]=0
+        push_log(p,"👻 **Espírito de Vel'Moran** te arranca da morte! _(imunidade gasta — descanse para recarregar)_")
+        return
     c=cls(p); p["hp"]=max(30,(c["hp"]if c else 100)//3); p["mana"]=max(10,p["max_mana"]//2)
     p["position"]={"x":2,"y":2}; p["gold"]=max(0,p["gold"]-12)
     p["active_monsters"]=[]; p["boss_phase"]=0; p["poison_stacks"]=0
@@ -772,7 +953,14 @@ def resolve_kill(p,m,gs):
     xp_total=int(xp_base*xp_mult); g=xp_gain(p,xp_total,sk)
     p["gold"]+=gold; p["kills"]+=1; p["fury_bonus"]=True
     t=terrain(p); boss_data=BOSSES.get(t,{})
-    if m.get("is_boss"):
+    # O mini-boss da sala 10 da masmorra também é is_boss=True, e este bloco gravava
+    # bosses_defeated[terreno_atual]. Resultado: matar o Troll-Rei numa masmorra em
+    # Kragdor entregava a relíquia de Drakar e a montaria dracônica de graça, e matar
+    # qualquer mini-boss dava a conquista "Caçador de Chefões" com os 4 chefões vivos.
+    # É exatamente o que aconteceu no save do dono do repo (bosses_defeated:
+    # {"Tundra Glacial": true}, um terreno que não tem chefão nenhum).
+    is_world_boss = m.get("is_boss") and not p.get("in_dungeon") and t in BOSSES
+    if is_world_boss:
         p.setdefault("bosses_defeated",{})[t]=True; p["boss_phase"]=0
         push_log(p,f"💀 **[CHEFÃO DERROTADO]** {m['emoji']} {m['nome']}! +{g} XP · +{gold}g")
         push_log(p,"_Esta vitória ecoará pelos corredores da história._")
@@ -782,6 +970,7 @@ def resolve_kill(p,m,gs):
         if relic and not any(r["id"]==relic["id"] for r in p.get("relics",[])):
             p.setdefault("relics",[]).append(relic)
             push_log(p,f"{relic['emoji']} **Relíquia:** {relic['nome']} — _{relic['effect']}_")
+            recompute_maxima(p)
         # Dragon mount
         if boss_data.get("post_kill_unlock")=="dragon_mount":
             p["dragon_mount"]=True; push_log(p,"🐉 **Montaria Dracônica desbloqueada!** Use `rpg:montar` para viajar!")
@@ -789,12 +978,15 @@ def resolve_kill(p,m,gs):
         # Faction update — defeating Sombras bosses increases Ordem rep
         if t in ("Fortaleza das Sombras","Ruínas de Vel'Moran"):
             p.setdefault("factions",{"ordem":0,"circulo":0,"pacto":0}); p["factions"]["ordem"]=min(5,p["factions"].get("ordem",0)+1)
-        # Regen from Caçador
-        if sk.get("regen",0)>0: p["hp"]=min(p["max_hp"],p["hp"]+sk["regen"])
+    elif m.get("is_boss"):
+        # Mestre de masmorra: recompensa cheia, zero crédito de chefão do mundo.
+        p["boss_phase"]=0
+        p["dungeon_bosses_killed"]=sorted(set(p.get("dungeon_bosses_killed",[]))|{m["nome"]})
+        push_log(p,f"💀 **[MESTRE DA MASMORRA DERROTADO]** {m['emoji']} {m['nome']}! +{g} XP · +{gold}g")
+        push_world(gs,f"🏰 @{p['username']} derrotou **{m['nome']}** no fundo de uma masmorra!")
     else:
         push_log(p,f"💀 **{m['nome']} derrotado!** +{g} XP · +{gold}g")
         if random.random()<0.12: p["potions"]+=1; push_log(p,"🧪 Poção encontrada no corpo!")
-        if sk.get("regen",0)>0: p["hp"]=min(p["max_hp"],p["hp"]+sk["regen"])
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  DUNGEON SYSTEM — INSTANCED ROGUELIKE
@@ -836,9 +1028,11 @@ def _generate_dungeon_encounter(p, gs):
         gold_reward = 150 + random.randint(50, 150)
         p["gold"] += gold_reward
         p["dungeons_cleared"] = p.get("dungeons_cleared", 0) + 1
-        # Check flawless (no potions used during dungeon)
-        if p.get("_dungeon_potions_used", 0) == 0:
-            p["dungeon_flawless"] = True
+        # Flawless é por run: `dungeon_flawless` ficava True para sempre depois da
+        # primeira masmorra limpa, então o status do README mentia nas runs seguintes.
+        p["dungeon_flawless"] = p.get("_dungeon_potions_used", 0) == 0
+        if p["dungeon_flawless"]:
+            p["dungeon_flawless_count"] = p.get("dungeon_flawless_count", 0) + 1
         p.pop("_dungeon_potions_used", None)
         xp_bonus = 50 + (p["level"] * 10)
         xp_gain(p, xp_bonus)
@@ -916,7 +1110,7 @@ def action_dungeon(p, gs):
     """Enter an instanced dungeon from the current terrain."""
     if not p.get("classe"): push_log(p, "⚠️ Escolha uma classe antes de explorar masmorras!"); return
     if p.get("in_dungeon"): push_log(p, "⚠️ Você já está dentro de uma masmorra!"); return
-    if p.get("active_monsters"): push_log(p, "⚔️ Termine o combate antes de entrar na masmorra!"); return
+    if in_combat(p): push_log(p, "⚔️ Termine o combate antes de entrar na masmorra!"); return
     t = terrain(p)
     if t in SAFE_ZONES: push_log(p, f"🏰 Não há masmorras em **{t}**. Aventure-se nas terras selvagens!"); return
     if p["level"] < 3: push_log(p, "⚠️ Nível mínimo 3 para masmorras. Continue caçando!"); return
@@ -926,6 +1120,7 @@ def action_dungeon(p, gs):
     p["dungeon_terrain"] = t
     p["active_monsters"] = []
     p["_dungeon_potions_used"] = 0
+    p["dungeon_flawless"] = False        # status é da run atual, não histórico
     push_log(p, f"🏰 **Você adentra a Masmorra de {t}!**")
     push_log(p, "_A escuridão te envolve. Não há caminho de volta fácil..._")
     push_world(gs, f"🏰 @{p['username']} entrou na Masmorra de {t}!")
@@ -948,7 +1143,9 @@ def action_flee(p, gs):
         # Flee from combat
         sk = sb(p)
         flee_chance = 0.45 + (sk.get("dodge", 0) * 0.5)  # Agility helps flee
-        if random.random() < flee_chance:
+        # `free_escape` ("Fuga sempre funciona": Passo Silencioso, Dança Festiva,
+        # Incontrolável) era agregado em sb() e nunca consultado aqui.
+        if sk.get("free_escape") or random.random() < flee_chance:
             p["active_monsters"] = []
             push_log(p, "🏃 Você conseguiu escapar do combate!")
             if p.get("in_dungeon"):
@@ -1008,7 +1205,7 @@ def action_create_raid(p, gs, boss_slug):
         url = f"https://api.github.com/repos/{repo}/issues"
         data = json.dumps({"title": f"[RAID] {boss_key}", "body": issue_body, "labels": ["rpg-action"]}).encode("utf-8")
         req = Request(url, data=data, headers={"Authorization": f"token {tok}", "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json", "User-Agent": "Aethoria"})
-        with urlopen(req) as resp:
+        with urlopen(req, timeout=HTTP_TIMEOUT) as resp:
             issue_number = str(json.loads(resp.read().decode())["number"])
     except Exception as e:
         push_log(p, f"⚠️ Erro ao criar Issue de Raid: {e}"); return
@@ -1036,7 +1233,7 @@ def _try_auto_spawn_raid(gs, tok):
         url = f"https://api.github.com/repos/{repo}/issues"
         data = json.dumps({"title": f"[RAID] {boss_key}", "body": body, "labels": ["rpg-action"]}).encode("utf-8")
         req = Request(url, data=data, headers={"Authorization": f"token {tok}", "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json", "User-Agent": "Aethoria"})
-        with urlopen(req) as resp:
+        with urlopen(req, timeout=HTTP_TIMEOUT) as resp:
             issue_number = str(json.loads(resp.read().decode())["number"])
         raids[issue_number] = {
             "boss_key": boss_key, "hp": bd["base_hp"], "max_hp": bd["base_hp"],
@@ -1049,14 +1246,26 @@ def _try_auto_spawn_raid(gs, tok):
         print(f"⚠️ Auto-spawn raid failed: {e}")
 
 def _raid_init_from_issue(tok, issue_number, raids):
-    """Lazy-init a raid from a GitHub Issue if not already in raids.json."""
-    url = f"https://api.github.com/repos/{os.environ.get('GITHUB_REPOSITORY')}/issues/{issue_number}"
+    """Lazy-init a raid from a GitHub Issue if not already in raids.json.
+
+    SEGURANÇA: antes bastava o título casar com o nome de um World Boss. Qualquer pessoa
+    abria uma issue `[RAID] destruidor de mundos`, comentava `/atacar` e tinha uma raid
+    legítima — escolhendo o boss de maior recompensa e repetindo com issue nova a cada
+    vez. Agora a issue precisa ter sido aberta pelo bot, que é o único caminho por onde
+    action_create_raid e _try_auto_spawn_raid criam raid."""
+    repo = os.environ.get("GITHUB_REPOSITORY", "xXYoungMoreXx/xXYoungMoreXx")
+    url = f"https://api.github.com/repos/{repo}/issues/{issue_number}"
     req = Request(url, headers={"Authorization": f"token {tok}", "User-Agent": "Aethoria"})
     try:
-        with urlopen(req) as resp:
-            title = json.loads(resp.read().decode()).get("title", "")
+        with urlopen(req, timeout=HTTP_TIMEOUT) as resp:
+            data = json.loads(resp.read().decode())
     except Exception as e:
-        return None, f"⚠️ Erro ao buscar dados da Raid {issue_number}: {e}"
+        return None, f"⚠️ Erro ao buscar dados da Raid {esc(issue_number,12)}: {type(e).__name__}"
+    author = ((data.get("user") or {}).get("login") or "")
+    if not author.endswith("[bot]"):
+        return None, ("⚠️ Esta Raid não foi convocada pelo sistema. Use "
+                      "`rpg:criar_raid:<slug>` (nível 5+) para abrir uma Raid válida.")
+    title = data.get("title", "")
     boss_key = None
     title_norm = _normalize(title)
     for k in WORLD_BOSSES:
@@ -1065,16 +1274,26 @@ def _raid_init_from_issue(tok, issue_number, raids):
     if not boss_key:
         return None, "⚠️ Chefão da Raid desconhecido ou issue inválida."
     bd = WORLD_BOSSES[boss_key]
-    raid = {"boss_key": boss_key, "hp": bd["base_hp"], "max_hp": bd["base_hp"], "status": "active", "participants": {}}
+    raid = {"boss_key": boss_key, "hp": bd["base_hp"], "max_hp": bd["base_hp"],
+            "status": "active", "participants": {}}
     raids[issue_number] = raid
     return raid, None
 
 def _raid_distribute_rewards(raid, bd, user, p, gs):
-    """Distribute rewards to all raid participants after boss defeat."""
-    mvp = max(raid["participants"].items(), key=lambda x: x[1]["damage"])[0]
-    for p_user, stats in raid["participants"].items():
+    """Distribute rewards to all raid participants after boss defeat.
+
+    O pool é DIVIDIDO entre participantes. Antes cada um recebia o pool inteiro, então
+    cinco jogadores num Azazel geravam 6.000 XP e 2.500g de nada — farm trivial."""
+    parts = raid.get("participants") or {}
+    if not parts:
+        return
+    mvp = max(parts.items(), key=lambda x: x[1].get("damage", 0))[0]
+    n = len(parts)
+    share_xp = max(1, bd["xp_pool"] // n)
+    share_gold = max(1, bd["gold_pool"] // n)
+    for p_user in parts:
         other_p = p if p_user == user else load_player(p_user)
-        p_xp, p_gold = bd["xp_pool"], bd["gold_pool"]
+        p_xp, p_gold = share_xp, share_gold
         if p_user == mvp:
             p_xp = int(p_xp * 1.5); p_gold = int(p_gold * 1.5)
         if p_user == user:
@@ -1083,31 +1302,39 @@ def _raid_distribute_rewards(raid, bd, user, p, gs):
         other_p["raid_count"] = other_p.get("raid_count", 0) + 1
         if raid["boss_key"] not in other_p.get("raid_bosses_killed", []):
             other_p.setdefault("raid_bosses_killed", []).append(raid["boss_key"])
-        push_log(other_p, f"🎉 **A RAID {bd['nome']} FOI VENCIDA!** Você ganhou {p_xp} XP e {p_gold}g!")
+        push_log(other_p, f"🎉 **A RAID {bd['nome']} FOI VENCIDA!** Sua parte: {p_xp} XP e {p_gold}g _(pool ÷ {n})_")
         if p_user == mvp:
             other_p["raid_mvp_count"] = other_p.get("raid_mvp_count", 0) + 1
-            push_log(other_p, f"🌟 **VOCÊ FOI O MVP DA RAID!** (+50% recompensa)")
-        check_lu(other_p)
+            push_log(other_p, "🌟 **VOCÊ FOI O MVP DA RAID!** (+50% sobre a sua parte)")
+        lv = check_lu(other_p)
+        if lv: push_log(other_p, lv)
         if p_user != user:
+            # Participantes ausentes também recebem conquista e entrada no leaderboard —
+            # antes só ganhavam XP e ficavam desatualizados até jogarem de novo.
+            check_conquistas(other_p, gs)
+            other_p["last_played"] = _now().isoformat()
             save_player(other_p)
+            lb = load_lb(); update_lb(lb, other_p); save_lb(lb)
     push_world(gs, f"👑 **{bd['nome']}** foi derrotado na Raid! MVP: @{mvp}")
 
 def _raid_post_comment(tok, issue_number, user, dmg, raid, bd):
     """Post attack status comment on the raid Issue."""
     try:
-        url = f"https://api.github.com/repos/{os.environ.get('GITHUB_REPOSITORY')}/issues/{issue_number}/comments"
+        repo = os.environ.get("GITHUB_REPOSITORY", "xXYoungMoreXx/xXYoungMoreXx")
+        url = f"https://api.github.com/repos/{repo}/issues/{issue_number}/comments"
         msg = f"⚔️ **@{user}** atacou causando **{dmg}** de dano!\n\n"
         if raid["hp"] > 0:
-            msg += f"### {bd['emoji']} {bd['nome']}\n**HP Global:** {hp_bar(raid['hp'], raid['max_hp'])} ({raid['hp']}/{raid['max_hp']})"
+            # hp_bar() já imprime "v/mx"; o sufixo duplicava o número.
+            msg += f"### {bd['emoji']} {bd['nome']}\n**HP Global:** {hp_bar(raid['hp'], raid['max_hp'])}"
         else:
-            msg += f"🎉 **A RAID {bd['nome']} FOI VENCIDA!** O Boss caiu!\nRecompensas distribuídas para todos os participantes."
+            msg += f"🎉 **A RAID {bd['nome']} FOI VENCIDA!** O Boss caiu!\nRecompensas distribuídas entre todos os participantes."
         req = Request(url, data=json.dumps({"body": msg}).encode("utf-8"), headers={
             "Authorization": f"token {tok}", "Accept": "application/vnd.github.v3+json",
             "Content-Type": "application/json", "User-Agent": "Aethoria"
         })
-        urlopen(req)
+        urlopen(req, timeout=HTTP_TIMEOUT)
     except Exception as e:
-        print(f"⚠️ Erro ao postar comentário de Raid na issue {issue_number}: {e}")
+        print(f"::warning::Erro ao postar comentário de Raid na issue {issue_number}: {e}")
 
 def action_raid_attack(p, gs, issue_number):
     """Main raid attack flow: validate → init → combat → rewards → comment."""
@@ -1132,18 +1359,20 @@ def action_raid_attack(p, gs, issue_number):
         raid["participants"][user] = {"damage": 0, "level": p["level"]}
         push_log(p, f"🔥 Você entrou na Raid! O Boss foi fortalecido em +{added_hp} HP (Escalonamento Nvl {p['level']})!")
         push_world(gs, f"⚔️ @{user} entrou na Raid contra **{bd['nome']}**!")
-    # Combat
+    # Combat — o dano do jogador é aplicado ANTES do contra-ataque; antes o boss
+    # revidava primeiro e uma morte fazia o golpe do jogador nem contar.
     dmg = atk_dmg(p)
-    if random.random() < 0.6:
-        boss_dmg = max(1, bd["base_atk"] - p.get("defense", 5))
+    raid["participants"][user]["damage"] += dmg
+    raid["hp"] -= dmg
+    push_log(p, f"⚔️ Você causou **{dmg} de dano** ao Boss da Raid!")
+    if raid["hp"] > 0 and random.random() < 0.6:
+        boss_dmg = max(1, bd["base_atk"] - total_def(p))
         p["hp"] = max(0, p["hp"] - boss_dmg)
         push_log(p, f"🩸 O Boss da Raid revidou! **-{boss_dmg} HP**")
         if p["hp"] <= 0:
             push_log(p, "💀 Você caiu na Raid...")
-            death_reset(p); save_raids(raids); return
-    raid["participants"][user]["damage"] += dmg
-    raid["hp"] -= dmg
-    push_log(p, f"⚔️ Você causou **{dmg} de dano** ao Boss da Raid!")
+            death_reset(p); save_raids(raids)
+            _raid_post_comment(tok, issue_number, user, dmg, raid, bd); return
     # Defeat
     if raid["hp"] <= 0:
         raid["status"] = "defeated"; raid["hp"] = 0
@@ -1159,16 +1388,22 @@ def action_raid_attack(p, gs, issue_number):
 # ══════════════════════════════════════════════════════════════════════════════
 def action_class(p,gs,cls_key):
     if p.get("classe"): push_log(p,"⚠️ Classe já escolhida. Use `rpg:reiniciar` para recomeçar."); return
+    cls_key=(cls_key or "").lower()
     c=CLASSES.get(cls_key)
-    if not c: push_log(p,f"❓ Classe inválida: `{cls_key}`"); return
-    p.update({"classe":cls_key,"max_hp":c["hp"],"hp":c["hp"],"max_mana":c["mana"],"mana":c["mana"],"defense":c["def"]})
+    if not c:
+        opts=" · ".join(f"`{k}`" for k in CLASSES)
+        push_log(p,f"❓ Classe inválida: `{esc(cls_key,20)}`. Disponíveis: {opts}"); return
+    p.update({"classe":cls_key,"defense":c["def"]})
     p["equipment"]["weapon"]=c["weapon"]; p["equipment"]["armor"]=c["armor"]
-    # Affinity bonus via github_profile
+    # Affinity bonus via github_profile — guardado como flag para que recompute_maxima()
+    # possa derivar o máximo em vez de somar +15 uma vez e perder o rastro.
     gh = p.get("github_profile") or {}
     top_lang = gh.get("top_language","")
     if top_lang and LANG_CLASS.get(top_lang)==cls_key:
-        p["max_hp"]+=15; p["hp"]=p["max_hp"]
+        p["affinity_bonus"]=True
         push_log(p,f"💻 **Bônus de Afinidade com {top_lang}:** +15 HP máx!")
+    recompute_maxima(p)
+    p["hp"]=p["max_hp"]; p["mana"]=p["max_mana"]
     push_log(p,f"{c['emoji']} **Classe: {c['nome']}** — _{c['lore']}_")
     push_log(p,f"✨ Habilidade: **{c['skill']}** · `rpg:habilidade` em combate")
     push_world(gs,f"🌟 @{p['username']} escolheu a classe **{c['nome']}** e começa sua jornada!")
@@ -1176,8 +1411,9 @@ def action_class(p,gs,cls_key):
 DIRS={"rpg:norte":(0,-1,"Norte ⬆️"),"rpg:sul":(0,1,"Sul ⬇️"),"rpg:leste":(1,0,"Leste ▶️"),"rpg:oeste":(-1,0,"Oeste ◀️")}
 
 def action_move(p,gs,dx,dy,dname):
+    if not p.get("classe"): push_log(p,"⚠️ Escolha sua classe antes de explorar Aethoria!"); return
     if p.get("in_dungeon"): push_log(p,"🏰 Você está preso na Masmorra! Use **Avançar** ou **Fugir**."); return
-    if p.get("active_monsters") or p.get("active_monster"): push_log(p,"⚔️ Termine o combate antes de mover!"); return
+    if in_combat(p): push_log(p,"⚔️ Termine o combate antes de mover!"); return
     nx,ny=p["position"]["x"]+dx,p["position"]["y"]+dy
     if not(0<=nx<5 and 0<=ny<5): push_log(p,"🚧 O mundo de Aethoria termina aqui."); return
     # Poison tick on move
@@ -1246,9 +1482,10 @@ def action_attack(p,gs):
     
     m = mons[0] # Alvo focado (o primeiro)
     first=m.get("hp")==m.get("max_hp") and sk.get("first_strike")
-    dmg=atk_dmg(p); 
+    dmg=atk_dmg(p)
     if first: dmg=int(dmg*2.0); push_log(p,"🌑 **Primeiro Golpe Crítico!**")
     if comp: dmg+=comp.get("atk_bonus",0)+sk.get("companion_atk",0)
+    dmg+=consume_tavern_bonus(p,m)
     
     if sk.get("burn",0)>0 and m.get("burning"): m["hp"]-=sk["burn"]; push_log(p,f"🔥 Queima: **{sk['burn']} dmg**!")
     if sk.get("poison_chance",0)>0 and random.random()<sk["poison_chance"]:
@@ -1263,8 +1500,12 @@ def action_attack(p,gs):
     _process_monsters_turn(p, gs)
 
 def _check_boss_phase(p,gs,m):
+    # Dentro de masmorra o mini-boss herdava as falas de fase do chefão do terreno:
+    # numa masmorra em Kragdor, o Troll-Rei anunciava "FASE 2 — Fúria Dracônica" e
+    # poluía p["boss_phase"].
+    if p.get("in_dungeon"): return
     t=terrain(p); bd=BOSSES.get(t)
-    if not bd: return
+    if not bd or m.get("nome")!=bd.get("nome"): return
     phases=bd["phases"]; cur_phase=p.get("boss_phase",0)
     if cur_phase+1>=len(phases): return
     next_ph=phases[cur_phase+1]
@@ -1274,6 +1515,21 @@ def _check_boss_phase(p,gs,m):
         m["atk"]=next_ph["atk"]
         push_log(p,next_ph["desc"])
         push_world(gs,f"⚠️ **{m['nome']}** entrou em nova fase durante batalha contra @{p['username']}!")
+
+def _apply_skill_effects(p, m, sk, cls_key):
+    """Queima e atordoamento vêm dos bônus da árvore, não da classe.
+
+    O gate era `if cls_key == "mago"`, então "Fender Crânios" (bárbaro, atordoa 20%),
+    "Prisão Óssea" (necromante, 30%) e "Raio Aniquilador" (bruxo, queima 8/turno) eram
+    inertes — anunciados no README e no SETUP.md, sem efeito nenhum."""
+    stun = False
+    if sk.get("burn", 0) > 0:
+        m["burning"] = True
+    if sk.get("stun", 0) > 0 and random.random() < sk["stun"]:
+        stun = True
+    if cls_key == "ladino" and random.random() < 0.40:   # atordoamento de classe do ladino
+        stun = True
+    return stun
 
 def action_skill(p,gs,idx=0):
     cls_key=p.get("classe")
@@ -1302,55 +1558,83 @@ def action_skill(p,gs,idx=0):
     if is_aoe:
         push_log(p, f"{hab['emoji']} **{hab['nome']}!** (Dano em Área)")
         for i, m in enumerate(mons):
-            stun=False
-            if cls_key=="mago":
-                if sk.get("burn",0)>0: m["burning"]=True
-                if sk.get("stun",0)>0 and random.random()<sk["stun"]: stun=True
-            if cls_key=="ladino" and random.random()<0.40: stun=True
-            m["hp"]-=dmg; push_log(p,f"💥 **{dmg} dmg** em {m['nome']}!{' 😵 Stun!' if stun else ''}")
+            stun=_apply_skill_effects(p, m, sk, cls_key)
+            hit=dmg+consume_tavern_bonus(p,m)
+            m["hp"]-=hit; push_log(p,f"💥 **{hit} dmg** em {m['nome']}!{' 😵 Stun!' if stun else ''}")
             if stun: stunned_indices.append(i)
     else:
         m = mons[0]
-        stun=False
-        if cls_key=="mago":
-            if sk.get("burn",0)>0: m["burning"]=True
-            if sk.get("stun",0)>0 and random.random()<sk["stun"]: stun=True
-        if cls_key=="ladino" and random.random()<0.40: stun=True
+        stun=_apply_skill_effects(p, m, sk, cls_key)
+        dmg+=consume_tavern_bonus(p,m)
         m["hp"]-=dmg; push_log(p,f"{hab['emoji']} **{hab['nome']}!** **{dmg} dmg** em {m['nome']}!{' 😵 Stun!' if stun else ''}")
         if stun: stunned_indices.append(0)
 
     _process_monsters_turn(p, gs, stunned_indices)
 
 def action_unlock_skill(p,sid):
+    sid=(sid or "").lower()
+    if not p.get("classe"): push_log(p,"⚠️ Escolha sua classe primeiro!"); return
     if p.get("skill_points",0)<=0: push_log(p,"❌ Sem pontos! Suba de nível para ganhar."); return
     tree=SKILL_TREES.get(p.get("classe",""),[])
     sk=next((s for s in tree if s[0]==sid),None)
-    if not sk: push_log(p,f"❓ Habilidade `{sid}` não encontrada."); return
+    if not sk:
+        ids=" · ".join(f"`{s[0]}`" for s in tree)
+        push_log(p,f"❓ Habilidade `{esc(sid,12)}` não existe para {cls(p)['nome']}. IDs: {ids}"); return
     if sid in p.get("skills_unlocked",[]): push_log(p,"⚠️ Habilidade já desbloqueada!"); return
-    if sk[5] and sk[5] not in p.get("skills_unlocked",[]): push_log(p,f"🔒 Desbloqueie **{sk[5]}** primeiro!"); return
+    if sk[5] and sk[5] not in p.get("skills_unlocked",[]):
+        pre=next((s[1] for s in tree if s[0]==sk[5]),sk[5])
+        push_log(p,f"🔒 Desbloqueie **{pre}** (`{sk[5]}`) primeiro!"); return
     if p["skill_points"]<sk[4]: push_log(p,f"❌ Precisa {sk[4]} ponto(s) (tem {p['skill_points']})."); return
     p["skill_points"]-=sk[4]; p.setdefault("skills_unlocked",[]).append(sid)
+    # Nós com hp_max/mana_max precisam refletir no máximo na hora, não só no próximo nível.
+    recompute_maxima(p)
     push_log(p,f"✨ **{sk[1]}** desbloqueado! _{sk[6]}_")
 
 def action_potion(p):
-    if p.get("potions",0)<=0: push_log(p,"❌ Sem poções! Compre ou encontre em inimigos."); return
-    heal=random.randint(32,56); p["hp"]=min(p["max_hp"],p["hp"]+heal); p["potions"]-=1
-    if p.get("in_dungeon"): p["_dungeon_potions_used"] = p.get("_dungeon_potions_used", 0) + 1
-    push_log(p,f"🧪 +{heal} HP · {p['hp']}/{p['max_hp']} · {p['potions']} poções restantes")
+    """Consome o melhor item do inventário; sem inventário, cai na poção básica.
+
+    Antes `p["inventory"]` nunca era preenchido (a linha "Inventário" do README dizia
+    _vazio_ para sempre) e `RECIPES[...]["result"]` era ignorado: craftar Poção Superior
+    (+120 HP) só somava +1 no contador genérico, e Poção Menor (8g) curava exatamente o
+    mesmo que Poção Grande (15g)."""
+    inv=p.get("inventory") or []
+    item=None
+    if inv:
+        best=max(range(len(inv)),key=lambda i:inv[i].get("heal",0)+inv[i].get("mana",0))
+        item=inv.pop(best)
+    elif p.get("potions",0)>0:
+        p["potions"]-=1
+        item={"nome":"Poção Menor","emoji":"🧪","heal":random.randint(30,42)}
+    if not item:
+        push_log(p,"❌ Sem poções! Compre em zona segura, fabrique ou saqueie inimigos."); return
+    parts=[]
+    if item.get("heal"):
+        healed=min(p["max_hp"]-p["hp"],int(item["heal"])); p["hp"]+=healed; parts.append(f"+{healed} HP")
+    if item.get("mana"):
+        gained=min(p["max_mana"]-p["mana"],int(item["mana"])); p["mana"]+=gained; parts.append(f"+{gained} Mana")
+    if item.get("cure_poison"):
+        p["poison_stacks"]=0; parts.append("veneno curado")
+    if p.get("in_dungeon"): p["_dungeon_potions_used"]=p.get("_dungeon_potions_used",0)+1
+    push_log(p,f"{item.get('emoji','🧪')} **{item['nome']}**: {' · '.join(parts) or 'nenhum efeito'} · "
+               f"{p['hp']}/{p['max_hp']} HP · {p['potions']} poção(ões) básica(s) · {len(p.get('inventory',[]))} item(ns)")
 
 def action_rest(p):
     t=terrain(p)
     if t not in SAFE_ZONES: push_log(p,f"⚠️ Não é seguro descansar em **{t}**."); return
-    if p.get("active_monster"): push_log(p,"⚠️ Não pode descansar com inimigo!"); return
+    if in_combat(p): push_log(p,"⚠️ Não pode descansar com inimigo!"); return
     h=min(p["max_hp"]-p["hp"],random.randint(28,48)); m=min(p["max_mana"]-p["mana"],random.randint(20,38))
     p["hp"]+=h; p["mana"]+=m; p["poison_stacks"]=0
-    push_log(p,f"😴 Descansou em **{t}**: +{h} HP · +{m} Mana · veneno curado.")
+    extra=""
+    if p.get("death_immunity_used"):
+        p["death_immunity_used"]=False; extra=" · 👻 imunidade da relíquia recarregada"
+    push_log(p,f"😴 Descansou em **{t}**: +{h} HP · +{m} Mana · veneno curado{extra}.")
 
 def action_tavern(p,gs):
     t=terrain(p)
     rumors=TAVERN_RUMORS.get(t)
     if not rumors: push_log(p,f"🍺 Não há taverna em **{t}**. Vá a uma zona segura."); return
-    
+    if in_combat(p): push_log(p,"⚔️ A taverna pode esperar — há um inimigo na sua frente!"); return
+
     player_msgs = gs.get("tavern_messages", [])
     if player_msgs and random.random() < 0.4:
         text = random.choice(player_msgs)
@@ -1371,16 +1655,20 @@ def action_message(p, gs, msg):
     if t not in TAVERN_RUMORS:
         push_log(p, f"🍺 Não há taverna em **{t}** para deixar uma mensagem. Vá a uma zona segura.")
         return
-    msg = msg.strip()[:100]
+    # esc(): o texto vai direto para o README público. Sem isto,
+    # `rpg:mensagem:[clique](https://phishing.tld)` renderizava um link no perfil.
+    msg = esc(msg.strip(), 100)
     if not msg:
+        push_log(p, "🍺 A mensagem ficou vazia depois de remover caracteres não permitidos.")
         return
     messages = gs.get("tavern_messages", [])
-    messages.append(f"💬 \"{msg}\" — _{p['username']}_")
+    messages.append(f"💬 \"{msg}\" — _{safe_username(p['username'])}_")
     gs["tavern_messages"] = messages[-20:]
     push_log(p, f"🍺 Você cravou uma mensagem na mesa da taverna em **{t}**!")
 
 def action_interact(p,gs):
     t=terrain(p)
+    if in_combat(p): push_log(p,"⚔️ Ninguém quer conversar com um inimigo na sua frente!"); return
     NPC_MAP={"Aldeia de Ashenvale":"Miriel","Ironhold":"Aldric","Torre do Oráculo":"Oráculo","Porto da Perdição":"Capitão Heron"}
     GENERIC={
         "Templo Esquecido":("🛕 O altar drena 5 HP e concede 30 Mana.",lambda:_temple(p)),
@@ -1410,8 +1698,16 @@ def _temple(p): p["hp"]=max(1,p["hp"]-5); p["mana"]=min(p["max_mana"],p["mana"]+
 def _mirewood(p): xp_gain(p,15); p["mana"]=min(p["max_mana"],p["mana"]+15)
 def _catedral(p): xp_gain(p,25); p["hp"]=max(1,p["hp"]-10)
 
+KARMA_ZONES = ("Ironhold", "Vilarejo de Ravenford")
+
 def action_karma(p, alignment):
     t = terrain(p)
+    alignment = (alignment or "").lower()
+    if alignment not in ("good", "bad"):
+        push_log(p, f"⚖️ Alinhamento inválido: `{esc(alignment,16)}`. Use `rpg:karma:good` ou `rpg:karma:bad`.")
+        return
+    if in_combat(p):
+        push_log(p, "⚔️ Dilemas morais depois do combate."); return
     if t == "Vilarejo de Ravenford":
         if alignment == "good":
             if p["gold"] >= 10:
@@ -1439,20 +1735,31 @@ def action_karma(p, alignment):
 def action_buy(p,item_key):
     t=terrain(p)
     if t not in SAFE_ZONES: push_log(p,"🏪 Compre em Ironhold, Ashenvale, Ravenford, Porto ou Mercado."); return
+    raw_key=item_key; item_key=(item_key or "").lower()
     item=SHOP_BASE.get(item_key)
-    if not item: push_log(p,"❓ Item inválido. Use: pocao_menor · pocao · elixir_mana · antidoto"); return
+    if not item:
+        push_log(p,f"❓ Item inválido: `{esc(raw_key,20)}`. Use: pocao_menor · pocao · elixir_mana · antidoto"); return
     price=shop_price(p,item["price"],t)
     if p["gold"]<price: push_log(p,f"💰 Ouro insuficiente! {item['nome']} custa {price}g (tem {p['gold']}g)."); return
     p["gold"]-=price
-    if "heal" in item: p["potions"]+=1; push_log(p,f"🛒 {item['emoji']} {item['nome']} ({price}g) · Poções: {p['potions']}")
+    if item_key=="pocao_menor":
+        # Poção Menor continua sendo o contador genérico (é o ingrediente das receitas).
+        p["potions"]+=1
+        push_log(p,f"🛒 {item['emoji']} {item['nome']} ({price}g) · Poções básicas: {p['potions']}")
+    elif "heal" in item:
+        # Poção Grande vai para o inventário com o valor real de cura: antes custava
+        # quase o dobro e curava exatamente o mesmo que a Menor.
+        p.setdefault("inventory",[]).append({"id":item_key,"nome":item["nome"],"emoji":item["emoji"],"heal":item["heal"]})
+        push_log(p,f"🛒 {item['emoji']} {item['nome']} ({price}g) · cura {item['heal']} HP · guardada no inventário")
     elif "mana" in item:
         p["mana"]=min(p["max_mana"],p["mana"]+item["mana"]); p["mana_elixirs"]=p.get("mana_elixirs",0)+1
         push_log(p,f"🛒 {item['emoji']} {item['nome']} ({price}g) · +{item['mana']} Mana · Elixirs: {p['mana_elixirs']}")
     elif "cure_poison" in item: p["poison_stacks"]=0; push_log(p,f"🌿 Antídoto usado ({price}g) · Veneno curado!")
 
 def action_craft(p,recipe_key):
+    raw_key=recipe_key; recipe_key=(recipe_key or "").lower()
     recipe=RECIPES.get(recipe_key)
-    if not recipe: push_log(p,f"❓ Receita `{recipe_key}` desconhecida. Disponíveis: pocao_maior · elixir_wyrd · po_reliquias"); return
+    if not recipe: push_log(p,f"❓ Receita `{esc(raw_key,24)}` desconhecida. Disponíveis: pocao_maior · elixir_wyrd · po_reliquias"); return
     # Check ingredients using counter-based system
     if "requires" in recipe:
         for item_id,qty in recipe["requires"].items():
@@ -1466,30 +1773,48 @@ def action_craft(p,recipe_key):
             counter_key = "potions" if item_id == "pocao_menor" else item_id
             p[counter_key] = p.get(counter_key, 0) - qty
     if "requires_relic" in recipe:
-        if len(p.get("relics",[]))<recipe["requires_relic"]: push_log(p,f"❌ Precisa de {recipe['requires_relic']} relíquias."); return
-        p["relics"]=p["relics"][recipe["requires_relic"]:]
+        need=recipe["requires_relic"]
+        if len(p.get("relics",[]))<need: push_log(p,f"❌ Precisa de {need} relíquias."); return
+        # Consumir relíquia apaga um passivo permanente (+20 ATK, +30% XP, imunidade a
+        # morte). A troca é intencional, mas era silenciosa — agora o log diz o que foi.
+        consumed=p["relics"][:need]
+        p["relics"]=p["relics"][need:]
+        push_log(p,"💠 Relíquias consumidas: "+", ".join(f"{r['emoji']} {r['nome']}" for r in consumed)+" _(passivos perdidos)_")
+        recompute_maxima(p)
     result=recipe["result"]
     if recipe["type"]=="consumable":
-        p["potions"]+=1; push_log(p,f"🔨 **{recipe['emoji']} {recipe['nome']}** fabricado! (+1 poção especial)")
+        # Vai para o inventário com os valores reais da receita, em vez de virar +1 no
+        # contador genérico e descartar `result`.
+        p.setdefault("inventory",[]).append({
+            "id":recipe_key,"nome":recipe["nome"],"emoji":recipe["emoji"],
+            **{k:v for k,v in result.items() if k in ("heal","mana","cure_poison")}})
+        efeito=" · ".join(filter(None,[
+            f"+{result['heal']} HP" if result.get("heal") else "",
+            f"+{result['mana']} Mana" if result.get("mana") else ""]))
+        push_log(p,f"🔨 **{recipe['emoji']} {recipe['nome']}** fabricado! ({efeito}) — no inventário")
     elif recipe["type"]=="special":
         if "xp" in result: g=xp_gain(p,result["xp"]); push_log(p,f"🔨 **{recipe['emoji']} {recipe['nome']}** → +{g} XP!")
     p["crafted_count"]=p.get("crafted_count",0)+1
     lv=check_lu(p)
     if lv: push_log(p,lv)
 
+MOUNT_DESTS={"ironhold":{"x":2,"y":2,"nome":"Ironhold"},
+             "ashenvale":{"x":1,"y":1,"nome":"Aldeia de Ashenvale"},
+             "porto":{"x":4,"y":3,"nome":"Porto da Perdição"}}
+
 def action_mount(p,gs):
     if not p.get("dragon_mount"): push_log(p,"🐉 Montaria dracônica não disponível. Derrote Drakar em Kragdor primeiro!"); return
-    if p.get("active_monster"): push_log(p,"⚔️ Termine o combate primeiro!"); return
-    # Dragon mount: teleport to any safe zone
-    MOUNT_DEST={"ironhold":{"x":2,"y":2},"ashenvale":{"x":1,"y":1},"porto":{"x":4,"y":3}}
-    push_log(p,f"🐉 **Montaria Dracônica!** Para onde voar? Use: `rpg:montar:ironhold` · `rpg:montar:ashenvale` · `rpg:montar:porto`")
+    if in_combat(p): push_log(p,"⚔️ Termine o combate primeiro!"); return
+    if p.get("in_dungeon"): push_log(p,"🏰 Não há espaço para um dragão dentro da masmorra."); return
+    opts=" · ".join(f"`rpg:montar:{k}`" for k in MOUNT_DESTS)
+    push_log(p,f"🐉 **Montaria Dracônica!** Para onde voar? Use: {opts}")
 
 def action_mount_to(p,gs,dest):
     if not p.get("dragon_mount"): push_log(p,"🐉 Derrote Drakar primeiro!"); return
-    dests={"ironhold":{"x":2,"y":2,"nome":"Ironhold"},"ashenvale":{"x":1,"y":1,"nome":"Aldeia de Ashenvale"},
-           "porto":{"x":4,"y":3,"nome":"Porto da Perdição"}}
-    d=dests.get(dest)
-    if not d: push_log(p,f"❓ Destino inválido. Use: ironhold · ashenvale · porto"); return
+    if in_combat(p): push_log(p,"⚔️ Termine o combate primeiro!"); return
+    if p.get("in_dungeon"): push_log(p,"🏰 Não há espaço para um dragão dentro da masmorra."); return
+    d=MOUNT_DESTS.get((dest or "").lower())
+    if not d: push_log(p,f"❓ Destino inválido: `{esc(dest,20)}`. Use: "+" · ".join(MOUNT_DESTS)); return
     p["position"]={"x":d["x"],"y":d["y"]}; push_log(p,f"🐉 Voou em montaria dracônica para **{d['nome']}**!")
     push_log(p,"_As chamas do dragão iluminam a noite enquanto vocês pousam._")
     t=terrain(p)
@@ -1497,19 +1822,28 @@ def action_mount_to(p,gs,dest):
 
 def action_prestige(p,gs):
     if p["level"]<10: push_log(p,"❌ Prestígio requer nível 10 máximo. Continue subindo!"); return
+    if in_combat(p): push_log(p,"⚔️ Não se transcende no meio de uma luta."); return
     count=p.get("prestige_count",0)+1
     p["prestige_count"]=count; p["level"]=1; p["xp"]=0; p["skill_points"]=2
-    p["max_hp"]=cls(p)["hp"]+20*count if cls(p) else 100+20*count
-    p["hp"]=p["max_hp"]; p["max_mana"]=cls(p)["mana"]+15*count if cls(p) else 60+15*count; p["mana"]=p["max_mana"]
+    p["skills_unlocked"]=[]          # reset de árvore: os pontos voltam a 2, os nós não podiam ficar
+    recompute_maxima(p)
+    p["hp"]=p["max_hp"]; p["mana"]=p["max_mana"]
     p["titulo"]=f"Transcendente {'I'*count}"
     push_log(p,f"🔮 **PRESTÍGIO {count}!** Você transcendeu os limites mortais de Aethoria.")
     push_log(p,f"_Título atualizado: **Transcendente {'I'*count}** · HP e Mana base aumentados permanentemente!_")
     push_world(gs,f"🔮 @{p['username']} atingiu **Prestígio {count}** — um ser além dos mortais!")
 
 def action_pvp(p,gs,target_user):
-    if target_user==p["username"]: push_log(p,"😅 Você não pode desafiar a si mesmo!"); return
+    # safe_username(): `rpg:desafiar:../../../etc/passwd` montava um caminho fora de
+    # rpg/players/. E o título inteiro era lowercased antes de chegar aqui, então
+    # `rpg:desafiar:xXYoungMoreXx` procurava xxyoungmorexx.json e o PvP nunca achava
+    # ninguém com maiúscula no login — o parse agora preserva o case do argumento.
+    target_user=safe_username(target_user)
+    if target_user=="anon": push_log(p,"❓ Login inválido. Use `rpg:desafiar:USUARIO` com um login do GitHub."); return
+    if target_user.lower()==p["username"].lower(): push_log(p,"😅 Você não pode desafiar a si mesmo!"); return
     target=_rw(f"rpg/players/{target_user}.json")
     if not target: push_log(p,f"❌ Aventureiro **@{target_user}** não encontrado. Ele precisa ter jogado antes."); return
+    target=migrate_player(target)
     p_score=p["kills"]*10+p["level"]*50+len(p.get("bosses_defeated",{}))*100
     t_score=target["kills"]*10+target["level"]*50+len(target.get("bosses_defeated",{}))*100
     diff=p_score-t_score
@@ -1519,8 +1853,11 @@ def action_pvp(p,gs,target_user):
     push_world(gs,f"🥊 @{p['username']} desafiou **@{target_user}** em PvP — **{result}**!")
 
 def action_reset(p,gs):
+    """new_player(), não load_player(): load_player relê o arquivo do disco, que ainda
+    não foi sobrescrito, então o reset copiava o save antigo de volta. O log dizia "Nova
+    lenda começa em Aethoria" com nível 5, 392g e 7 conquistas intactos."""
     u=p["username"]; gh=p.get("github_profile"); pb=p.get("profile_bonuses")
-    p.clear(); p.update(load_player(u)); p.pop("_new",None)
+    p.clear(); p.update(new_player(u))
     p["github_profile"]=gh; p["profile_bonuses"]=pb or []
     push_world(gs,f"🔄 @{u} reiniciou sua jornada."); push_log(p,"🔄 **Nova lenda começa em Aethoria...**")
     push_log(p,"⚔️ Escolha sua classe para começar!")
@@ -1528,10 +1865,14 @@ def action_reset(p,gs):
 # ══════════════════════════════════════════════════════════════════════════════
 #  NPC MEMORY
 # ══════════════════════════════════════════════════════════════════════════════
+NPC_MET_CAP = 200
+
 def npc_dialogue(npc,p,gs):
     mem=gs.setdefault("npc_memory",{}); nm=mem.setdefault(npc,{"met":[]})
-    u=p["username"]; first=u not in nm["met"]
-    if first: nm["met"].append(u)
+    u=safe_username(p["username"]); first=u not in nm["met"]
+    # `met` crescia sem limite (uma entrada por jogador, para sempre) dentro de
+    # state.json, que é lido e reescrito a cada turno.
+    if first: nm["met"]=(nm["met"]+[u])[-NPC_MET_CAP:]
     bd=p.get("bosses_defeated",{}); kills=p["kills"]; lvl=p["level"]
     quests_done=sum(1 for q in p.get("quests",[]) if q["concluida"])
     title=p.get("titulo",""); cls_name=cls(p)["nome"] if cls(p) else "Desconhecido"
@@ -1609,7 +1950,10 @@ def render_lb(lb):
         rows.append(f"| {pos} | **@{e['username']}**{prest}{title} | {cls_s} | {e['level']} | {e['score']} | {e['bosses']} | {e['conquistas']} | {lang} |")
     return "\n".join(rows)
 
-def render_skill_tree(p):
+def render_skill_tree(p, base=None):
+    """Nó desbloqueável virou link clicável. Antes o README mandava o jogador abrir o
+    SETUP.md, decorar o ID e digitar `rpg:skill:gf1` no título da issue à mão — sendo que
+    os IDs são conhecidos em runtime."""
     tree=SKILL_TREES.get(p.get("classe",""),[])
     if not tree: return "_Escolha uma classe para ver sua árvore._"
     unlocked=set(p.get("skills_unlocked",[])); pts=p.get("skill_points",0)
@@ -1619,10 +1963,13 @@ def render_skill_tree(p):
     for br,skills in branches.items():
         parts=[]
         for sk in skills:
-            if sk[0] in unlocked: icon="✅"
-            elif (not sk[5] or sk[5] in unlocked) and pts>=sk[4]: icon="🔓"
-            else: icon="🔒"
-            parts.append(f"{icon}`{sk[0]}` **{sk[1]}** — _{sk[6]}_")
+            if sk[0] in unlocked:
+                parts.append(f"✅ **{sk[1]}** — _{sk[6]}_")
+            elif (not sk[5] or sk[5] in unlocked) and pts>=sk[4]:
+                link=f"[{sk[1]}]({base}rpg%3Askill%3A{sk[0]})" if base else f"**{sk[1]}**"
+                parts.append(f"🔓 **{link}** — _{sk[6]}_")
+            else:
+                parts.append(f"🔒 `{sk[0]}` **{sk[1]}** — _{sk[6]}_")
         out.append(f"{br}: " + " → ".join(parts))
     return "\n".join(out)
 
@@ -1636,8 +1983,10 @@ def _render_raids_preclass(base):
     if not active:
         return ""
     repo = os.environ.get("GITHUB_REPOSITORY", "xXYoungMoreXx/xXYoungMoreXx")
+    # `boss_key` é o slug interno ("Tita de Gelo", sem til); o nome de exibição está em
+    # WORLD_BOSSES[...]["nome"] ("Titã de Gelo Ancestral").
     rows = "".join(
-        f"\n| {WORLD_BOSSES[r['boss_key']]['emoji']} {r['boss_key']} | {hp_bar(r['hp'], r['max_hp'])} | {len(r['participants'])} | [Ver Raid](https://github.com/{repo}/issues/{iss}) |"
+        f"\n| {WORLD_BOSSES[r['boss_key']]['emoji']} {WORLD_BOSSES[r['boss_key']]['nome']} | {hp_bar(r['hp'], r['max_hp'])} | {len(r.get('participants',{}))} | [Ver Raid](https://github.com/{repo}/issues/{iss}) |"
         for iss, r in active
     )
     return f"""
@@ -1685,16 +2034,22 @@ def build_block(p,gs,lb):
 > *Uma profecia fala de um Escolhido marcado pela Estrela de Wyrd, destinado a restaurar a luz. Por um acaso do destino (ou uma ressaca coletiva), 10 heróis com passados estereotipados acordaram na mesma Taverna em Ironhold sem memórias recentes.*
 > *Todos eles possuem uma tatuagem arcana pulsando no pulso. Suas histórias se cruzaram aqui. A jornada pertence a quem ousa começar.*
 
+> 🎮 *Clique numa classe para começar — qualquer visitante pode jogar. A ação abre uma Issue; o README atualiza em ~40s.*
+
+<details open>
+<summary><b>⚔️ As 10 classes — clique para escolher</b></summary>
+
 | Classe | Lore | Stats | Atributos | Habilidades |
 |--------|------|:---:|:-------:|-------------|
 {class_table}
 
-> 🎮 *Clique em uma classe para começar! Qualquer visitante pode jogar.*
+</details>
 
 ---
 
 ### 🌍 Evento Mundial Atual
 > {ev['emoji']} **{ev['nome']}** — {ev['desc']}
+> _Rotaciona em {event_ends_in()}._
 {_render_raids_preclass(base)}
 ---
 
@@ -1759,16 +2114,16 @@ def build_block(p,gs,lb):
     active_raid_list = [(iss, r) for iss, r in raids.items() if r["status"] == "active"]
     if active_raid_list:
         repo_name = os.environ.get('GITHUB_REPOSITORY', 'xXYoungMoreXx/xXYoungMoreXx')
-        raid_rows = "".join(f"\n| {WORLD_BOSSES[r['boss_key']]['emoji']} {r['boss_key']} | {hp_bar(r['hp'], r['max_hp'])} | {len(r['participants'])} | [⚔️ Juntar-se à Raid!](https://github.com/{repo_name}/issues/{iss}) |" for iss, r in active_raid_list)
+        raid_rows = "".join(f"\n| {WORLD_BOSSES[r['boss_key']]['emoji']} {WORLD_BOSSES[r['boss_key']]['nome']} | {hp_bar(r['hp'], r['max_hp'])} | {len(r.get('participants',{}))} | [⚔️ Juntar-se à Raid!](https://github.com/{repo_name}/issues/{iss}) |" for iss, r in active_raid_list)
         active_raids_block = f"""
 ---
 ### ⚔️ Dungeons Cooperativas (Raids Ativas)
-> _Qualquer jogador pode entrar na Raid comentando `/atacar` na Issue! O dano e as recompensas são distribuídos entre todos os participantes._
+> _Qualquer jogador entra comentando `/atacar` na Issue. O pool de recompensa é **dividido** entre os participantes; o MVP leva +50% da sua parte._
 
 | Boss | HP Global | Participantes | Ação |
 |---|---|---|---|{raid_rows}
 """
-        
+
     log_txt="\n".join(f"> {l}" for l in p.get("log",[])[:7])
     wlog="\n".join(f"> 🌍 {l}" for l in gs.get("world_log",[])[:4])
     
@@ -1784,6 +2139,54 @@ def build_block(p,gs,lb):
     else:
         habs_str_actions = f"[{c.get('skill_e','✨')} {c.get('skill','Habilidade')}]({base}rpg%3Ahabilidade)"
 
+    # `int((price_mult)-1)*100` fechava o parêntese no lugar errado: int(0.4) = 0, então
+    # o efeito de preço mostrava "+0%" em todos os eventos, sempre.
+    price_pct = round((ev.get('price_mult',1.0)-1)*100)
+
+    # ── Ações condicionais ────────────────────────────────────────────────────────
+    # Antes tudo era exibido sempre: clicar em "Comprar" fora de zona segura gastava um
+    # turno para receber "compre em Ironhold...". Só o bloco de masmorra era condicional.
+    t_now = terrain(p); in_safe = t_now in SAFE_ZONES; fighting = bool(mons)
+    if p.get("in_dungeon"):
+        move_line = (f"**🏰 Masmorra (Sala {p.get('dungeon_room',1)}/{DUNGEON_MAX_ROOMS}):** "
+                     f"[🚪 Avançar Sala]({base}rpg%3Aavancar) · [🏃 Fugir (-50% Ouro)]({base}rpg%3Afugir)")
+        explore_line = "**🍺 Explorar:** _indisponível dentro da masmorra._"
+    else:
+        move_line = (f"**🧭 Mover:** [⬆️ Norte]({base}rpg%3Anorte) · [⬇️ Sul]({base}rpg%3Asul) · "
+                     f"[◀️ Oeste]({base}rpg%3Aoeste) · [▶️ Leste]({base}rpg%3Aleste)")
+        if fighting:
+            move_line = "**🧭 Mover:** _termine o combate primeiro._"
+        parts = [f"[🔍 Interagir]({base}rpg%3Ainteragir)"]
+        if in_safe:
+            parts += [f"[😴 Descansar]({base}rpg%3Adescansar)"]
+            if t_now in TAVERN_RUMORS: parts += [f"[🍺 Taverna]({base}rpg%3Ataverna)"]
+        else:
+            parts += [f"[🏰 Masmorra{'' if p['level']>=3 else ' (nív.3+)'}]({base}rpg%3Amasmorra)"]
+        explore_line = ("**🍺 Explorar:** _termine o combate primeiro._" if fighting
+                        else "**🍺 Explorar:** " + " · ".join(parts))
+
+    combat_line = (f"[⚔️ Atacar]({base}rpg%3Aatacar) · {habs_str_actions} · "
+                   f"[🧪 Poção]({base}rpg%3Apocao) · [🏃 Fugir]({base}rpg%3Afugir)"
+                   if fighting or p.get("in_dungeon") else "_sem inimigo à vista — explore o mapa._")
+
+    if t_now in KARMA_ZONES and not fighting:
+        karma_line = (f"**⚖️ Moralidade em {t_now}:** [🛡️ Escolha Boa]({base}rpg%3Akarma%3Agood) · "
+                      f"[🗡️ Escolha Maligna]({base}rpg%3Akarma%3Abad)")
+    else:
+        karma_line = "**⚖️ Moralidade:** _há escolhas morais em Ironhold e Ravenford._"
+
+    if in_safe and not fighting:
+        prices = " · ".join(
+            f"[{it['emoji']} {it['nome']} -{shop_price(p,it['price'],t_now)}g]({base}rpg%3Acomprar%3A{k})"
+            for k, it in SHOP_BASE.items())
+        shop_line = f"**🛒 Comprar em {t_now}:** {prices}"
+    else:
+        shop_line = "**🛒 Comprar:** _só em zona segura (🔵 no mapa)._"
+
+    craft_line = "**🔨 Crafting:** " + " · ".join(
+        f"[{r['emoji']} {r['nome']}]({base}rpg%3Acraftar%3A{k})" for k, r in RECIPES.items())
+    prestige_link = f" · [🔮 Prestígio]({base}rpg%3Aprestigio)" if p["level"] >= 10 else ""
+    mount_hint = " · `rpg:montar:ironhold|ashenvale|porto`" if p.get("dragon_mount") else ""
     return f"""<!-- RPG_START -->
 ## ⚔️ AETHORIA: O REINO FRAGMENTADO{titulo}{prestige_badge}
 
@@ -1795,20 +2198,10 @@ def build_block(p,gs,lb):
 
 ---
 
-### 🌍 Evento Mundial — {ev['emoji']} {ev['nome']}
-> _{ev['desc']}_
-> Efeitos: Monstros {int((ev.get('monster_hp_mult',1.0))*100)-100:+d}% HP · Encontros {int(ev.get('encounter_rate_bonus',0)*100):+d}% · XP ×{ev.get('xp_mult',1.0):.1f} · Preços {int((ev.get('price_mult',1.0))-1)*100:+d}%
+### 📖 O que acabou de acontecer — @{p['username']}
+{log_txt}
 
----
-
-### 🗺️ Mapa de Aethoria
-```
-{render_map(p)}
-```
-> 🧙 Você · 🌨️Tundra · 🏔️Pico · 🗼Oráculo · 🌲Mirewood · 🏘️Ashenvale · 🏚️Vel'Moran · 🏰Fortaleza
-> 🌑Pântano · 🌾Planície · 🏙️Ironhold · ⛏️Kragdor · 🌳Floresta · 🛕Templo · 🏡Ravenford
-
-📍 **{terrain(p)}** — _{LOCATION_LORE.get(terrain(p),'...')}_
+> ⏱️ _Cada ação abre uma Issue e leva ~40s para processar. Recarregue o README depois disso._
 
 ---
 
@@ -1818,61 +2211,69 @@ def build_block(p,gs,lb):
 | ❤️ HP | {hp_bar(p['hp'],p['max_hp'])} |
 | 💧 Mana | {mp_bar(p['mana'],p['max_mana'])} |
 | 🧙 Classe | {c['emoji']} **{c['nome']}** · {c_attr_str} |
+| 🛡️ Defesa efetiva | {total_def(p,sk)} _(base {p.get('defense',5)} + {sk['def_flat']} da árvore)_ |
 | ✨ Habilidades | {habs_status} |
 | ⭐ Nível | {p['level']} · XP: {p['xp']}/{xp_next} · Total: {p.get('total_xp',0)} |
 | 💰 Ouro / ⚖️ Karma | {p['gold']}g / {p.get('karma', 0)} ({'😇 Herói' if p.get('karma', 0)>=20 else '😈 Vilão' if p.get('karma', 0)<=-20 else '⚖️ Neutro'}) |
-| 🧪 Poções | {p['potions']} · 🐍 Veneno: {p.get('poison_stacks',0)} cargas |
-| ☠️ Kills/Mortes | {p['kills']} / {p.get('deaths',0)} |
+| 🧪 Poções | {p['potions']} básica(s) · 🐍 Veneno: {p.get('poison_stacks',0)} cargas |
+| 🎒 Inventário | {inv} |
 | 🗡️ Arma / 🛡️ Armadura | {p['equipment']['weapon']} / {p['equipment']['armor']} |
 | 💎 Relíquias | {relics_str} |
+| ☠️ Kills / Mortes | {p['kills']} / {p.get('deaths',0)} |
+| 🏰 Masmorras | {p.get('dungeons_cleared',0)} {'completa' if p.get('dungeons_cleared',0)==1 else 'completas'}{' · 💎 última sem poção' if p.get('dungeon_flawless') else ''} |
 | 🎖️ Conquistas | {conqs_str} |{comp_row}{dragon_row}{gh_row}
 
 ---
 
-### 🌳 Árvore de Habilidades ({p.get('skill_points',0)} ponto(s))
-{render_skill_tree(p)}
+### 🌍 Evento Mundial — {ev['emoji']} {ev['nome']}
+> _{ev['desc']}_
+> Efeitos: Monstros {int((ev.get('monster_hp_mult',1.0))*100)-100:+d}% HP · Encontros {int(ev.get('encounter_rate_bonus',0)*100):+d}% · XP ×{ev.get('xp_mult',1.0):.1f} · Preços {price_pct:+d}%
+> _Rotaciona em {event_ends_in()}._
 
 ---
 
-### 🏹 Facções
+### 🗺️ Mapa de Aethoria
+{render_map(p)}
+
+{render_legend(p)}
+
+📍 **{terrain(p)}** — _{LOCATION_LORE.get(terrain(p),'...')}_
+
+---
+
+### 🎮 Ações
+{move_line}
+**⚔️ Combate:** {combat_line}
+{explore_line}
+{karma_line}
+{shop_line}
+{craft_line}
+**⚙️ Outros:** [🔄 Reiniciar]({base}rpg%3Areiniciar){prestige_link} · `rpg:desafiar:USUARIO` · `rpg:mensagem:TEXTO`{mount_hint}
+{m_block}{active_raids_block}
+
+---
+
+### 🌳 Árvore de Habilidades ({p.get('skill_points',0)} ponto(s))
+{render_skill_tree(p, base)}
+
+<details>
+<summary><b>📜 Missões · 👹 Chefões · 🏹 Facções</b></summary>
+
+| | Missão | Objetivo |
+|---|---|---|{quests_rows}
+
+| | Chefão | Local | Status |
+|---|---|---|---|{boss_rows}
+
 | Facção | Reputação |
 |---|---|
 | ⚔️ Ordem do Aço | {frep(fac.get('ordem',0))} |
 | 🌿 Círculo Verdante | {frep(fac.get('circulo',0))} |
 | 🖤 Pacto das Sombras | {frep(fac.get('pacto',0))} |
 
----
+</details>
 
-### 📜 Missões
-| | Missão | Objetivo |
-|---|---|---|{quests_rows}
-
----
-
-### 👹 Chefões
-| | | Local | Status |
-|---|---|---|---|{boss_rows}
-{m_block}{active_raids_block}
-
----
-
-### 🎮 Ações — _Última jogada: @{p['username']}_
-
-{'**🏰 Masmorra (Sala ' + str(p.get('dungeon_room',1)) + '/' + str(DUNGEON_MAX_ROOMS) + '):** [🚪 Avançar Sala](' + base + 'rpg%3Aavancar) · [🏃 Fugir (-50% Ouro)](' + base + 'rpg%3Afugir)' if p.get('in_dungeon') else '**🧭 Mover:** [⬆️](' + base + 'rpg%3Anorte) [⬇️](' + base + 'rpg%3Asul) [◀️](' + base + 'rpg%3Aoeste) [▶️](' + base + 'rpg%3Aleste)'}
-**⚔️ Combate:** [⚔️ Atacar]({base}rpg%3Aatacar) · {habs_str_actions} · [🧪 Poção]({base}rpg%3Apocao) · [🏃 Fugir]({base}rpg%3Afugir)
-{'**🍺 Explorar:** [🔍 Interagir](' + base + 'rpg%3Ainteragir) · [😴 Descansar](' + base + 'rpg%3Adescansar) · [🍺 Taverna](' + base + 'rpg%3Ataverna)' + (' · [🏰 Explorar Masmorra (nív.3+)](' + base + 'rpg%3Amasmorra)' if terrain(p) not in SAFE_ZONES else '') if not p.get('in_dungeon') else '**🏰 Masmorra:** Não é possível explorar dentro da masmorra.'}
-**⚖️ Moralidade:** [🛡️ Escolha Boa (Ironhold/Ravenford)]({base}rpg%3Akarma%3Agood) · [🗡️ Escolha Maligna]({base}rpg%3Akarma%3Abad)
-**🛒 Comprar:** [🧪-8g]({base}rpg%3Acomprar%3Apocao_menor) · [💊-15g]({base}rpg%3Acomprar%3Apocao) · [💙-12g]({base}rpg%3Acomprar%3Aelixir_mana) · [🌿-10g]({base}rpg%3Acomprar%3Aantidoto)
-**🔨 Crafting:** [Poção Superior]({base}rpg%3Acraftar%3Apocao_maior) · [Elixir Wyrd]({base}rpg%3Acraftar%3Aelixir_wyrd) · [Pó de Relíquias]({base}rpg%3Acraftar%3Apo_reliquias)
-**🌳 Skill:** `rpg:skill:ID` — [{c['emoji']} Ver IDs no SETUP.md](../../blob/main/SETUP.md)
-**⚙️ Outros:** [🔄 Reiniciar]({base}rpg%3Areiniciar) · [🔮 Prestígio (nív.10)]({base}rpg%3Aprestigio) · `rpg:desafiar:USERNAME` · `rpg:montar:DESTINO`
-
----
-
-### 📖 Log de @{p['username']}
-{log_txt}
-
-{f"### 🌍 Eventos Recentes do Mundo{chr(10)}{wlog}" if wlog.strip() else ""}
+{f"---{chr(10)}{chr(10)}### 🌍 Eventos Recentes do Mundo{chr(10)}{wlog}" if wlog.strip() else ""}
 
 ---
 
@@ -1884,15 +2285,94 @@ def build_block(p,gs,lb):
 
 def update_readme(p,gs,lb):
     rp=Path("README.md"); content=rp.read_text("utf-8")
-    updated=re.sub(r"<!-- RPG_START -->.*?<!-- RPG_END -->",build_block(p,gs,lb),content,flags=re.DOTALL)
-    rp.write_text(updated,"utf-8")
+    block=build_block(p,gs,lb)
+    # lambda em vez de replacement string: como string, um `\1` ou `\g<0>` vindo de texto
+    # de jogador viraria backreference — `\1` levantava re.error e derrubava o turno.
+    updated=re.sub(r"<!-- RPG_START -->.*?<!-- RPG_END -->",lambda _m:block,content,flags=re.DOTALL)
+    rp.write_text(updated,"utf-8",newline="\n")
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  MAIN
 # ══════════════════════════════════════════════════════════════════════════════
+def parse_action(title):
+    """Separa comando de argumento preservando o CASE do argumento.
+
+    Antes o título inteiro levava `.lower()`, e isso quebrava duas coisas:
+    `rpg:desafiar:xXYoungMoreXx` procurava o arquivo `xxyoungmorexx.json` (os saves usam
+    o login exato, então PvP nunca achava ninguém com maiúscula), e toda mensagem de
+    taverna era exibida em minúsculas."""
+    t = (title or "").strip()
+    parts = t.split(":")
+    if len(parts) >= 2:
+        cmd = f"{parts[0]}:{parts[1]}".lower()
+        arg = ":".join(parts[2:])       # rejunta: `rpg:mensagem:a:b` -> arg "a:b"
+    else:
+        cmd, arg = t.lower(), ""
+    return cmd, arg
+
+def apply_turn_regen(p):
+    """`regen` é descrito como "+X HP por turno vivo" na árvore e no SETUP.md, mas só era
+    aplicado dentro de resolve_kill — ou seja, apenas ao matar algo."""
+    sk = sb(p)
+    if sk.get("regen", 0) > 0 and p.get("classe") and 0 < p.get("hp", 0) < p.get("max_hp", 0):
+        healed = min(p["max_hp"] - p["hp"], sk["regen"])
+        p["hp"] += healed
+        push_log(p, f"💚 Regeneração: +{healed} HP")
+
+def dispatch(p, gs, cmd, arg):
+    """Despacha a ação. Isolado de main() para poder rodar dentro de try/except e para
+    os testes exercitarem o caminho real, não uma cópia da lógica."""
+    if cmd in DIRS:
+        dx, dy, name = DIRS[cmd]; action_move(p, gs, dx, dy, name)
+    elif cmd == "rpg:atacar":       action_attack(p, gs)
+    elif cmd == "rpg:habilidade":
+        # `int(arg)` cru fazia `rpg:habilidade:x` levantar ValueError e matar o turno.
+        action_skill(p, gs, int(arg) if arg.isdigit() else 0)
+    elif cmd == "rpg:pocao":        action_potion(p)
+    elif cmd == "rpg:interagir":    action_interact(p, gs)
+    elif cmd == "rpg:descansar":    action_rest(p)
+    elif cmd == "rpg:taverna":      action_tavern(p, gs)
+    elif cmd == "rpg:reiniciar":    action_reset(p, gs)
+    elif cmd in ("rpg:prestige", "rpg:prestigio"): action_prestige(p, gs)
+    elif cmd == "rpg:montar":
+        action_mount_to(p, gs, arg) if arg else action_mount(p, gs)
+    elif cmd == "rpg:classe":       action_class(p, gs, arg)
+    elif cmd == "rpg:skill":        action_unlock_skill(p, arg)
+    elif cmd == "rpg:comprar":      action_buy(p, arg)
+    elif cmd == "rpg:craftar":      action_craft(p, arg)
+    elif cmd == "rpg:desafiar":     action_pvp(p, gs, arg)
+    elif cmd == "rpg:criar_raid":   action_create_raid(p, gs, (arg or "").lower())
+    elif cmd == "rpg:raid_attack":  action_raid_attack(p, gs, arg)
+    elif cmd == "rpg:mensagem":     action_message(p, gs, arg)
+    elif cmd == "rpg:karma":        action_karma(p, arg)
+    elif cmd == "rpg:masmorra":     action_dungeon(p, gs)
+    elif cmd == "rpg:avancar":      action_advance(p, gs)
+    elif cmd == "rpg:fugir":        action_flee(p, gs)
+    else:
+        # esc(): o título vai para o README público sem passar por markdown do atacante.
+        push_log(p, f"❓ Ação `{esc(cmd, 40)}` desconhecida. Use os botões do README.")
+
+def run_turn(p, gs, cmd, arg, user="anon"):
+    """Executa a ação com contenção de erro.
+
+    Separado de main() para que o try/except esteja no caminho que os testes exercitam —
+    e não só dentro do entrypoint. Qualquer exceção aqui antes derrubava o processo: o
+    step do workflow falhava, o step de commit era pulado e o de comentar/fechar também,
+    então o turno desaparecia com um ✗ mudo no Actions e nenhum aviso ao jogador."""
+    try:
+        dispatch(p, gs, cmd, arg)
+        return True
+    except Exception as e:
+        push_log(p, f"💥 Erro interno processando `{esc(cmd,40)}` — reportado ao mantenedor.")
+        print(f"::error::dispatch falhou em '{cmd}' (arg={arg!r}) para @{user}: {type(e).__name__}: {e}")
+        traceback.print_exc()
+        return False
+
 def main():
     if len(sys.argv)<2: print("Uso: engine.py <title> [username]"); sys.exit(1)
-    raw=sys.argv[1].strip().lower(); u=sys.argv[2].strip() if len(sys.argv)>2 else "anon"
+    title=sys.argv[1]
+    cmd,arg=parse_action(title)
+    u=safe_username(sys.argv[2] if len(sys.argv)>2 else "anon")
     # Skip bots
     if "bot" in u.lower() and "github" in u.lower(): print("⏭️ Skipped: bot user"); sys.exit(0)
     tok=os.environ.get("GITHUB_TOKEN")
@@ -1908,45 +2388,16 @@ def main():
             for m in msgs: push_log(p,m)
             push_world(gs,f"🌟 **@{u}** chegou a Aethoria! _({profile.get('top_language','?')} · {profile.get('followers',0)} followers)_")
         push_log(p,f"⚔️ Bem-vindo, **@{u}**! Escolha sua classe para começar.")
-    # Process action
-    if raw in DIRS:
-        dx,dy,name=DIRS[raw]; action_move(p,gs,dx,dy,name)
-    elif raw=="rpg:atacar":     action_attack(p,gs)
-    elif raw.startswith("rpg:habilidade"):
-        parts = raw.split(":")
-        idx = int(parts[2]) if len(parts) > 2 else 0
-        action_skill(p,gs,idx)
-    elif raw=="rpg:pocao":      action_potion(p)
-    elif raw=="rpg:interagir":  action_interact(p,gs)
-    elif raw=="rpg:descansar":  action_rest(p)
-    elif raw=="rpg:taverna":    action_tavern(p,gs)
-    elif raw=="rpg:reiniciar":  action_reset(p,gs)
-    elif raw=="rpg:prestige" or raw=="rpg:prestigio": action_prestige(p,gs)
-    elif raw=="rpg:montar":     action_mount(p,gs)
-    elif raw.startswith("rpg:classe:"):   action_class(p,gs,raw.split("rpg:classe:")[1])
-    elif raw.startswith("rpg:skill:"):    action_unlock_skill(p,raw.split("rpg:skill:")[1])
-    elif raw.startswith("rpg:comprar:"): action_buy(p,raw.split("rpg:comprar:")[1])
-    elif raw.startswith("rpg:craftar:"): action_craft(p,raw.split("rpg:craftar:")[1])
-    elif raw.startswith("rpg:montar:"):  action_mount_to(p,gs,raw.split("rpg:montar:")[1])
-    elif raw.startswith("rpg:desafiar:"): action_pvp(p,gs,raw.split("rpg:desafiar:")[1])
-    elif raw.startswith("rpg:criar_raid:"): action_create_raid(p, gs, raw.split("rpg:criar_raid:")[1])
-    elif raw.startswith("rpg:raid_attack:"): 
-        issue_number = raw.split("rpg:raid_attack:")[1]
-        action_raid_attack(p, gs, issue_number)
-    elif raw.startswith("rpg:mensagem:"): action_message(p, gs, raw.split("rpg:mensagem:")[1])
-    elif raw.startswith("rpg:karma:"): action_karma(p, raw.split("rpg:karma:")[1])
-    elif raw=="rpg:masmorra":    action_dungeon(p, gs)
-    elif raw=="rpg:avancar":     action_advance(p, gs)
-    elif raw=="rpg:fugir":       action_flee(p, gs)
-    else: push_log(p,f"❓ Ação `{raw}` desconhecida.")
+    run_turn(p, gs, cmd, arg, u)
     check_conquistas(p,gs); lv=check_lu(p)
     if lv: push_log(p,lv)
+    apply_turn_regen(p)
     lb=load_lb(); update_lb(lb,p); save_lb(lb)
-    p["last_played"]=datetime.now(timezone.utc).isoformat()
+    p["last_played"]=_now().isoformat()
     save_player(p); save_gs(gs); update_readme(p,gs,lb)
     # Auto-spawn raid every 30 turns if none active
     if gs["turn"] % 30 == 0 and tok:
         _try_auto_spawn_raid(gs, tok)
-    print(f"✅ '{raw}' → @{u} · T#{gs['turn']} · Score:{score(p)}")
+    print(f"✅ '{cmd}' → @{u} · T#{gs['turn']} · Score:{score(p)}")
 
 if __name__=="__main__": main()
