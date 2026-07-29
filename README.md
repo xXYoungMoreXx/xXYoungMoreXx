@@ -169,24 +169,24 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
     <tr>
       <td align="center" width="400">
         <a href="https://github.com/xXYoungMoreXx/ProspectFlow_AI">
-          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=ProspectFlow_AI&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" width="380" height="120" />
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=ProspectFlow_AI&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" alt="xXYoungMoreXx/ProspectFlow_AI — estatísticas do repositório" width="380" height="120" />
         </a>
       </td>
       <td align="center" width="400">
         <a href="https://github.com/xXYoungMoreXx/RAG_Agent">
-          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=RAG_Agent&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" width="380" height="120" />
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=RAG_Agent&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" alt="xXYoungMoreXx/RAG_Agent — estatísticas do repositório" width="380" height="120" />
         </a>
       </td>
     </tr>
     <tr>
       <td align="center" width="400">
         <a href="https://github.com/xXYoungMoreXx/WordPress_Cogitari_Theme">
-          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WordPress_Cogitari_Theme&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" width="380" height="120" />
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WordPress_Cogitari_Theme&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" alt="xXYoungMoreXx/WordPress_Cogitari_Theme — estatísticas do repositório" width="380" height="120" />
         </a>
       </td>
       <td align="center" width="400">
         <a href="https://github.com/xXYoungMoreXx/WP_Cogitari_Theme">
-          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WP_Cogitari_Theme&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" width="380" height="120" />
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=WP_Cogitari_Theme&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" alt="xXYoungMoreXx/WP_Cogitari_Theme — estatísticas do repositório" width="380" height="120" />
         </a>
       </td>
     </tr>
