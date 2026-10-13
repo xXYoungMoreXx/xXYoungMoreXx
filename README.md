@@ -168,13 +168,13 @@ SDR, consultor autônomo, marketing digital e SEO freelancer. Base estratégica 
   <table border="0">
     <tr>
       <td align="center" width="400">
-        <a href="https://github.com/xXYoungMoreXx/linkedin-apresentation">
-          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=linkedin-apresentation&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" alt="xXYoungMoreXx/linkedin-apresentation — estatísticas do repositório" width="380" height="120" />
+        <a href="https://github.com/xXYoungMoreXx/EscolaApp">
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=EscolaApp&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" alt="xXYoungMoreXx/EscolaApp — estatísticas do repositório" width="380" height="120" />
         </a>
       </td>
       <td align="center" width="400">
-        <a href="https://github.com/xXYoungMoreXx/EscolaApp">
-          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=EscolaApp&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" alt="xXYoungMoreXx/EscolaApp — estatísticas do repositório" width="380" height="120" />
+        <a href="https://github.com/xXYoungMoreXx/linkedin-apresentation">
+          <img src="https://github-readme-stats.vercel.app/api/pin/?username=xXYoungMoreXx&repo=linkedin-apresentation&hide_border=false&border_radius=8&bg_color=0d1117&title_color=58a6ff&icon_color=58a6ff&text_color=c9d1d9&border_color=30363d&show_owner=true" alt="xXYoungMoreXx/linkedin-apresentation — estatísticas do repositório" width="380" height="120" />
         </a>
       </td>
     </tr>
